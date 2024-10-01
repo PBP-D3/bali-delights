@@ -1,0 +1,36 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Toko PBP - Pasti Belanja Puas</h1>
+
+<h5>NPM:</h5>
+<p>{{ npm }}</p>
+<!-- Ubah sesuai dengan npm kamu -->
+<h5>Name:</h5>
+<p>{{ name }}</p>
+<!-- Ubah sesuai dengan nama kamu -->
+<h5>Class:</h5>
+<p>{{ class }}</p>
+<!-- Ubah sesuai dengan kelas kamu -->
+
+{% if not shop_entries %}
+<p>Belum ada data item pada shop.</p>
+{% else %}
+<table>
+  <tr>
+    <th>Item Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Amount Sold</th>
+    <th>Rating</th>
+  </tr>
+
+  
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_shop_entry' %}">
+  <button>Add New Shop Entry</button>
+</a>
+{% endblock content %}
