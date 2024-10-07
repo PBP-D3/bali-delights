@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-nqz=h6)ugh(81x68-$sgq@m@s$%qj8%8#7*f3d0kq!pmx(r@m&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhammad-azzam31-tugas2.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhammad-azzam31-balidelights.pbp.cs.ui.ac.id"]
 
 
 
@@ -124,4 +124,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://muhammad-azzam31-tugas2.pbp.cs.ui.ac.id", "https://muhammad-azzam31-tugas2.pbp.cs.ui.ac.id"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://muhammad-azzam31-balidelights.pbp.cs.ui.ac.id", "https://muhammad-azzam31-balidelights.pbp.cs.ui.ac.id"]
