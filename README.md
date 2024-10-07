@@ -119,8 +119,6 @@ Tugas dan Tanggung Jawab
 
 Penjual di aplikasi Bali Delights berfungsi sebagai penyedia produk suvenir yang mencerminkan kekayaan budaya Bali. Mereka adalah pengrajin lokal atau pemilik toko yang menawarkan produk berkualitas tinggi kepada pelanggan, memanfaatkan platform untuk memperluas jangkauan pasar mereka.
 
-
-
 ### Tugas dan Tanggung Jawab
 
 **1\. Mengelola Produk**
@@ -135,12 +133,9 @@ Penjual di aplikasi Bali Delights berfungsi sebagai penyedia produk suvenir yang
 **4\. Analytics**
   - Penjual dapat melihat total penjualan mereka serta chart penjualan berdasarkan produk/kategori.
 
-
-
 ## VI. Tautan Deployment
 
 Github: https://github.com/PBP-D3/bali-delights
 
 Deployment: http://pbp.cs.ui.ac.id/muhammad.azzam31/balidelights
-
-teste
+palpwlawpa
