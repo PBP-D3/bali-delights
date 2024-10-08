@@ -138,4 +138,3 @@ Penjual di aplikasi Bali Delights berfungsi sebagai penyedia produk suvenir yang
 Github: https://github.com/PBP-D3/bali-delights
 
 Deployment: http://pbp.cs.ui.ac.id/muhammad.azzam31/balidelights
-palpwlawpa
