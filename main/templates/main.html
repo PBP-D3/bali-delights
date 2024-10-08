@@ -1,36 +1,18 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1>Toko PBP - Pasti Belanja Puas</h1>
+<h1>Bali Delights</h1>
 
-<h5>NPM:</h5>
-<p>{{ npm }}</p>
+<h2>PBP - D03</h2>
 <!-- Ubah sesuai dengan npm kamu -->
-<h5>Name:</h5>
-<p>{{ name }}</p>
+<h3>Anggota:</h3>
+<ul>
+  <li>Muhammad Azzam / 2306220444
+<li>Karolina Jocelyn / 2306221762</li>
+<li>Pascal Hafidz Fajri / 2306222746</li>
+<li>Edmond Christian / 2306208363</li>
+<li>Pradipta Wachyu Aditama / 2306226233</li>
+
+</ul>
 <!-- Ubah sesuai dengan nama kamu -->
-<h5>Class:</h5>
-<p>{{ class }}</p>
-<!-- Ubah sesuai dengan kelas kamu -->
 
-{% if not shop_entries %}
-<p>Belum ada data item pada shop.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Item Name</th>
-    <th>Price</th>
-    <th>Description</th>
-    <th>Amount Sold</th>
-    <th>Rating</th>
-  </tr>
-
-  
-</table>
-{% endif %}
-
-<br />
-
-<a href="{% url 'main:create_shop_entry' %}">
-  <button>Add New Shop Entry</button>
-</a>
 {% endblock content %}
