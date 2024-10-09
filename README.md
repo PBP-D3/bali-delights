@@ -67,16 +67,24 @@ Dengan **Bali Delights**, pengalaman mendapatkan suvenir dari Bali menjadi lebih
    - Menghitung total biaya dan menampilkan rincian pesanan.
    - Fitur checkout untuk memproses pembayaran.
 
-5. **Modul Analytics**
+5. **Modul Analytics dan Forms Recommendation System**
    - Menganalisis data penjualan (total penjualan, produk terlaris, dll.).
    - Laporan interaksi pengguna dengan produk dan toko (like, reviews, dll.).
    - Menyediakan insights untuk pengembangan bisnis dan strategi pemasaran.
+   - Menyediakan bentuk forms untuk mengetahui produk apa yang disukai dan dicari oleh pengguna.
+   - Forms juga akan berpengaruh kepada insights yang didapat dari modul analytics.
 
 6. **Modul Pengguna**
    - Pendaftaran dan autentikasi pengguna (login, logout, registrasi).
    - Profil pengguna (pengaturan akun, preferensi, dan informasi pribadi).
    - Riwayat pembelian dan transaksi.
    - Pengelolaan wishlist atau daftar favorit.
+  
+7. **Modul Chat dengan Penjual**:
+   - Membuat chat baru dengan penjual dari halaman produk atau toko.
+   - Pembeli bisa chat dengan penjual untuk menanyakan mengenai produk dan pengiriman.
+   - Chat akan memiliki sejumlah default messages yang dapat dikirimkan langsung untuk mempermudah pembeli.
+   - Pembeli bisa men-delete chat jika tidak dibutuhkan.
 
 Dengan pengembangan modul-modul di atas, aplikasi Bali Delights akan memberikan pengalaman pengguna yang optimal, memfasilitasi penjual dalam mengelola produk mereka, dan memberikan analisis yang berguna untuk pengambilan keputusan.
 
