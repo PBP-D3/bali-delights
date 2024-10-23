@@ -21,5 +21,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('', include('main.urls')),
+    path('', include('main.urls')),
+    path('chat/', include('chat.urls')),
+    path('review/', include('review.urls')),
+    path('product/', include('product.urls')),
+    path('cart/', include('cart.urls')),
+    path('store/', include('store.urls')),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]
