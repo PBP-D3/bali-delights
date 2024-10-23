@@ -8,10 +8,11 @@
 
 {% block content %}
 
-  <div class="flex">
-      <h1>Hello, {{ username }}!</h1>
+  <div class="flex flex-col ">
+      <h1 class="text-3xl font-bold">Hello, {{ username }}!</h1>
       <div>
-          <h2>User Information</h2>
+          <br>
+          <h2>User Information:</h2>
           <ul>
               <li><strong>Username:</strong> {{ username }}</li>
               <li><strong>Email:</strong> {{ email }}</li>
