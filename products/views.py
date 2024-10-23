@@ -1,7 +1,8 @@
 from django.shortcuts import render
 
 # Create your views here.
-def show_chat(request):
+# Create your views here.
+def show_products(request):
     context = {
         'npm' : '2306220444',
         'name': request.user.username,
@@ -9,4 +10,4 @@ def show_chat(request):
         'last_login': request.COOKIES['last_login'],
     }
 
-    return render(request, "chat.html", context)
+    return render(request, "products.html", context)

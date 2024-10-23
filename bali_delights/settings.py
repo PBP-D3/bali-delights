@@ -39,15 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'chat',
-    'product',
-    'review',
-    'store',
-    'cart',
+    'chats',
+    'products',
+    'reviews',
+    'stores',
+    'carts',
     'django_browser_reload',
 ]
 
-# AUTH_USER_MODEL = "main.User" 
+AUTH_USER_MODEL = 'main.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

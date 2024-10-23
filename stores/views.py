@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 # Create your views here.
-def show_store(request):
+def show_stores(request):
     context = {
         'npm' : '2306220444',
         'name': request.user.username,
@@ -10,4 +10,4 @@ def show_store(request):
         'last_login': request.COOKIES['last_login'],
     }
 
-    return render(request, "store.html", context)
+    return render(request, "stores.html", context)
