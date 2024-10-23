@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect, reverse   # Tambahkan import redirect di baris ini
-from main.forms import ShopEntryForm
-from main.models import ShopEntry
 from django.http import HttpResponse
 from django.core import serializers
 
@@ -20,7 +18,6 @@ from django.utils.html import strip_tags
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
-    shop_entries = ShopEntry.objects.all()
     context = {
         'npm' : '2306220444',
         'name': request.user.username,
