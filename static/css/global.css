@@ -1,0 +1,98 @@
+:root {
+  --bg-color: #fef4e9; /* Background color */
+  --primary-color: #23323c; /* Primary accent color */
+  --secondary-color: #5d513f; /* Secondary color for text or accents */
+  --highlight-color: #c6ad8f; /* Highlight color */
+  --muted-color: #ebe0d6; /* Muted elements like borders or secondary backgrounds */
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--highlight-color);
+  border-radius: 0.375rem;
+}
+form input:focus,
+form textarea:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 1px var(--highlight-color);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Cormorant Garamond", serif;
+}
+
+p,
+span,
+div {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+/* Background and Text Colors */
+.bg-primary {
+  background-color: var(--bg-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-highlight {
+  background-color: var(--highlight-color);
+}
+
+.bg-muted {
+  background-color: var(--muted-color);
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-highlight {
+  color: var(--highlight-color);
+}
+
+.text-muted {
+  color: var(--muted-color);
+}
+
+.text-main {
+  color: var(--bg-color);
+}
+
+/* Border Colors */
+.border-primary {
+  border-color: var(--primary-color);
+}
+
+.border-secondary {
+  border-color: var(--secondary-color);
+}
+
+.border-highlight {
+  border-color: var(--highlight-color);
+}
+
+.border-muted {
+  border-color: var(--muted-color);
+}
+
+/* Font Family */
+.font-header {
+  font-family: "Cormorant Garamond", serif;
+}
+
+.font-body {
+  font-family: "Source Sans Pro", sans-serif;
+}
