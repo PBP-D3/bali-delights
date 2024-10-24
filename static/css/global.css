@@ -1,9 +1,13 @@
 :root {
-  --bg-color: #fef4e9; /* Background color */
+  --primary: #eae0d5; /* Background color */
   --primary-color: #23323c; /* Primary accent color */
   --secondary-color: #5d513f; /* Secondary color for text or accents */
   --highlight-color: #c6ad8f; /* Highlight color */
   --muted-color: #ebe0d6; /* Muted elements like borders or secondary backgrounds */
+}
+
+.bg-primary {
+  background-color: var(--primary);
 }
 
 form input,

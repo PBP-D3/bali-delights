@@ -18,7 +18,6 @@ from django.contrib.auth import get_user_model
 
 from .forms import CustomUserCreationForm  # Import your custom form
 
-
 User = get_user_model()
 
 # Create your views here.

@@ -55,5 +55,27 @@
       "is_superuser": true,
       "is_staff": true
     }
+  },
+  {
+    "model": "main.user",
+    "pk": 6,
+    "fields": {
+      "username": "owner3",
+      "password": "a",
+      "role": "shop_owner",
+      "money": 300,
+      "created_at": "2024-10-24T10:00:00Z"
+    }
+  },
+  {
+    "model": "main.user",
+    "pk": 7,
+    "fields": {
+      "username": "owner4",
+      "password": "a",
+      "role": "shop_owner",
+      "money": 350,
+      "created_at": "2024-10-24T10:00:00Z"
+    }
   }
 ]
