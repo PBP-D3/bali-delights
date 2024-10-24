@@ -1,13 +1,14 @@
 from django.shortcuts import render
+from .models import Product
 
 # Create your views here.
 # Create your views here.
 def show_products(request):
+    products = Product.objects.all()  # Retrieve all products from the database
     context = {
-        'npm' : '2306220444',
         'name': request.user.username,
-        'class': 'PBP D',
         'last_login': request.COOKIES['last_login'],
+        'products': products
     }
-
+    
     return render(request, "products.html", context)

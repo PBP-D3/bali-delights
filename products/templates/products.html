@@ -8,4 +8,27 @@
 
 {% block content %}
 <h1>Products</h1>
+<table>
+  <tr>
+    <th>Item Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Image</th>
+    <th>Category</th>
+    <th>stock</th>
+    <th>Rating</th>
+  </tr>
+
+  {% for product in products %}
+  <tr>
+    <td>{{product.name}}</td>
+    <td>{{product.price}}</td>
+    <td><image src={{product.image_url}}></image></td>
+    <td>{{product.description}}</td>
+    <td>{{product.category}}</td>
+    <td>{{product.stock}}</td>
+    <td>{{product.rating}}</td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock content %}
