@@ -1,27 +1,26 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
 {% block meta %}
-<title>Bali Delights</title>
-
+<title>Main</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-{% include 'navbar.html' %}
-<h1>Bali Delights</h1>
 
-<h2>PBP - D03</h2>
-<!-- Ubah sesuai dengan npm kamu -->
-<h3>Anggota:</h3>
-<ul>
-  <li>Muhammad Azzam / 2306220444
-<li>Karolina Jocelyn / 2306221762</li>
-<li>Pascal Hafidz Fajri / 2306222746</li>
-<li>Edmond Christian / 2306208363</li>
-<li>Pradipta Wachyu Aditama / 2306226233</li>
-
-</ul>
-<!-- Ubah sesuai dengan nama kamu -->
-
+  <div class="flex flex-col ">
+      <h1 class="text-3xl font-bold">Hello, {{ username }}!</h1>
+      <div>
+          <br>
+          <h2>User Information:</h2>
+          <ul>
+              <li><strong>Username:</strong> {{ username }}</li>
+              <li><strong>Email:</strong> {{ email }}</li>
+              <li><strong>Role:</strong> {{ role }}</li>
+              <li><strong>Money:</strong> {{ money }}</li>
+              <li><strong>Account Created At:</strong> {{ created_at }}</li>
+              <li><strong>Last Login:</strong> {{ last_login }}</li>
+          </ul>
+      </div>
+  </div>
 {% endblock content %}
