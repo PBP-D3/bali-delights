@@ -1,102 +1,82 @@
+/* define warna sebagai variabel */
 :root {
-  --primary: #eae0d5; /* Background color */
-  --primary-color: #23323c; /* Primary accent color */
-  --secondary-color: #5d513f; /* Secondary color for text or accents */
-  --highlight-color: #c6ad8f; /* Highlight color */
-  --muted-color: #ebe0d6; /* Muted elements like borders or secondary backgrounds */
+  --white1: #f8f9fa;
+  --black1: #0a0908;
+  --primary: #eae0d5;
+  --secondary: #c6ac8f;
+  --accent: #5e503f;
 }
 
-.bg-primary {
-  background-color: var(--primary);
-}
-
-form input,
-form textarea,
-form select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--highlight-color);
-  border-radius: 0.375rem;
-}
-form input:focus,
-form textarea:focus,
-form select:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 1px var(--highlight-color);
-}
-
+/* semua yg besar pake cantana one */
 h1,
 h2,
-h3 {
-  font-family: "Cormorant Garamond", serif;
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Cantata One", serif;
+}
+.font-header {
+  font-family: "Cantata One", serif;
 }
 
+/* yg kecil plus jakarta */
 p,
 span,
 div {
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Plus Jakarta Sans", serif;
 }
-
-/* Background and Text Colors */
-.bg-primary {
-  background-color: var(--bg-color);
-}
-
-.bg-secondary {
-  background-color: var(--secondary-color);
-}
-
-.bg-highlight {
-  background-color: var(--highlight-color);
-}
-
-.bg-muted {
-  background-color: var(--muted-color);
-}
-
-.text-primary {
-  color: var(--primary-color);
-}
-
-.text-secondary {
-  color: var(--secondary-color);
-}
-
-.text-highlight {
-  color: var(--highlight-color);
-}
-
-.text-muted {
-  color: var(--muted-color);
-}
-
-.text-main {
-  color: var(--bg-color);
-}
-
-/* Border Colors */
-.border-primary {
-  border-color: var(--primary-color);
-}
-
-.border-secondary {
-  border-color: var(--secondary-color);
-}
-
-.border-highlight {
-  border-color: var(--highlight-color);
-}
-
-.border-muted {
-  border-color: var(--muted-color);
-}
-
-/* Font Family */
-.font-header {
-  font-family: "Cormorant Garamond", serif;
-}
-
 .font-body {
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Plus Jakarta Sans", serif;
+}
+
+/* class untuk warna background */
+.bg-primary {
+  background-color: var(--primary);
+}
+.bg-secondary {
+  background-color: var(--secondary);
+}
+.bg-accent {
+  background-color: var(--accent);
+}
+.bg-white1 {
+  background-color: var(--white1);
+}
+.bg-black1 {
+  background-color: var(--black1);
+}
+
+/* class untuk warna text */
+.text-primary {
+  color: var(--primary);
+}
+.text-secondary {
+  color: var(--secondary);
+}
+.text-accent {
+  color: var(--accent);
+}
+.text-white1 {
+  color: var(--white1);
+}
+.text-black1 {
+  color: var(--black1);
+}
+
+/* class untuk warna border */
+.border-primary {
+  border-color: var(--primary);
+}
+.border-secondary {
+  border-color: var(--secondary);
+}
+.border-accent {
+  border-color: var(--accent);
+}
+.border-white1 {
+  border-color: var(--white1);
+}
+.border-black1 {
+  border-color: var(--black1);
 }
