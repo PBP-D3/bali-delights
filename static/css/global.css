@@ -80,3 +80,41 @@ div {
 .border-black1 {
   border-color: var(--black1);
 }
+
+/* Fill color classes */
+.fill-primary {
+  fill: var(--primary);
+}
+
+.fill-secondary {
+  fill: var(--secondary);
+}
+
+.fill-accent {
+  fill: var(--accent);
+}
+
+.fill-white1 {
+  fill: var(--white1);
+}
+
+.fill-black1 {
+  fill: var(--black1);
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.375rem;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--secondary);
+}

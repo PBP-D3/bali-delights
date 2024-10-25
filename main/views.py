@@ -16,6 +16,8 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.contrib.auth import get_user_model
 
+from django.templatetags.static import static
+
 from .forms import CustomUserCreationForm  # Import your custom form
 
 User = get_user_model()
@@ -71,3 +73,4 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+

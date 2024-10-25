@@ -1,22 +1,49 @@
-<nav class="bg-secondary shadow-lg fixed top-0 left-0 z-40 w-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+{% load static %}
+
+
+<nav class="bg-white1 fixed top-0 left-0 z-[100] w-screen">
+    <!-- Desktop menu -->
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-10">
+      <!-- Container -->
+      <div class="flex items-center justify-between \">
+        <!-- Logo -->
         <div class="flex items-center">
-          <a href="/">
-            <h1 class="text-2xl font-bold text-center text-white">PBP Shop</h1>
+          <a href="/" class="flex items-center">
+            <img src="{% static 'logos/company-logo.png' %}" alt="Company Logo" width="120px" height="66px">
           </a>
         </div>
-        <div class="hidden md:flex items-center">
-          {% if user.is_authenticated %}
-            <span class="text-gray-300 mr-4">Welcome, {{ user.username }}</span>
-            <a href="{% url 'main:logout' %}" class="text-center bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded transition duration-300">
-              Logout
+
+        {% comment %} links {% endcomment %}
+        <div class="md:flex md:gap-[36px] lg:gap-[52px] items-center">
+          {% for key, link in links.items %}
+            <a href="{{ link.url }}" class="flex flex-col gap-1 items-center justify-center hover:opacity-80 {% if request.path == link.url %} 
+                text-black1 
+              {% else %} 
+                text-accent 
+              {% endif %}">
+              {% include "icons/"|add:link.filename %}
+              <span class="text-sm font-medium">{{ key|title }}</span>
             </a>
+          {% endfor %}
+        </div>
+
+        <div class="hidden md:flex items-center gap-6 px-1"> 
+         
+          <span></span>
+          {% if user.is_authenticated %}
+            <span>
+              <a href="/carts">{% include "icons/shopcart_icon.html" %}</a>
+            </span>
+            <span class="h-6 w-[1px] border border-gray-300"> </span>
+            <span>
+              {% include "icons/profile_icon.html" %}
+            </span>
           {% else %}
-            <a href="{% url 'main:login' %}" class="text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mr-2">
+            <a href="{% url 'main:login' %}" class="text-center  hover:opacity-80 text-accent font-bold py-2 px-6 rounded transition duration-300 mr-2 border border-accent">
               Login
             </a>
-            <a href="{% url 'main:register' %}" class="text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+
+            <a href="{% url 'main:register' %}" class="text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-6 rounded transition duration-300">
               Register
             </a>
           {% endif %}
@@ -30,6 +57,8 @@
         </div>
       </div>
     </div>
+
+
     <!-- Mobile menu -->
     <div class="mobile-menu hidden md:hidden  px-4 w-full md:max-w-full">
       <div class="pt-2 pb-3 space-y-1 mx-auto">
@@ -48,6 +77,8 @@
         {% endif %}
       </div>
     </div>
+
+    <!-- scripts -->
     <script>
       const btn = document.querySelector("button.mobile-menu-button");
       const menu = document.querySelector(".mobile-menu");
