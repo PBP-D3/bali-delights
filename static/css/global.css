@@ -10,10 +10,7 @@
 /* semua yg besar pake cantana one */
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3 {
   font-family: "Cantata One", serif;
 }
 .font-header {
@@ -120,8 +117,9 @@ form select:focus {
 }
 
 .footer-bg {
-  background-image: url("{% static 'images/batik.avif' %}");
+  position: relative; /* Required for absolute positioning of overlay */
+  background-image: url("/static/images/batik.avif");
   background-size: cover; /* or 'contain' depending on your preference */
   background-position: center;
-  padding: 20px; /* Adjust the padding as necessary */
+  overflow: hidden; /* Ensures the overlay stays within the footer */
 }
