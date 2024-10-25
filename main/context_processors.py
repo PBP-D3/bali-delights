@@ -9,15 +9,15 @@ def navbar_links(request):
             "filename": "home_icon.html"
         },
         "stores": {
-            "url": "/stores", 
+            "url": "/stores/", 
             "filename": "store_icon.html"
         },
         "chats": {
-            "url": "/chats", 
+            "url": "/chats/", 
             "filename": "chat_icon.html"
         },
         "history": {
-            "url": "/history", 
+            "url": "/history/", 
             "filename": "history_icon.html"
         },
 

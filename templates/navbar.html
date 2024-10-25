@@ -1,90 +1,114 @@
 {% load static %}
 
+<nav class="bg-[#F8F9FA] fixed top-0 left-0 z-[100] w-screen shadow-md">
+  <!-- Desktop menu -->
+  <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-10">
+    <!-- Container -->
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center">
+          <img src="{% static 'logos/company-logo.png' %}" alt="Company Logo" width="120px" height="66px">
+        </a>
+      </div>
 
-<nav class="bg-white1 fixed top-0 left-0 z-[100] w-screen">
-    <!-- Desktop menu -->
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-10">
-      <!-- Container -->
-      <div class="flex items-center justify-between \">
-        <!-- Logo -->
-        <div class="flex items-center">
-          <a href="/" class="flex items-center">
-            <img src="{% static 'logos/company-logo.png' %}" alt="Company Logo" width="120px" height="66px">
-          </a>
-        </div>
-
-        {% comment %} links {% endcomment %}
-        <div class="md:flex md:gap-[36px] lg:gap-[52px] items-center">
-          {% for key, link in links.items %}
-            <a href="{{ link.url }}" class="flex flex-col gap-1 items-center justify-center hover:opacity-80 {% if request.path == link.url %} 
-                text-black1 
+      {% comment %} links {% endcomment %}
+      <div class="md:flex md:gap-[36px] lg:gap-[52px] items-center hidden">
+        {% for key, link in links.items %}
+          <a href="{{ link.url }}" class="flex flex-col gap-1 items-center justify-center hover:opacity-80 {% if request.path == link.url %} 
+                text-secondary 
               {% else %} 
                 text-accent 
               {% endif %}">
-              {% include "icons/"|add:link.filename %}
-              <span class="text-sm font-medium">{{ key|title }}</span>
-            </a>
-          {% endfor %}
-        </div>
-
-        <div class="hidden md:flex items-center gap-6 px-1"> 
-         
-          <span></span>
-          {% if user.is_authenticated %}
-            <span>
-              <a href="/carts">{% include "icons/shopcart_icon.html" %}</a>
-            </span>
-            <span class="h-6 w-[1px] border border-gray-300"> </span>
-            <span>
-              {% include "icons/profile_icon.html" %}
-            </span>
-          {% else %}
-            <a href="{% url 'main:login' %}" class="text-center  hover:opacity-80 text-accent font-bold py-2 px-6 rounded transition duration-300 mr-2 border border-accent">
-              Login
-            </a>
-
-            <a href="{% url 'main:register' %}" class="text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-6 rounded transition duration-300">
-              Register
-            </a>
-          {% endif %}
-        </div>
-        <div class="md:hidden flex items-center">
-          <button class="mobile-menu-button">
-            <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Mobile menu -->
-    <div class="mobile-menu hidden md:hidden  px-4 w-full md:max-w-full">
-      <div class="pt-2 pb-3 space-y-1 mx-auto">
-        {% if user.is_authenticated %}
-          <span class="block text-gray-300 px-3 py-2">Welcome, {{ user.username }}</span>
-          <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
-            Logout
+            {% include "icons/"|add:link.filename %}
+            <span class="text-sm font-medium">{{ key|title }}</span>
           </a>
+        {% endfor %}
+      </div>
+
+      {% comment %} right buttons {% endcomment %}
+      <div class="hidden md:flex items-center gap-6 px-1"> 
+        {% if user.is_authenticated %}
+          <span>
+            <a href="/carts">{% include "icons/shopcart_icon.html" %}</a>
+          </span>
+          <span class="h-6 w-[1px] border border-gray-300"> </span>
+          <span>{% include "icons/profile_icon.html" %}</span>
         {% else %}
-          <a href="{% url 'main:login' %}" class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mb-2">
+          <a href="{% url 'main:login' %}" class="text-center hover:opacity-80 text-accent font-bold py-2 px-6 rounded transition duration-300 mr-2 border border-accent">
             Login
           </a>
-          <a href="{% url 'main:register' %}" class="block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+
+          <a href="{% url 'main:register' %}" class="text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-6 rounded transition duration-300">
             Register
           </a>
         {% endif %}
       </div>
+      <div class="md:hidden flex items-center">
+        <button class="mobile-menu-button">
+          <svg id="burger-icon" class="w-6 h-6 text-gray-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="close-icon" class="w-6 h-6 text-gray-600 hidden" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- scripts -->
-    <script>
-      const btn = document.querySelector("button.mobile-menu-button");
-      const menu = document.querySelector(".mobile-menu");
+  <!-- Mobile menu -->
+  <div class="mobile-menu hidden px-4 w-full md:max-w-full pb-6">
+    <div class="pt-2 pb-3 space-y-4 mx-auto">
+      {% if user.is_authenticated %}
+        <div class="flex items-center gap-2 text-gray-800 font-bold">
+          <span class="block">Welcome, {{ user.username }}</span>
+          <span class="block h-6 w-[1px] border border-gray-300"></span>
+          <span class="block">BP: ${{ user.money }}</span>
+        </div>
+        <div class="h-[1px] bg-gray-300 my-2"></div> <!-- Separator -->
+        <div class="flex flex-col gap-2">
+          {% for key, link in links.items %}
+            <a href="{{ link.url }}" class="flex items-center gap-4 py-2 px-4 hover:bg-gray-200 rounded transition duration-300">
+              {% include "icons/"|add:link.filename %}
+              <span class="text-sm">{{ key|title }}</span>
+            </a>
+          {% endfor %}
+        </div>
+        <div class="h-[1px] bg-gray-300 my-2"></div> <!-- Separator -->
+        <span>
+          <a href="/carts" class="flex items-center py-2 px-4 gap-[10px] hover:bg-gray-200 rounded transition duration-300">
+            {% include "icons/shopcart_icon.html" %}
+            <span class="text-sm mr-1">Cart</span>
+          </a>
+        </span>
+        <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+          Logout
+        </a>
+      {% else %}
+        
+        <div class="h-[1px] bg-gray-300 my-2"></div> <!-- Separator -->
+        <a href="{% url 'main:login' %}" class="block text-center hover:bg-gray-200 text-accent border border-accent font-bold py-2 px-4 rounded transition duration-300 mb-2">
+          Login
+        </a>
+        <a href="{% url 'main:register' %}" class="block text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-4 rounded transition duration-300">
+          Register
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- scripts -->
+  <script>
+    const btn = document.querySelector("button.mobile-menu-button");
+    const menu = document.querySelector(".mobile-menu");
+    const burgerIcon = document.getElementById("burger-icon");
+    const closeIcon = document.getElementById("close-icon");
     
-      btn.addEventListener("click", () => {
-        menu.classList.toggle("hidden");
-      });
-    </script>
-  </nav>
+    btn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+      burgerIcon.classList.toggle("hidden");
+      closeIcon.classList.toggle("hidden");
+    });
+  </script>
+</nav>

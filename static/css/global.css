@@ -3,7 +3,7 @@
   --white1: #f8f9fa;
   --black1: #0a0908;
   --primary: #eae0d5;
-  --secondary: #c6ac8f;
+  --secondary: #bd9f7e;
   --accent: #5e503f;
 }
 
@@ -117,4 +117,11 @@ form select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--secondary);
+}
+
+.footer-bg {
+  background-image: url("{% static 'images/batik.avif' %}");
+  background-size: cover; /* or 'contain' depending on your preference */
+  background-position: center;
+  padding: 20px; /* Adjust the padding as necessary */
 }
