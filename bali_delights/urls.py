@@ -18,14 +18,13 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import path, include
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
-    path('chat/', include('chat.urls')),
-    path('review/', include('review.urls')),
-    path('product/', include('product.urls')),
-    path('cart/', include('cart.urls')),
-    path('store/', include('store.urls')),
+    path('chats/', include('chats.urls')),
+    path('reviews/', include('reviews.urls')),
+    path('products/', include('products.urls')),
+    path('carts/', include('carts.urls')),
+    path('stores/', include('stores.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

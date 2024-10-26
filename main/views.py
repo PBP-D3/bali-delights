@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect, reverse   # Tambahkan import redirect di baris ini
-from main.forms import ShopEntryForm
-from main.models import ShopEntry
 from django.http import HttpResponse
 from django.core import serializers
 
@@ -16,25 +14,35 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+from django.contrib.auth import get_user_model
+
+from django.templatetags.static import static
+
+from .forms import CustomUserCreationForm  # Import your custom form
+
+User = get_user_model()
 
 # Create your views here.
+# main/views.py
 @login_required(login_url='/login')
 def show_main(request):
-    shop_entries = ShopEntry.objects.all()
+    # Prepare context with user information
     context = {
-        'npm' : '2306220444',
-        'name': request.user.username,
-        'class': 'PBP D',
-        'last_login': request.COOKIES['last_login'],
+        'username': request.user.username,
+        'email': request.user.email,
+        'role': request.user.role,
+        'money': request.user.money,
+        'created_at': request.user.created_at,
+        'last_login': request.COOKIES.get('last_login', 'Not available'),  # Safely get the cookie
     }
 
     return render(request, "main.html", context)
 
 def register(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your account has been successfully created!')
@@ -65,3 +73,4 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+

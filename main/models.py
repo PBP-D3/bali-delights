@@ -1,21 +1,22 @@
-import uuid  # tambahkan baris ini di paling atas
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from .managers import CustomUserManager
 
 
-# Create your models here.
-class ShopEntry(models.Model):
-    # id
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # tambahkan baris ini
+class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('normal_user', 'Normal User'),
+        ('shop_owner', 'Shop Owner'),
+    ]
 
-    # wajib
-    name = models.CharField(max_length=255)
-    price = models.IntegerField()
-    description = models.TextField()
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='normal_user')
+    money = models.IntegerField(default=0)  # Add the money field
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.username
     
-    # optional
-    sold = models.IntegerField(default=0)
-    rating = models.FloatField(default=None)
+    def is_admin(self):
+        return self.role == 'shop_owner'
     
-    @property
-    def is_top_seller(self):
-        return self.sold > 1000 and self.rating > 4.0
+    objects = CustomUserManager()

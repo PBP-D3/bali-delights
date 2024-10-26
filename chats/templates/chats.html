@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Bali Delights</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4">
+    <!-- Messages Header -->
+    <div class="flex flex-col items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Messages</h2>
+
+        <!-- Search Input -->
+        <div class="w-full">
+            <input type="text" id="searchMessages" placeholder="Search messages"
+                class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+                style="font-family: 'Plus Jakarta Sans', sans-serif;" />
+        </div>
+    </div>
+
+    <!-- Conditional Display for Chats -->
+    <div id="chatList">
+        <!-- This div will be dynamically populated with chats via AJAX -->
+    </div>
+
+    <!-- No Chats Message -->
+    <div id="noChatsMessage" class="text-center text-gray-600 mt-8" style="font-family: 'Plus Jakarta Sans', sans-serif; display:none;">
+        No chats. Start a chat with your favorite merchant!
+    </div>
+</div>
+
+<!-- jQuery for AJAX -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    function loadChats(query = "") {
+      $.ajax({
+        url: '/api/chats/',  // URL to fetch chats (this should be an API endpoint in your Django app)
+        type: 'GET',
+        data: { search: query },
+        success: function(response) {
+          console.log('Response:', response);  // Debugging: log the response in the console
+          $('#chatList').empty();
+
+          if (response.chats.length === 0) {
+            $('#noChatsMessage').show();
+          } else {
+            $('#noChatsMessage').hide();
+            
+            $.each(response.chats, function(index, chat) {
+              const chatItem = `
+                <a href="/chats/${chat.store.id}/" class="block">
+                  <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 transition duration-200 ease-in-out">
+                    <div class="flex items-center">
+                      <img src="${chat.store.photo_url}" alt="Photo" class="w-12 h-12 rounded-full object-cover mr-4" />
+                      <div class="font-semibold text-gray-800">${chat.store.name}</div>
+                    </div>
+                    <div class="text-sm text-gray-500">${chat.last_message_time} ago</div>
+                  </div>
+                </a>
+              `;
+              $('#chatList').append(chatItem);
+            });
+          }
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error loading chats:', errmsg);
+        }
+      });
+    }
+
+    loadChats();
+
+    $('#searchMessages').on('keyup', function() {
+      const query = $(this).val();
+      loadChats(query);
+    });
+  });
+</script>
+
+{% endblock content %}

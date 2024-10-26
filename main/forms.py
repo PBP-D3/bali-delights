@@ -1,7 +1,9 @@
-from django.forms import ModelForm
-from main.models import ShopEntry
 
-class ShopEntryForm(ModelForm):
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User  # Import your custom User model
+
+class CustomUserCreationForm(UserCreationForm):
     class Meta:
-        model = ShopEntry
-        fields = ["name", "price", "description", "sold", "rating"]
+        model = User
+        fields = ('username', 'password1', 'password2')  # Include any additional fields you want

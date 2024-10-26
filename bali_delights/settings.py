@@ -29,8 +29,6 @@ DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhammad-azzam31-balidelights.pbp.cs.ui.ac.id"]
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,13 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'chat',
-    'product',
-    'review',
-    'store',
-    'cart',
+    'chats',
+    'products',
+    'reviews',
+    'stores',
+    'carts',
     'django_browser_reload',
 ]
+
+AUTH_USER_MODEL = 'main.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,13 +73,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.context_processors.navbar_links',  # Add this line
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'bali_delights.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -109,7 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
