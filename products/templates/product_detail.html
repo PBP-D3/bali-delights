@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>{{ product.name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="product-details flex flex-col md:flex-row items-center md:items-start mx-auto">
+    {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+    {% endif %}
+    <div class="product-info ml-0 md:ml-6 mt-6 md:mt-0">
+        <h1 style="text-align: center"><strong>{{ product.name }}</strong></h1>
+        <p><strong>Price:</strong> {{ product.price }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Category:</strong> {{ product.category }}</p>
+        <p><strong>Description:</strong> {{ product.description }}</p>
+        <p><strong>Rating:</strong> ⭐️⭐️⭐️⭐️⭐️</p> <!-- Placeholder rating -->
+        <p><strong>Created at:</strong> {{ product.created_at }}</p>
+        <p><strong>Updated at:</strong> {{ product.updated_at }}</p>
+    </div>
+</div>
+
+<style>
+    .product-details {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 5px;
+        max-width: 800px;
+        margin: auto;
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .product-image {
+        max-width: 300px;
+        height: auto;
+        border-radius: 5px;
+    }
+    .product-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+</style>
+
+{% endblock content %}
