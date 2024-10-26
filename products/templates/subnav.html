@@ -1,0 +1,76 @@
+{% load static %}
+
+<style>
+    .nav-link {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        transform: scale(1.05); 
+        color: #e0d1c1;
+    }
+</style>
+
+<nav style="background-color: #5c543c;" class="shadow-md sticky top-[80px]">
+    <div class="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-10">
+        <div class="flex items-center justify-center">
+            <div class="flex gap-8 text-center" style="color: #c9bfb1">
+                <!-- Categories Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/categories_icon.png' %}" alt="Categories Icon" class="h-6 w-6 mr-2">
+                        <span>Categories</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Clothes Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/clothes_icon.png' %}" alt="Clothes Icon" class="h-6 w-6 mr-2">
+                        <span>Clothes</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Jewelries Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/jewelries_icon.png' %}" alt="Jewelries Icon" class="h-6 w-6 mr-2">
+                        <span>Jewelries</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Crafts Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/crafts_icon.jpg' %}" alt="Crafts Icon" class="h-6 w-6 mr-2">
+                        <span>Crafts</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Arts Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/arts_icon.png' %}" alt="Arts Icon" class="h-6 w-6 mr-2">
+                        <span>Arts</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Snacks Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/snacks_icon.png' %}" alt="Snacks Icon" class="h-6 w-6 mr-2">
+                        <span>Snacks</span>
+                    </div>
+                </a>
+                <span>|</span>
+                <!-- Drinks Icon -->
+                <a href="#" class="nav-link">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/drinks_icon.png' %}" alt="Drinks Icon" class="h-6 w-6 mr-2">
+                        <span>Drinks</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

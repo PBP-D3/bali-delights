@@ -5,6 +5,7 @@ app_name = 'products'
 
 urlpatterns = [
     path('', show_products, name='show_products'),
+    path('<str:category>/', show_products, name='show_products_by_category'),
     path('json/', show_json, name='show_json'),
     path('xml/', show_xml, name='show_xml'),
     path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),

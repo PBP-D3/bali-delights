@@ -1,24 +1,44 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
-from .models import Product
+from products.models import Product
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 
-def show_products(request):
-    products = Product.objects.all()
-    
+def show_products(request, category=None):
+    # Category filter
+    if request.method == 'GET' and 'category' in request.GET:
+        category = request.GET.get('category')
+
+    if category:
+        products = Product.objects.filter(category=category)
+    else:
+        products = Product.objects.all()  
+
+    # Sort products by price if specified in the query parameter
+    sort_order = request.GET.get('sort', 'asc')  # Default sort is ascending
+    if sort_order == 'desc':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('price')
+
+    # Get unique categories for the filter dropdown
+    categories = Product.CATEGORY_CHOICES
+
     context = {
         'products': products,
+        'categories': categories,
+        'selected_category': category,
+        'sort_order': sort_order,
     }
 
     return render(request, "products.html", context)
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, "product_detail.html", {"product": product})
+    return render(request, "products/product_detail.html", {"product": product})
 
 def edit_product(request, product_id):
     product = Product.objects.get(pk = product_id)
@@ -38,8 +58,6 @@ def delete_product(request, product_id):
     product.delete()
 
     return HttpResponseRedirect(reverse('products:show_products'))
-
-
 
 def show_xml(request):
     data = Product.objects.filter(user=request.user)

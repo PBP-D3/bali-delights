@@ -7,7 +7,36 @@
 {% endblock meta %}
 
 {% block content %}
-<h1>Products</h1>
+{% include 'subnav.html' %}
+<h1>Product</h1>
+
+<!-- Filtering Form -->
+ <div>
+    <form method="GET" class="filter-form"><span>Sort by: </span>
+        <select name="category" class="dropdown" onchange="this.form.submit()">
+            <option value="">Select Category</option>
+            {% for category in categories %}
+                <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
+                    {{ category.0 }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="sort" class="dropdown" onchange="this.form.submit()">
+            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Price: Lowest</option>
+            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Price: Highest</option>
+        </select>
+    </form>
+</div>
+
+<!-- Add Product Button -->
+{% if user.is_authenticated and user.role == "shop_owner" %}
+<div class="add-product-button">
+    <a href="#">
+    <button class="edit-btn rounded-lg px-4 py-2">Add New Product</button>
+    </a>
+</div>
+{% endif %}
 
 <div class="product-grid">
     {% for product in products %}
@@ -22,7 +51,7 @@
                 {% endif %}
                 <p class="product-price">Price: {{ product.price }}</p>
                 <p class="product-category">Category: {{ product.category }}</p>
-                <p>Rating: <span class="rating-placeholder">⭐️⭐️⭐️⭐️⭐️</span></p> <!-- Placeholder rating -->
+                <p>Rating: <span class="rating-placeholder">⭐️⭐️⭐️⭐️⭐️</span></p>
             </div>
         </a>
         {% if user.is_authenticated and user.role == "shop_owner" %}
@@ -40,6 +69,10 @@
 </div>
 
 <style>
+    .add-product-button {
+        text-align: center;
+        margin-bottom: 20px;
+    }
     .product-grid {
         display: flex;
         flex-wrap: wrap;
@@ -102,5 +135,22 @@
         background-color: red;
         color: black;
     }
+    .filter-form {
+        margin-bottom: 20px;
+    }
+    .filter-form select {
+        margin-right: 10px;
+        padding: 5px;
+    }
+    .dropdown {
+        width: 150px;  
+        height: 30px;  
+        padding: 5px;  
+        font-size: 14px;  
+        border-radius: 4px;  
+        border: 1px solid #ccc;  
+        background-color: #fff; 
+    }
+    
 </style>
 {% endblock content %}
