@@ -13,7 +13,7 @@
                         <p class="text-sm text-gray-500">{{ review.created_at|date:"F j, Y" }}</p>
                     </div>
                     <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                    <p class="text-gray-700">{{ review.comment }}</p>
+                    <p class="text-gray-700">{{ review.comment|linebreaks }}</p>
                 </div>
             {% endfor %}
         </div>
