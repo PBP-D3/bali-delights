@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+
+  <title>Main</title>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+{% endblock meta %}
+
+{% block content %}
+  <h1>Order History</h1>
+  {% for cart in carts %}
+    <div>
+      <p>Transaction ID: {{ cart.id }}</p>
+      <p>Purchase Date: {{ cart.created_at }}</p>
+      <p>Total Price: {{ cart.total_price }}</p>
+      <a href="{% url 'carts:receipt' cart.id %}">View Receipt</a>
+    </div>
+  {% endfor %}
+{% endblock content %}
