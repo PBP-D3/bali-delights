@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">
+    <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-bold uppercase">
+        Edit Your Store
+    </div>
+    <form class="py-4 px-6" action="{% url 'stores:edit_store' store.id %}" method="POST">
+        {% csrf_token %}
+        
+        <!-- Store Name Field -->
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="id_name">
+                Store Name
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id_name" name="name" type="text" placeholder="Enter store name" value="{{ store.name }}" required>
+        </div>
+
+        <!-- Store Description Field -->
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="id_description">
+                Store Description
+            </label>
+            <textarea
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id_description" name="description" rows="4" placeholder="Enter store description">{{ store.description }}</textarea>
+        </div>
+
+        <!-- Store Image URL Field -->
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="id_photo">
+                Store Image URL
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id_photo" name="photo" type="text" placeholder="Enter image URL" value="{{ store.photo }}" required>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-center mb-4">
+            <button
+                class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
+                type="submit">
+                Update Store
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

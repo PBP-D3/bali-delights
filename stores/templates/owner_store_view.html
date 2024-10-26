@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{{ store.name }} - Store Details</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="bg-white rounded shadow p-6 mb-6">
+        <h1 class="text-3xl font-bold mb-4">{{ store.name }}</h1>
+        <img src="{{ store.photo }}" alt="{{ store.name }}" class="w-full h-64 object-cover rounded mb-4">
+        <p class="text-gray-700 text-base mb-4">{{ store.description }}</p>
+        <div class="font-[sans-serif] w-max mx-auto border-2 border-[#333] rounded-lg overflow-hidden flex m-4">
+            <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Add Product</a>
+            <a href="{% url 'stores:edit_store' store.id %}" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Edit Store</a>
+            <a href="{% url 'stores:delete_store' store.id %}" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Delete Store</a>
+        </div>
+        <h2 class="text-2xl font-semibold mb-4">Products</h2>
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for product in products %}
+                <div class="bg-gray-100 rounded overflow-hidden shadow-lg p-4 flex flex-col h-full space-y-3">
+                    <!-- Product Image -->
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-32 object-cover mb-2">
+                    
+                    <!-- Product Details -->
+                    <div class="flex-grow">
+                        <div class="font-bold text-xl">{{ product.name }}</div>
+                        <p class="text-gray-700 text-base">{{ product.description }}</p>
+                        <p class="font-bold mt-2">Price: ${{ product.price }}</p>
+                    </div>
+                    
+                    <!-- Button Container -->
+                    <div class="w-max mx-auto border-2 border-[#333] rounded-lg overflow-hidden flex mt-auto">
+                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Edit Product</a>
+                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold outline-none hover:bg-[#333] hover:text-white transition-all">Delete Product</a>
+                    </div>
+                </div>                
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No products available for this store.</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'stores:show_stores' %}" class="text-blue-500 hover:underline">Back to Stores</a>
+</div>
+{% endblock content %}
