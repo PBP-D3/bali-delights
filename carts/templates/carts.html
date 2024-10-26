@@ -2,10 +2,97 @@
 {% load static %}
 
 {% block meta %}
-<title>Main</title>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <title>Main</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-<h1>Carts</h1>
+
+{% if not items %}
+  <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-40 mx-auto text-center max-w-7xl md:pt-6 lg:pt-0">
+    <div >
+      {% include "icons/emptycart_icon.html" %}
+    </div>
+    <div class="">
+      <h4 class="mb-2 text-lg font-bold md:text-2xl">Looks like your cart is empty</h4>
+      <p class="text-sm md:text-base">Lets start shopping!</p>
+    </div>
+    <a href="/products" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
+  </div>
+{% else %}
+  <div>
+    <h1>Shopping Cart</h1>
+    <p>Username: {{ user.username }}</p>
+    <p>Current Balance: {{ user.money }}</p>
+
+    <div id="cart-items">
+      {% for item in items %}
+      <div>
+        <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}">
+        <p>{{ item.product_id.name }}</p>
+        <input type="number" value="{{ item.quantity }}" min="0" max="{{ item.product_id.stock }}" data-item-id="{{ item.id }}" class="quantity-input">
+        <p>Subtotal: <span class="subtotal">{{ item.subtotal }}</span></p>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <button id="explore-products">Explore More Products</button>
+
+    <div>
+      <h2>Order Summary</h2>
+      <p>Total: <span id="total-price">{{ total_price }}</span></p>
+      <form id="order-form" method="post">
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <button type="submit">Submit Order</button>
+      </form>
+    </div>
+  </div>
+{% endif %}
+
+
+<script>
+  document.querySelectorAll('.quantity-input').forEach(input => {
+    input.addEventListener('change', event => {
+      const sanitizedQuantity = DOMPurify.sanitize(event.target.value);
+      const itemId = DOMPurify.sanitize(event.target.dataset.itemId);
+
+      fetch("{% url 'carts:update_cart_item' %}", {
+        method: 'POST',
+        body: new URLSearchParams({ quantity: sanitizedQuantity, item_id: itemId }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          event.target.closest('.cart-item').querySelector('.subtotal').textContent = data.subtotal;
+        }
+      });
+    });
+  });
+
+  document.getElementById('order-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const sanitizedPassword = DOMPurify.sanitize(document.getElementById("password").value);
+
+    // Check if the cart is empty
+    const cartItems = document.querySelectorAll('#cart-items .cart-item');
+    if (cartItems.length === 0) {
+      alert("Your cart is empty. Please add items to your cart before submitting your order.");
+      return; // Exit the function if the cart is empty
+    }
+
+    fetch("{% url 'carts:submit_order' %}", {
+      method: 'POST',
+      body: new URLSearchParams({ password: sanitizedPassword }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert(`Order successful! Remaining balance: ${data.remaining_balance}`);
+      } else {
+        alert(`Order failed: ${data.message}`);
+      }
+    });
+  });
+</script>
 {% endblock content %}

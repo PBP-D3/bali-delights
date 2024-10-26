@@ -17,7 +17,7 @@ def navbar_links(request):
             "filename": "chat_icon.html"
         },
         "history": {
-            "url": "/history/", 
+            "url": "/carts/history/", 
             "filename": "history_icon.html"
         },
     }
