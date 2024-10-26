@@ -2,7 +2,7 @@
 
 <nav class="bg-[#F8F9FA] fixed top-0 left-0 z-[100] w-screen shadow-md">
   <!-- Desktop menu -->
-  <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-10">
+  <div class="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-10">
     <!-- Container -->
     <div class="flex items-center justify-between">
       <!-- Logo -->
@@ -27,7 +27,7 @@
       </div>
 
       {% comment %} right buttons {% endcomment %}
-      <div class="hidden md:flex items-center gap-6 px-1"> 
+      <div class="items-center hidden gap-6 px-1 md:flex"> 
         {% if user.is_authenticated %}
           <span>
             <a href="/carts">{% include "icons/shopcart_icon.html" %}</a>
@@ -35,21 +35,21 @@
           <span class="h-6 w-[1px] border border-gray-300"> </span>
           <span>{% include "icons/profile_icon.html" %}</span>
         {% else %}
-          <a href="{% url 'main:login' %}" class="text-center hover:opacity-80 text-accent font-bold py-2 px-6 rounded transition duration-300 mr-2 border border-accent">
+          <a href="{% url 'main:login' %}" class="px-6 py-2 mr-2 font-bold text-center transition duration-300 border rounded hover:opacity-80 text-accent border-accent">
             Login
           </a>
 
-          <a href="{% url 'main:register' %}" class="text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-6 rounded transition duration-300">
+          <a href="{% url 'main:register' %}" class="px-6 py-2 font-bold text-center transition duration-300 rounded bg-accent hover:opacity-80 text-white1">
             Register
           </a>
         {% endif %}
       </div>
-      <div class="md:hidden flex items-center">
+      <div class="flex items-center md:hidden">
         <button class="mobile-menu-button">
           <svg id="burger-icon" class="w-6 h-6 text-gray-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
             <path d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
-          <svg id="close-icon" class="w-6 h-6 text-gray-600 hidden" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+          <svg id="close-icon" class="hidden w-6 h-6 text-gray-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
             <path d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
@@ -58,10 +58,10 @@
   </div>
 
   <!-- Mobile menu -->
-  <div class="mobile-menu hidden px-4 w-full md:max-w-full pb-6">
-    <div class="pt-2 pb-3 space-y-4 mx-auto">
+  <div class="hidden w-full px-4 pb-6 mobile-menu md:max-w-full">
+    <div class="pt-2 pb-3 mx-auto space-y-4">
       {% if user.is_authenticated %}
-        <div class="flex items-center gap-2 text-gray-800 font-bold">
+        <div class="flex items-center gap-2 font-bold text-gray-800">
           <span class="block">Welcome, {{ user.username }}</span>
           <span class="block h-6 w-[1px] border border-gray-300"></span>
           <span class="block">BP: ${{ user.money }}</span>
@@ -69,7 +69,7 @@
         <div class="h-[1px] bg-gray-300 my-2"></div> <!-- Separator -->
         <div class="flex flex-col gap-2">
           {% for key, link in links.items %}
-            <a href="{{ link.url }}" class="flex items-center gap-4 py-2 px-4 hover:bg-gray-200 rounded transition duration-300">
+            <a href="{{ link.url }}" class="flex items-center gap-4 px-4 py-2 transition duration-300 rounded hover:bg-gray-200">
               {% include "icons/"|add:link.filename %}
               <span class="text-sm">{{ key|title }}</span>
             </a>
@@ -79,19 +79,19 @@
         <span>
           <a href="/carts" class="flex items-center py-2 px-4 gap-[10px] hover:bg-gray-200 rounded transition duration-300">
             {% include "icons/shopcart_icon.html" %}
-            <span class="text-sm mr-1">Cart</span>
+            <span class="mr-1 text-sm">Cart</span>
           </a>
         </span>
-        <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+        <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-bold text-center text-white transition duration-300 bg-red-500 rounded hover:bg-red-600">
           Logout
         </a>
       {% else %}
         
         <div class="h-[1px] bg-gray-300 my-2"></div> <!-- Separator -->
-        <a href="{% url 'main:login' %}" class="block text-center hover:bg-gray-200 text-accent border border-accent font-bold py-2 px-4 rounded transition duration-300 mb-2">
+        <a href="{% url 'main:login' %}" class="block px-4 py-2 mb-2 font-bold text-center transition duration-300 border rounded hover:bg-gray-200 text-accent border-accent">
           Login
         </a>
-        <a href="{% url 'main:register' %}" class="block text-center bg-accent hover:opacity-80 text-white1 font-bold py-2 px-4 rounded transition duration-300">
+        <a href="{% url 'main:register' %}" class="block px-4 py-2 font-bold text-center transition duration-300 rounded bg-accent hover:opacity-80 text-white1">
           Register
         </a>
       {% endif %}
