@@ -20,11 +20,20 @@
                             </a>
                         </h3>
                         <p class="review-rating text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                        <div class="text-base review-comment text-gray-700 mt-2">
+                        <div class="text-base review-comment text-gray-700 mt-2 whitespace-pre-line">
                             {{ review.comment|linebreaks }}
                         </div>
                         <p class="text-sm text-gray-500 mt-1">Reviewed on: {{ review.created_at|date:"F j, Y" }}</p>
-                        
+                        <p class="text-sm text-gray-500">Updated on: {{ review.updated_at|date:"F j, Y" }}</p>
+
+                        <div class="flow-root w-full">
+                            <span class="float-right flex gap-1">
+                                <p id="like-count-{{ review.id }}">{{ review.like_set.count }}</p>
+                                <p>Likes</p>
+                            </span> 
+                        </div>
+
+
                         <!-- Edit and Delete Buttons -->
                         <button class="edit-review-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Edit</button>
                         <button class="delete-review-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Delete</button>
@@ -39,7 +48,7 @@
 </div>
 
 <!-- Edit Review Modal -->
-<div id="editReviewModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+<div id="editReviewModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-md w-1/2">
         <h2 class="text-xl font-semibold mb-4">Edit Review</h2>
         <form id="editReviewForm">
@@ -104,7 +113,8 @@
     .then(data => {
         if (data.success) {
             const reviewItem = document.querySelector(`[data-review-id='${reviewId}']`);
-            reviewItem.querySelector(".review-comment").textContent = `${data.review.comment}`;
+            let comment = data.review.comment.trim();
+            reviewItem.querySelector(".review-comment").textContent = comment;
             reviewItem.querySelector(".review-rating").textContent = `Rating: ${data.review.rating} / 5`;
             document.getElementById("editReviewModal").classList.add("hidden");
         } else {

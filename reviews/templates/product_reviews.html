@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="product-reviews max-w-4xl mx-auto mt-10">
+<div class="product-reviews max-w-4xl mx-auto px-4 mt-10">
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for<h1>
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ product.name }}</h1>
+    <br>
+    <a href="{% url 'reviews:create_review' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
+            Create your review!
+    </a>
+    <br><br>
     {% if reviews %}
         <div class="flex flex-col space-y-4 items-center">
             {% for review in reviews %}
@@ -16,10 +21,26 @@
                             {{ review.user_id.username|slice:":1" }}{% for char in review.user_id.username %}*{% endfor %}
                         {% endif %}
                         </h3>
-                        <p class="text-sm text-gray-500">{{ review.created_at|date:"F j, Y" }}</p>
+                        <p class="text-sm text-gray-500">{{ review.updated_at|date:"F j, Y" }}</p>
                     </div>
                     <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
                     <p class="text-gray-700">{{ review.comment|linebreaks }}</p>
+
+                    <br>
+                    <!-- Like Button -->
+                        {% if user.is_authenticated %}
+                        <div class="flow-root w-full">
+                            <button class="float-left like-btn" data-review-id="{{ review.id }}">
+                                {% if review.liked %} Unlike {% else %} Like {% endif %}
+                            </button>
+                            <span class="float-right flex gap-1">
+                                <p id="like-count-{{ review.id }}">{{ review.like_set.count }}</p>
+                                <p>Likes</p>
+                            </span> 
+                        </div>
+                        {% else %}
+                            Login to see likes on a review
+                        {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -27,4 +48,29 @@
         <p class="text-gray-500">No reviews yet for this product.</p>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".like-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const reviewId = this.dataset.reviewId;
+            fetch(`/reviews/toggle-like/${reviewId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+            }).then(response => response.json()).then(data => {
+                if (data.liked) {
+                    this.textContent = "Unlike";
+                } else {
+                    this.textContent = "Like";
+                }
+                // Update the displayed like count
+                document.querySelector(`#like-count-${reviewId}`).textContent = data.like_count;
+            });
+        });
+    });
+});
+</script>
+
 {% endblock %}
