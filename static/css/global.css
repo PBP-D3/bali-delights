@@ -3,17 +3,14 @@
   --white1: #f8f9fa;
   --black1: #0a0908;
   --primary: #eae0d5;
-  --secondary: #c6ac8f;
+  --secondary: #bd9f7e;
   --accent: #5e503f;
 }
 
 /* semua yg besar pake cantana one */
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3 {
   font-family: "Cantata One", serif;
 }
 .font-header {
@@ -79,4 +76,50 @@ div {
 }
 .border-black1 {
   border-color: var(--black1);
+}
+
+/* Fill color classes */
+.fill-primary {
+  fill: var(--primary);
+}
+
+.fill-secondary {
+  fill: var(--secondary);
+}
+
+.fill-accent {
+  fill: var(--accent);
+}
+
+.fill-white1 {
+  fill: var(--white1);
+}
+
+.fill-black1 {
+  fill: var(--black1);
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.375rem;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--secondary);
+}
+
+.footer-bg {
+  position: relative; /* Required for absolute positioning of overlay */
+  background-image: url("/static/images/batik.avif");
+  background-size: cover; /* or 'contain' depending on your preference */
+  background-position: center;
+  overflow: hidden; /* Ensures the overlay stays within the footer */
 }
