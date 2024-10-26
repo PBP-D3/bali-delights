@@ -58,6 +58,7 @@ def chat_with_store(request, store_id):
         'store': store,
     })
 
+@csrf_exempt
 @login_required
 def send_message(request, chat_id):
     if request.method == 'POST':
