@@ -24,19 +24,11 @@ User = get_user_model()
 
 # Create your views here.
 # main/views.py
-@login_required(login_url='/login')
 def show_main(request):
     # Prepare context with user information
-    context = {
-        'username': request.user.username,
-        'email': request.user.email,
-        'role': request.user.role,
-        'money': request.user.money,
-        'created_at': request.user.created_at,
-        'last_login': request.COOKIES.get('last_login', 'Not available'),  # Safely get the cookie
-    }
 
-    return render(request, "main.html", context)
+
+    return render(request, "main.html")
 
 def register(request):
     form = CustomUserCreationForm()
