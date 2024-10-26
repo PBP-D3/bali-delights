@@ -1,16 +1,25 @@
 from django.urls import path
-from chats.views import list_chats, get_chat_messages, chat_with_store, send_message
+from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, add_chat, get_stores, create_chat
 
 urlpatterns = [
-    # List all chats for the user
-    path('', list_chats, name='list_chats'),  # Now accessible at '/chats/'
+    # Main chat list page
+    path('', list_chats, name='list_chats'),
 
-    # View a specific chat with a store (initial page load for chat)
-    path('<int:store_id>/', chat_with_store, name='chat_with_store'),  # Now accessible at '/chat/<store_id>/'
+    # Page to add a new chat
+    path('add/', add_chat, name='add_chat'),
 
-    # API to fetch chat messages for real-time updates (AJAX)
-    path('api/<int:chat_id>/messages/', get_chat_messages, name='get_chat_messages'),  # Now accessible at '/chat/api/<chat_id>/messages/'
+    # Specific chat view with store
+    path('<int:store_id>/', chat_with_store, name='chat_with_store'),
 
-    # API to send a message in a specific chat (AJAX)
-    path('api/<int:chat_id>/send/', send_message, name='send_message'),  # Now accessible at '/chat/api/<chat_id>/send/'
+    # AJAX endpoint to fetch messages for a specific chat
+    path('api/chats/<int:chat_id>/messages/', get_chat_messages, name='get_chat_messages'),
+
+    # API endpoint to create a new chat with a store
+    path('api/chats/create/', create_chat, name='create_chat'),  # Rename for clarity
+
+    # API endpoint to send a message within an existing chat
+    path('api/chats/<int:chat_id>/send/', send_message, name='send_message'),  # For actual messaging in chat
+
+    # API endpoint to get the list of stores
+    path('api/stores/', get_stores, name='get_stores'),
 ]

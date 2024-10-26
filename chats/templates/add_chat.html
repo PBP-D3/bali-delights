@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Bali Delights - Add Chat</title>
+{% endblock meta %}
+
+{% block content %}
+<!-- Dark overlay background for the modal -->
+<div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+    <!-- Modal container, centered within the flex container -->
+    <div class="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-lg transform scale-100 transition-transform duration-300 ease-out">
+        <!-- Modal title -->
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat with a Store</h3>
+
+        <!-- Search Store Input -->
+        <input type="text" id="searchStores" placeholder="Search stores"
+               class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <!-- Store List -->
+        <div id="storeList" class="space-y-2 max-h-60 overflow-y-auto">
+            <!-- Store list populated here via AJAX -->
+        </div>
+
+        <!-- Close Button -->
+        <button onclick="closeAddChatModal()" class="absolute top-2 right-2 bg-gray-300 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center">
+            ✕
+        </button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // Load stores function
+    function loadStores(query = "") {
+      $.ajax({
+        url: '/api/stores/',
+        type: 'GET',
+        data: { search: query },
+        success: function(response) {
+          $('#storeList').empty();
+          $.each(response.stores, function(index, store) {
+            const storeItem = `
+              <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 cursor-pointer" data-store-id="${store.id}">
+                <img src="${store.photo_url}" alt="Photo" class="w-10 h-10 rounded-full object-cover mr-4" />
+                <span class="font-semibold text-gray-800">${store.name}</span>
+              </div>
+            `;
+            $('#storeList').append(storeItem);
+          });
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error loading stores:', errmsg);
+        }
+      });
+    }
+
+    loadStores();
+
+    $('#searchStores').on('keyup', function() {
+      const query = $(this).val();
+      loadStores(query);
+    });
+
+    $('#storeList').on('click', 'div[data-store-id]', function() {
+      const storeId = $(this).data('store-id');
+      $.ajax({
+        url: `/api/chats/create/`,
+        type: 'POST',
+        data: {
+          store_id: storeId,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+          if (response.success) {
+            closeAddChatModal();
+            window.location.href = "{% url 'list_chats' %}";
+          }
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error creating chat:', errmsg);
+        }
+      });
+    });
+  });
+
+  function closeAddChatModal() {
+    $('#addChatModal').remove();
+  }
+</script>
+{% endblock content %}
