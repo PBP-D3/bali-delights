@@ -5,6 +5,7 @@ from .models import Chat, Message
 from stores.models import Store
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.db.models import Max
 
 User = get_user_model()
 
@@ -19,6 +20,7 @@ def get_chat_messages(request, chat_id):
     message_data = []
     for message in messages:
         message_data.append({
+            'id': message.id,  # Include the message ID here
             'content': message.content,
             'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
             'sender_is_user': message.sender == request.user,  # Check if the sender is the current user
@@ -26,25 +28,28 @@ def get_chat_messages(request, chat_id):
 
     return JsonResponse({'messages': message_data})
 
+
 @login_required
 def list_chats(request):
     user = request.user
-    chats = Chat.objects.filter(sender=user)  # Assuming `sender` is the user
+    chats = Chat.objects.filter(sender=user) \
+        .annotate(last_message_time=Max('messages__timestamp')) \
+        .order_by('-last_message_time')
 
-    # Prepare data for the response
     chat_data = []
     for chat in chats:
         store = chat.store
-        # Get the last message for the chat, if it exists
+        # Get the last message content, if it exists
         last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
         
         chat_data.append({
             'store': {
                 'id': store.id,
                 'name': store.name,
-                'photo_url': store.photo if store.photo else '/static/images/default_avatar.jpg',  # Default image if no photo
+                'photo_url': store.photo if store.photo else '/static/images/default_avatar.jpg',
             },
-            'last_message_time': last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') if last_message else "No messages"
+            'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
+            'last_message_content': last_message.content if last_message else ""
         })
 
     context = {'chats': chat_data}
@@ -120,3 +125,40 @@ def create_chat(request):
         return JsonResponse({'success': True, 'chat_id': chat.id})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@login_required
+@csrf_exempt
+def delete_chat(request):
+    if request.method == 'POST':
+        chat_id = request.POST.get('chat_id')
+        try:
+            chat = Chat.objects.get(id=chat_id, sender=request.user)
+            chat.delete()
+            return JsonResponse({"success": True})
+        except Chat.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Chat does not exist."}, status=404)
+    return JsonResponse({"success": False, "error": "Invalid request method."}, status=405)
+
+@login_required
+@csrf_exempt
+def edit_message(request, message_id):
+    if request.method == 'POST':
+        new_content = request.POST.get('content', '').strip()
+
+        if not new_content:
+            print("Edit failed: Content is empty.")
+            return JsonResponse({"success": False, "error": "Content cannot be empty."}, status=400)
+
+        try:
+            # Ensure the message exists and the user has permission to edit it
+            message = get_object_or_404(Message, id=message_id, sender=request.user)
+            message.content = new_content
+            message.save()
+            print("Message edited successfully.")
+            return JsonResponse({"success": True})
+        
+        except Exception as e:
+            print(f"Error in edit_message view: {e}")  # This will log the exact issue in the console
+            return JsonResponse({"success": False, "error": "Server error occurred"}, status=500)
+
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)

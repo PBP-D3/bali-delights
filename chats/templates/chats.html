@@ -12,162 +12,122 @@
     <!-- Messages Header -->
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-3xl font-bold text-gray-800">Messages</h2>
-
-        <!-- Button to Open Add Chat Modal -->
-        <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">
-            +
-        </button>
+        <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">+</button>
     </div>
 
     <!-- Search Input -->
     <div class="w-full mb-4">
-        <input type="text" id="searchMessages" placeholder="Search messages"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" id="searchMessages" placeholder="Search messages" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
 
     <!-- Chat List Container -->
     <div id="chatList">
-        <!-- Chats will be populated here via AJAX -->
+        {% for chat in chats %}
+        <div class="chat-item block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200 cursor-pointer" data-chat-id="{{ chat.store.id }}" oncontextmenu="showDeleteOption(event, {{ chat.store.id }})" ontouchstart="startLongPress(event, {{ chat.store.id }})">
+            <a href="{% url 'chat_with_store' chat.store.id %}">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ chat.store.photo_url }}" alt="{{ chat.store.name }}" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">{{ chat.store.name }}</h3>
+                        <p class="text-gray-500 text-sm">Last message at {{ chat.last_message_time }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
     </div>
 
     <!-- No Chats Message -->
-    <div id="noChatsMessage" class="text-center text-gray-600 mt-8" style="display: none;">
+    {% if chats|length == 0 %}
+    <div id="noChatsMessage" class="text-center text-gray-600 mt-8">
         No chats. Start a chat with your favorite merchant!
     </div>
+    {% endif %}
 </div>
 
 <!-- Modal for Adding Chat (Initially Hidden) -->
 <div id="addChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-lg">
-        <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat with a Store</h3>
-
-        <!-- Search Store Input -->
-        <input type="text" id="searchStores" placeholder="Search stores"
-               class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-
-        <!-- Store List -->
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat!</h3>
+        <input type="text" id="searchStores" placeholder="Search stores" class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <div id="storeList" class="space-y-2 max-h-60 overflow-y-auto">
             <!-- Store list populated here via AJAX -->
         </div>
+        <button onclick="closeAddChatModal()" class="absolute top-5 right-5 bg-secondary text-black rounded-full w-8 h-8 flex items-center justify-center">✕</button>
+    </div>
+</div>
 
-        <!-- Close Button -->
-        <button onclick="closeAddChatModal()" class="absolute top-5 right-5 bg-secondary text-black rounded-full w-8 h-8 flex items-center justify-center">
-            ✕
-        </button>
+<!-- Confirmation Dialog for Deleting Chat -->
+<div id="deleteChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 text-center">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Delete Chat?</h3>
+        <p class="text-gray-600 mb-6">Are you sure you want to delete this chat?</p>
+        <div class="flex justify-center space-x-4">
+            <button onclick="confirmDeleteChat()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
+            <button onclick="closeDeleteChatModal()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+        </div>
     </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    // Function to load all chats for the user
-    function loadChats() {
+  let selectedChatId = null;
+  let pressTimer;
+
+  // Show delete confirmation on right-click or long press
+  function showDeleteOption(event, chatId) {
+    event.preventDefault();
+    selectedChatId = chatId;
+    $('#deleteChatModal').removeClass('hidden');
+  }
+
+  function startLongPress(event, chatId) {
+    pressTimer = setTimeout(function() {
+      showDeleteOption(event, chatId);
+    }, 700);  // 700 ms for long press
+  }
+
+  // Cancel long press if touch ends or moves
+  document.addEventListener("touchend", function() {
+    clearTimeout(pressTimer);
+  });
+  document.addEventListener("touchmove", function() {
+    clearTimeout(pressTimer);
+  });
+
+  // Function to confirm delete
+  function confirmDeleteChat() {
+    if (selectedChatId) {
       $.ajax({
-        url: "{% url 'list_chats' %}",  // API endpoint to fetch all chats
-        type: "GET",
-        success: function(response) {
-          $('#chatList').empty();
-          if (response.chats.length === 0) {
-            $('#noChatsMessage').show();
-          } else {
-            $('#noChatsMessage').hide();
-            $.each(response.chats, function(index, chat) {
-              const chatItem = `
-                <a href="/chats/${chat.id}/" class="block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200">
-                  <div class="flex items-center space-x-3">
-                    <img src="${chat.store.photo_url}" alt="${chat.store.name}" class="w-10 h-10 rounded-full">
-                    <div>
-                      <h3 class="font-semibold text-gray-800">${chat.store.name}</h3>
-                      <p class="text-gray-500 text-sm">Last message at ${chat.last_message_time}</p>
-                    </div>
-                  </div>
-                </a>
-              `;
-              $('#chatList').append(chatItem);
-            });
-          }
-        },
-        error: function(xhr, errmsg, err) {
-          console.log("Error loading chat list:", errmsg);
-        }
-      });
-    }
-
-    // Load chats on page load
-    loadChats();
-
-    // Search functionality (optional, if needed for messages)
-    $('#searchMessages').on('keyup', function() {
-      const query = $(this).val().toLowerCase();
-      $('#chatList a').filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
-      });
-    });
-
-    // Function to load all stores or filter by search query
-    function loadStores(query = "") {
-      $.ajax({
-        url: '/chats/api/stores/',
-        type: 'GET',
-        data: { search: query },
-        success: function(response) {
-          $('#storeList').empty();
-          if (response.stores.length === 0) {
-            $('#storeList').append('<p class="text-gray-500 text-center">No stores found</p>');
-          } else {
-            $.each(response.stores, function(index, store) {
-              const storeItem = `
-                <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 cursor-pointer" data-store-id="${store.id}">
-                  <img src="${store.photo_url || '/static/images/default_avatar.jpg'}" alt="Photo" class="w-10 h-10 rounded-full object-cover mr-4" />
-                  <div class="flex-grow">
-                    <span class="font-semibold text-gray-800">${store.name}</span>
-                  </div>
-                </div>
-              `;
-              $('#storeList').append(storeItem);
-            });
-          }
-        },
-        error: function(xhr, errmsg, err) {
-          console.log('Error loading stores:', errmsg);
-        }
-      });
-    }
-
-    // Load all stores on page load
-    loadStores();
-
-    // Search stores as the user types in the search box
-    $('#searchStores').on('keyup', function() {
-      const query = $(this).val();
-      loadStores(query);
-    });
-
-    // Handle store click to create chat and redirect
-    $('#storeList').on('click', 'div[data-store-id]', function() {
-      const storeId = $(this).data('store-id');
-      $.ajax({
-        url: '/chats/api/chats/create/',
+        url: `/chats/api/delete_chat/`,  // The URL endpoint to delete chat
         type: 'POST',
         data: {
-          store_id: storeId,
+          chat_id: selectedChatId,
           csrfmiddlewaretoken: '{{ csrf_token }}'
         },
         success: function(response) {
           if (response.success) {
-            // Reload the chat list and close the modal
-            loadChats();
-            closeAddChatModal();
-            // Redirect to the chat with the selected store
-            window.location.href = `/chats/${response.chat_id}/`;  // Assuming chat_id is returned by the API
+            $(`[data-chat-id="${selectedChatId}"]`).remove();  // Remove the chat item from the DOM
+            closeDeleteChatModal();
+            if ($('#chatList').children().length === 0) {
+              $('#noChatsMessage').show();
+            }
+          } else {
+            console.log("Error deleting chat:", response.error);
           }
         },
         error: function(xhr, errmsg, err) {
-          console.log('Error creating chat:', errmsg);
+          console.log("AJAX error deleting chat:", errmsg);
         }
       });
-    });
-  });
+    }
+  }
+
+  // Function to close delete chat modal
+  function closeDeleteChatModal() {
+    $('#deleteChatModal').addClass('hidden');
+    selectedChatId = null;
+  }
 
   // Function to show the add chat modal
   function openAddChatModal() {

@@ -1,5 +1,5 @@
 from django.urls import path
-from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, add_chat, get_stores, create_chat
+from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, add_chat, get_stores, create_chat, delete_chat, edit_message
 
 urlpatterns = [
     # Main chat list page
@@ -22,4 +22,8 @@ urlpatterns = [
 
     # API endpoint to get the list of stores
     path('api/stores/', get_stores, name='get_stores'),
+    
+    path('api/delete_chat/', delete_chat, name='delete_chat'),
+    
+    path('api/messages/<int:message_id>/edit/', edit_message, name='edit_message'),
 ]

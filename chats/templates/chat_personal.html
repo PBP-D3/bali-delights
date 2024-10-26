@@ -8,18 +8,9 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-
-<!-- Container that adjusts based on screen height and width -->
 <div class="flex flex-col h-[calc(100vh-10rem)] items-center w-full">
-
-  <!-- Header with Store info and back button, placed close to the navbar -->
   <div class="w-full bg-white shadow p-3 flex items-center justify-between max-w-6xl">
-    <!-- Back Button -->
-    <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">
-      Back
-    </a>
-
-    <!-- Store Name and Photo -->
+    <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">Back</a>
     <div class="flex items-center space-x-2">
       {% if store.photo %}
         <img class="w-8 h-8 rounded-full" src="{{ store.photo.url }}" alt="{{ store.name }}" />
@@ -28,26 +19,16 @@
       {% endif %}
       <span class="font-medium text-gray-800 text-sm">{{ store.name }}</span>
     </div>
-    
     <div class="w-12"></div>
   </div>
 
-  <!-- Chat messages area, stretches vertically to fill available space -->
-  <div id="messageList" class="flex-1 w-full max-w-6xl p-4 overflow-y-auto bg-gray-100">
-    <!-- Messages will be dynamically loaded here via AJAX -->
-  </div>
+  <div id="messageList" class="flex-1 w-full max-w-6xl p-4 overflow-y-auto bg-gray-100"></div>
 
-  <!-- Message input area, always visible at the bottom -->
   <div class="w-full max-w-6xl bg-white p-3 border-t border-gray-200">
     <form id="chatForm" method="POST" class="flex space-x-2">
       {% csrf_token %}
-      <input
-        type="text"
-        name="message"
-        id="messageInput"
-        placeholder="Type a message"
-        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-      />
+      <input type="text" name="message" id="messageInput" placeholder="Type a message"
+             class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
       <button type="submit" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2.94 2.94a1.5 1.5 0 012.12 0l8.49 8.49a1.5 1.5 0 010 2.12l-2.12 2.12a1.5 1.5 0 01-2.12 0L2.94 5.06a1.5 1.5 0 010-2.12zm0 8.49l3.54 3.54-3.54-3.54z" />
@@ -57,11 +38,22 @@
   </div>
 </div>
 
-<!-- jQuery and AJAX for real-time message updates -->
+<div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-lg w-full max-w-md p-6">
+    <h3 class="text-2xl font-semibold mb-4">Edit Message</h3>
+    <textarea id="editMessageContent" class="w-full p-2 border border-gray-300 rounded-lg mb-4" rows="3"></textarea>
+    <div class="flex justify-end space-x-2">
+      <button id="saveEditBtn" class="bg-secondary text-white px-4 py-2 rounded">Save</button>
+      <button onclick="closeEditModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     const chatId = {{ chat.id }};
+    let currentMessageId = null;  // Track which message is being edited
     
     function scrollToBottom() {
       $('#messageList').scrollTop($('#messageList')[0].scrollHeight);
@@ -73,11 +65,11 @@
         type: 'GET',
         success: function(response) {
           $('#messageList').empty();
-          console.log(response.messages)
           $.each(response.messages, function(index, message) {
             const messageItem = `
               <div class="flex ${message.sender_is_user ? 'justify-end' : ''} mb-1">
-                <div class="p-2 rounded-lg max-w-xs ${message.sender_is_user ? 'bg-[#C6AC8F] text-white' : 'bg-[#EAE0D5] text-gray-800'} text-sm">
+                <div class="p-2 rounded-lg max-w-xs ${message.sender_is_user ? 'bg-[#C6AC8F] text-white' : 'bg-[#EAE0D5] text-gray-800'} text-sm message-bubble" 
+                     data-message-id="${message.id}">
                   <p>${message.content}</p>
                 </div>
               </div>
@@ -85,6 +77,16 @@
             $('#messageList').append(messageItem);
           });
           scrollToBottom();
+
+          // Attach right-click event for edit
+          $('.message-bubble').on('contextmenu', function(event) {
+            event.preventDefault();
+            currentMessageId = $(this).data('message-id');
+            const content = $(this).text().trim();
+            console.log("Right-clicked on message ID:", currentMessageId);  // Debugging log
+            $('#editMessageContent').val(content);
+            $('#editModal').removeClass('hidden');
+          });
         },
         error: function(xhr, errmsg, err) {
           console.log('Error loading messages:', errmsg);
@@ -95,60 +97,48 @@
     loadMessages();
     setInterval(loadMessages, 1000);
 
-    // Function to send message
-    function sendMessage() {
-      const messageInput = $('#messageInput');
-      const message = messageInput.val();
+    function closeEditModal() {
+      $('#editModal').addClass('hidden');
+      currentMessageId = null;
+    }
+    window.closeEditModal = closeEditModal;
 
-      if (message.trim() === "") {
-        return;  
+    $('#saveEditBtn').on('click', function() {
+      const updatedContent = $('#editMessageContent').val();
+    
+      if (updatedContent.trim() === "") {
+        alert("Message content cannot be empty.");
+        return;
       }
-
-      console.log("Sending message:", message);
-
+      console.log("Editing message ID:", currentMessageId);
+    
       $.ajax({
-        url: `/chats/${chatId}/send/`,
+        url: `/chats/api/messages/${currentMessageId}/edit/`,
         type: 'POST',
         data: {
-          'message': message,
-          'csrfmiddlewaretoken': '{{ csrf_token }}'
+            'content': updatedContent,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {
-          console.log("Server response:", response); 
-          
-          if (response.success && response.message && response.message.content) {
-            const messageItem = `
-              <div class="flex justify-end mb-1">
-                <div class="bg-[#C6AC8F] text-white p-2 rounded-lg max-w-xs text-sm pop-in">
-                  <p>${response.message.content}</p>
-                </div>
-              </div>
-            `;
-            $('#messageList').append(messageItem);
-            messageInput.val('');  // Clear the input field
-            scrollToBottom();      // Scroll to the bottom of the chat
-          } else {
-            console.log("Unexpected response format or message content missing:", response);
-          }
+            if (response.success) {
+                loadMessages(); 
+                closeEditModal();
+            } else {
+                console.log("Error editing message:", response.error);
+            }
         },
         error: function(xhr, errmsg, err) {
-          console.log("Error in AJAX request:", errmsg);
+            console.log("Error in AJAX request:", errmsg);  // This is where you’re seeing the error
         }
       });
-    }
+    });    
 
-    // Send message via AJAX when the form is submitted
     $('#chatForm').on('submit', function(e) {
       e.preventDefault();
       const messageInput = $('#messageInput');
       const message = messageInput.val();
 
-      if (message.trim() === "") {
-        console.log("Empty message, not sending.");
-        return;  
-      }
-
-      console.log("Sending message:", message);
+      if (message.trim() === "") return;
 
       $.ajax({
         url: `/chats/api/chats/${chatId}/send/`,
@@ -158,38 +148,16 @@
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {
-          console.log("Server response:", response); 
-
-          // Check if the response has the expected structure
-          if (response.success && response.message && response.message.content) {
-            // Create the message bubble
-            const messageItem = `
-              <div class="flex justify-end mb-1">
-                <div class="bg-[#C6AC8F] text-white p-2 rounded-lg max-w-xs text-sm pop-in">
-                  <p>${response.message.content}</p>
-                </div>
-              </div>
-            `;
-            // Append the message bubble to the message list
-            $('#messageList').append(messageItem);
-            messageInput.val('');  // Clear the input field
-            scrollToBottom();      // Scroll to the bottom of the chat
-          } else {
-            console.log("Unexpected response format or content missing:", response);
+          if (response.success && response.message) {
+            loadMessages();
+            messageInput.val('');  // Clear input
+            scrollToBottom();
           }
         },
         error: function(xhr, errmsg, err) {
           console.log("Error in AJAX request:", errmsg);
         }
       });
-    });
-
-    // Also send message on Enter key press
-    $('#messageInput').on('keypress', function(e) {
-      if (e.which === 13) {  // 13 is the Enter key code
-        e.preventDefault();  // Prevent default form submission
-        sendMessage();
-      }
     });
   });
 </script>
