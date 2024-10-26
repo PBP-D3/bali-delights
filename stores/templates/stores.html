@@ -1,45 +1,226 @@
-{% extends 'base.html' %}
-{% load static %}
+    {% extends 'base.html' %}
+    {% load static %}
 
-{% block meta %}
-<title>Available Stores</title>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
-{% endblock meta %}
+    {% block meta %}
+    <title>Available Stores</title>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+    {% endblock meta %}
 
-{% block content %}
-<div class="flex flex-col px-28 mb-9 space-y-3">
-    <ul class="inline-flex flex-row w-fit items-center gap-8 px-6 py-4 text-indigo-100 bg-indigo-900 rounded-lg">
-        <li>
-            <a href="{% url 'stores:show_stores' %}">All Stores</a>
-        </li>
-        <li>
-            <a href="{% url 'stores:show_user_store' %}">My Stores</a>
-        </li>
-        <li>
-            <a href="{% url 'stores:register_store' %}">Register Store</a>
-        </li>
-    </ul>
+    {% block content %}
+    <div class="flex flex-col px-28 mb-9 space-y-3">
+        <div class="font-sans p-4">
+            <div class="flex justify-between items-center mb-9">
+                <ul class="flex">
+                    <li id="allStoresTab" class="tab text-accent font-bold text-[15px] py-2.5 px-5 border-b-2 border-accent cursor-pointer">
+                        All Stores
+                    </li>
+                    <li id="myStoresTab" class="tab text-gray-400 font-semibold text-[15px] py-2.5 px-5 border-b-2 border-transparent cursor-pointer">
+                        My Stores
+                    </li>
+                    <li id="open-modal" class="tab text-gray-400 font-semibold text-[15px] py-2.5 px-5 border-b-2 border-transparent cursor-pointer">
+                        <button class="">Register Store</button>
+                    </li>
+                </ul>
 
-    {% if stores %}
-        <div class="columns-1 sm:columns-1 lg:columns-2 gap-6 space-y-6 w-full">
-            {% for store in stores %}
-                <div class="bg-gray-200 w-full rounded overflow-hidden shadow-lg flex flex-col items-center p-4">
-                    <img src=" {{ store.photo }} " alt="Sunset in the mountains" class="object-cover rounded">
-                    <div class="flex flex-col items-center px-6 py-4">
-                        <div class="font-bold text-xl mb-2">{{ store.name }}</div>
-                        <p class="text-gray-700 text-sm">{{ store.description }}</p>
-                        <a class="px-6 py-2 mt-4 min-w-[120px] text-center text-white bg-gray-500 border border-gray-500 rounded active:text-gray-600 hover:bg-transparent hover:text-gray-500 focus:outline-none focus:ring"
-                        href="{% url 'stores:show_store_details' store.pk %}">
-                        Go to Store Page
-                        </a>
-                    </div>
+                <input type="text" id="store-search" class="ml-auto px-6 py-2 border rounded" placeholder="Search store by name">
+            </div>
+
+            <div id="allStoresContent" class="tab-content">
+                <!-- Container for AJAX-loaded store results -->
+                <div id="store-results">
+                    {% include 'search_stores.html' with stores=stores %}
                 </div>
-            {% endfor %}
+            </div>
+            
+            <div id="myStoresContent" class="tab-content hidden">  <!-- Hide My Stores content initially -->
+                <div id="my-store-results">
+                    <!-- User stores will be loaded here -->
+                </div>
+            </div>
         </div>
-    {% else %}
-        <p>No stores available.</p>
-    {% endif %}
-</div>
 
+        <!-- Modal for Registering Store -->
+        <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="w-full mx-72 mt-10 bg-white shadow-lg rounded-lg overflow-hidden relative">  <!-- Increased max width -->
+                <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-body font-bold">
+                    Register Your Store
+                </div>
+                <form id="register-form" class="py-4 px-6" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Store Name Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2" for="id_name">
+                            Store Name
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="id_name" name="name" type="text" placeholder="Enter store name" required>
+                    </div>
+        
+                    <!-- Store Description Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2" for="id_description">
+                            Store Description
+                        </label>
+                        <textarea
+                            class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="id_description" name="description" rows="4" placeholder="Enter store description"></textarea>
+                    </div>
+        
+                    <!-- Store Image Upload Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2" for="id_photo">
+                            Store Image URL
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="id_photo" name="photo" type="text" placeholder="Enter image URL">
+                    </div>
+        
+                    <!-- Store Location Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2" for="id_location">
+                            Store Location
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="id_location" name="location" type="text" placeholder="Enter store location" required>
+                    </div>
+        
+                    <!-- Submit Button -->
+                    <div class="flex items-center justify-center mb-4 gap-4">
+                        <button
+                            class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
+                            type="submit">
+                            Register Store
+                        </button>
+                        <button
+                            type="button"
+                            id="close-modal"
+                            class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+                            Back
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>    
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let tabs = document.querySelectorAll('.tab');
+        let contents = document.querySelectorAll('.tab-content');
+        let currentView = 'all';  // Default view to 'all'
+
+        function showContent(activeTabId) {
+            contents.forEach(function (content) {
+                content.classList.add('hidden');  // Hide all content
+            });
+            tabs.forEach(function (tab) {
+                tab.classList.remove('border-accent', 'font-bold', 'text-accent');
+                tab.classList.add('border-transparent', 'text-gray-400', 'font-semibold');
+            });
+
+            let targetId = activeTabId.replace('Tab', 'Content');
+            document.getElementById(targetId).classList.remove('hidden');
+
+            document.getElementById(activeTabId).classList.add('border-accent', 'font-bold', 'text-accent');
+            document.getElementById(activeTabId).classList.remove('border-transparent', 'text-gray-400', 'font-semibold');
+        }
+
+        const initialTabId = 'allStoresTab';
+        showContent(initialTabId);
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                if (tab.id !== 'open-modal') {
+                    showContent(tab.id);
+                    currentView = (tab.id === 'allStoresTab') ? 'all' : 'my';
+                }
+            });
+        });
+
+        // Show the register modal when clicking the "Register Store" button
+        document.getElementById("open-modal").addEventListener("click", function () {
+            document.getElementById("register-modal").classList.remove("hidden");
+        });
+
+        // Close the register modal when clicking the "Back" button
+        document.getElementById("close-modal").addEventListener("click", function () {
+            document.getElementById("register-modal").classList.add("hidden");
+        });
+
+        document.getElementById("register-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch("{% url 'stores:register_store' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Error registering store.');
+            })
+            .then(data => {
+                loadAllStores();  // Ensure all stores get reloaded
+                loadUserStores();
+                document.getElementById("register-modal").classList.add("hidden");
+                this.reset();
+            })
+            .catch(error => console.error("Error registering store:", error));
+        });
+
+        document.getElementById("store-search").addEventListener("input", function() {
+            const query = this.value;
+
+            fetch("{% url 'stores:search_stores' %}?q=" + encodeURIComponent(query), {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (currentView == 'my'){
+                    document.getElementById("my-store-results").innerHTML = data.html;
+                } else {
+                    document.getElementById("store-results").innerHTML = data.html;  // Update the store results with the filtered data
+                }
+            })
+            .catch(error => console.error("Error searching stores:", error));
+        });
+
+        function loadAllStores() {
+            fetch("{% url 'stores:load_all_stores' %}", { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("store-results").innerHTML = data.html;  // Update all stores list
+                })
+                .catch(error => console.error("Error loading all stores:", error));
+            }
+
+        function loadUserStores() {
+            fetch("{% url 'stores:show_user_store' %}", { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("my-store-results").innerHTML = data.html;
+                })
+                .catch(error => console.error("Error loading user's stores:", error));
+        }
+
+        document.getElementById("myStoresTab").addEventListener("click", function(event) {
+            event.preventDefault();
+            currentView = 'my';
+            loadUserStores();
+            document.getElementById("store-search").value = '';
+        });
+
+        document.getElementById("allStoresTab").addEventListener("click", function(event) {
+            event.preventDefault();
+            currentView = 'all';
+            loadAllStores();
+            document.getElementById("store-search").value = '';
+        });
+    });
+</script>
 
 {% endblock content %}
