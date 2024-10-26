@@ -45,6 +45,13 @@ INSTALLED_APPS = [
     'stores',
     'carts',
     'django_browser_reload',
+    'tailwind',
+    'theme'
+]
+
+TAILWIND_APP_NAME = 'theme'
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 AUTH_USER_MODEL = 'main.User'
@@ -62,6 +69,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bali_delights.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -73,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.context_processors.navbar_links',  # Add this line
             ],
         },
     },

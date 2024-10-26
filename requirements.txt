@@ -4,3 +4,5 @@ whitenoise
 psycopg2-binary
 requests
 urllib3
+django_browser_reload
+django-tailwind
