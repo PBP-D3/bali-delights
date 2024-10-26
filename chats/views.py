@@ -35,13 +35,16 @@ def list_chats(request):
     chat_data = []
     for chat in chats:
         store = chat.store
+        # Get the last message for the chat, if it exists
+        last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+        
         chat_data.append({
             'store': {
                 'id': store.id,
                 'name': store.name,
-                'photo_url': store.photo.url if store.photo else '/static/images/default_avatar.jpg',  # Default image if no photo
+                'photo_url': store.photo if store.photo else '/static/images/default_avatar.jpg',  # Default image if no photo
             },
-            'last_message_time': chat.messages.last().timestamp.strftime('%Y-%m-%d %H:%M:%S') if chat.messages.exists() else "No messages"
+            'last_message_time': last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') if last_message else "No messages"
         })
 
     context = {'chats': chat_data}
@@ -59,46 +62,40 @@ def chat_with_store(request, store_id):
         'store': store,
     })
 
-@csrf_exempt
 @login_required
+@csrf_exempt
 def send_message(request, chat_id):
     if request.method == 'POST':
-        chat = get_object_or_404(Chat, id=chat_id)
         message_content = request.POST.get('message')
-
-        # Create and save the new message
-        if message_content:
-            message = Message.objects.create(
-                chat=chat,
-                sender=request.user,
-                content=message_content
-            )
-            # Return JSON response with message data
-            return JsonResponse({
-                'success': True,
-                'message': {
-                    'content': message.content,
-                    'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                    'sender_is_user': True
-                }
-            })
-        return JsonResponse({'success': False, 'error': 'Empty message content'}, status=400)
-
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
+        chat = Chat.objects.get(id=chat_id)
+        message = Message.objects.create(chat=chat, sender=request.user, content=message_content)
+        return JsonResponse({
+            "success": True,
+            "message": {
+                "content": message.content
+            }
+        })
+    return JsonResponse({"success": False}, status=400)
 
 @login_required
 def get_stores(request):
     search_query = request.GET.get('search', '')
 
-    # Filter stores based on search query if provided
+    # Retrieve all stores or filter by search query
     if search_query:
         stores = Store.objects.filter(name__icontains=search_query)
     else:
         stores = Store.objects.all()
 
     # Prepare the data to return
-    stores_data = [{'id': store.id, 'name': store.name, 'photo_url': store.photo.url if store.photo else ''} for store in stores]
+    stores_data = [
+        {
+            'id': store.id,
+            'name': store.name,
+            'photo_url': store.photo if isinstance(store.photo, str) else store.photo.url if store.photo else '/static/images/default_avatar.jpg'
+        }
+        for store in stores
+    ]
     
     return JsonResponse({'stores': stores_data})
 
@@ -109,16 +106,17 @@ def add_chat(request):
     stores = Store.objects.all()
     return render(request, 'add_chat.html', {'stores': stores})
 
-@csrf_exempt
 @login_required
+@csrf_exempt
 def create_chat(request):
     if request.method == 'POST':
         store_id = request.POST.get('store_id')
         store = get_object_or_404(Store, id=store_id)
-        
-        # Get or create a chat between the user and the selected store
+
+        # Check if a chat already exists with this store
         chat, created = Chat.objects.get_or_create(sender=request.user, store=store)
-        
+
+        # Return the chat ID so the frontend can redirect
         return JsonResponse({'success': True, 'chat_id': chat.id})
-    
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

@@ -15,7 +15,7 @@ urlpatterns = [
     path('api/chats/<int:chat_id>/messages/', get_chat_messages, name='get_chat_messages'),
 
     # API endpoint to create a new chat with a store
-    path('api/chats/create/', create_chat, name='create_chat'),  # Rename for clarity
+    path('api/chats/create/', create_chat, name='create_chat'), 
 
     # API endpoint to send a message within an existing chat
     path('api/chats/<int:chat_id>/send/', send_message, name='send_message'),  # For actual messaging in chat

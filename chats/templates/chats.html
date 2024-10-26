@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block meta %}
-<title>Bali Delights</title>
+<title>Bali Delights - Chat</title>
 {% endblock meta %}
 
 {% block content %}
@@ -11,11 +11,11 @@
 <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4">
     <!-- Messages Header -->
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 mb-4">Messages</h2>
+        <h2 class="text-3xl font-bold text-gray-800">Messages</h2>
 
-        <!-- Add Chat Button (with Circular Background) -->
-        <button onclick="window.location.href='{% url 'add_chat' %}'" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center focus:outline-none">
-          +
+        <!-- Button to Open Add Chat Modal -->
+        <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">
+            +
         </button>
     </div>
 
@@ -25,9 +25,9 @@
                class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
 
-    <!-- Conditional Display for Chats -->
+    <!-- Chat List Container -->
     <div id="chatList">
-        <!-- This div will be dynamically populated with chats via AJAX -->
+        <!-- Chats will be populated here via AJAX -->
     </div>
 
     <!-- No Chats Message -->
@@ -36,33 +36,50 @@
     </div>
 </div>
 
-<!-- jQuery for AJAX -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Modal for Adding Chat (Initially Hidden) -->
+<div id="addChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-lg">
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat with a Store</h3>
 
+        <!-- Search Store Input -->
+        <input type="text" id="searchStores" placeholder="Search stores"
+               class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <!-- Store List -->
+        <div id="storeList" class="space-y-2 max-h-60 overflow-y-auto">
+            <!-- Store list populated here via AJAX -->
+        </div>
+
+        <!-- Close Button -->
+        <button onclick="closeAddChatModal()" class="absolute top-5 right-5 bg-secondary text-black rounded-full w-8 h-8 flex items-center justify-center">
+            ✕
+        </button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function() {
-    // Function to load chats via AJAX
-    function loadChats(query = "") {
+    // Function to load all chats for the user
+    function loadChats() {
       $.ajax({
-        url: '/api/chats/',
-        type: 'GET',
-        data: { search: query },
+        url: "{% url 'list_chats' %}",  // API endpoint to fetch all chats
+        type: "GET",
         success: function(response) {
           $('#chatList').empty();
-
           if (response.chats.length === 0) {
             $('#noChatsMessage').show();
           } else {
             $('#noChatsMessage').hide();
             $.each(response.chats, function(index, chat) {
               const chatItem = `
-                <a href="/chat/${chat.store.id}/" class="block">
-                  <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 transition duration-200 ease-in-out">
-                    <div class="flex items-center">
-                      <img src="${chat.store.photo_url}" alt="Photo" class="w-12 h-12 rounded-full object-cover mr-4" />
-                      <div class="font-semibold text-gray-800">${chat.store.name}</div>
+                <a href="/chats/${chat.id}/" class="block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200">
+                  <div class="flex items-center space-x-3">
+                    <img src="${chat.store.photo_url}" alt="${chat.store.name}" class="w-10 h-10 rounded-full">
+                    <div>
+                      <h3 class="font-semibold text-gray-800">${chat.store.name}</h3>
+                      <p class="text-gray-500 text-sm">Last message at ${chat.last_message_time}</p>
                     </div>
-                    <div class="text-sm text-gray-500">${chat.last_message_time}</div>
                   </div>
                 </a>
               `;
@@ -71,20 +88,96 @@
           }
         },
         error: function(xhr, errmsg, err) {
-          console.log('Error loading chats:', errmsg);
+          console.log("Error loading chat list:", errmsg);
         }
       });
     }
 
-    // Load chats when the page loads
+    // Load chats on page load
     loadChats();
 
-    // Search function for chats
+    // Search functionality (optional, if needed for messages)
     $('#searchMessages').on('keyup', function() {
+      const query = $(this).val().toLowerCase();
+      $('#chatList a').filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
+      });
+    });
+
+    // Function to load all stores or filter by search query
+    function loadStores(query = "") {
+      $.ajax({
+        url: '/chats/api/stores/',
+        type: 'GET',
+        data: { search: query },
+        success: function(response) {
+          $('#storeList').empty();
+          if (response.stores.length === 0) {
+            $('#storeList').append('<p class="text-gray-500 text-center">No stores found</p>');
+          } else {
+            $.each(response.stores, function(index, store) {
+              const storeItem = `
+                <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 cursor-pointer" data-store-id="${store.id}">
+                  <img src="${store.photo_url || '/static/images/default_avatar.jpg'}" alt="Photo" class="w-10 h-10 rounded-full object-cover mr-4" />
+                  <div class="flex-grow">
+                    <span class="font-semibold text-gray-800">${store.name}</span>
+                  </div>
+                </div>
+              `;
+              $('#storeList').append(storeItem);
+            });
+          }
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error loading stores:', errmsg);
+        }
+      });
+    }
+
+    // Load all stores on page load
+    loadStores();
+
+    // Search stores as the user types in the search box
+    $('#searchStores').on('keyup', function() {
       const query = $(this).val();
-      loadChats(query);
+      loadStores(query);
+    });
+
+    // Handle store click to create chat and redirect
+    $('#storeList').on('click', 'div[data-store-id]', function() {
+      const storeId = $(this).data('store-id');
+      $.ajax({
+        url: '/chats/api/chats/create/',
+        type: 'POST',
+        data: {
+          store_id: storeId,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+          if (response.success) {
+            // Reload the chat list and close the modal
+            loadChats();
+            closeAddChatModal();
+            // Redirect to the chat with the selected store
+            window.location.href = `/chats/${response.chat_id}/`;  // Assuming chat_id is returned by the API
+          }
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error creating chat:', errmsg);
+        }
+      });
     });
   });
+
+  // Function to show the add chat modal
+  function openAddChatModal() {
+    $('#addChatModal').removeClass('hidden');
+  }
+
+  // Function to close the add chat modal
+  function closeAddChatModal() {
+    $('#addChatModal').addClass('hidden');
+  }
 </script>
 
 {% endblock content %}
