@@ -21,7 +21,7 @@
                             </a>
                         </h3>
                         <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                        <p class="text-gray-700 mt-2">{{ review.comment }}</p>
+                        <p class="text-gray-700 mt-2">{{ review.comment|linebreaks }}</p>
                         <p class="text-sm text-gray-500 mt-1">Reviewed on: {{ review.created_at|date:"F j, Y" }}</p>
                     </div>
                 </div>
