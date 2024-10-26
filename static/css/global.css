@@ -1,125 +1,56 @@
-/* define warna sebagai variabel */
-:root {
-  --white1: #f8f9fa;
-  --black1: #0a0908;
-  --primary: #eae0d5;
-  --secondary: #bd9f7e;
-  --accent: #5e503f;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* semua yg besar pake cantana one */
-h1,
-h2,
-h3 {
-  font-family: "Cantata One", serif;
-}
-.font-header {
-  font-family: "Cantata One", serif;
-}
+@layer base {
+  /* define warna sebagai variabel */
+  :root {
+    --color-white1: #f8f9fa;
+    --color-black1: #0a0908;
+    --color-primary: #eae0d5;
+    --color-secondary: #bd9f7e;
+    --color-accent: #5e503f;
+  }
 
-/* yg kecil plus jakarta */
-p,
-span,
-div {
-  font-family: "Plus Jakarta Sans", serif;
-}
-.font-body {
-  font-family: "Plus Jakarta Sans", serif;
-}
+  form input,
+  form textarea,
+  form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color-secondary);
+    border-radius: 0.375rem;
+  }
 
-/* class untuk warna background */
-.bg-primary {
-  background-color: var(--primary);
-}
-.bg-secondary {
-  background-color: var(--secondary);
-}
-.bg-accent {
-  background-color: var(--accent);
-}
-.bg-white1 {
-  background-color: var(--white1);
-}
-.bg-black1 {
-  background-color: var(--black1);
-}
+  form input:focus,
+  form textarea:focus,
+  form select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-secondary);
+  }
 
-/* class untuk warna text */
-.text-primary {
-  color: var(--primary);
-}
-.text-secondary {
-  color: var(--secondary);
-}
-.text-accent {
-  color: var(--accent);
-}
-.text-white1 {
-  color: var(--white1);
-}
-.text-black1 {
-  color: var(--black1);
-}
+  .footer-bg {
+    position: relative; /* Required for absolute positioning of overlay */
+    background-image: url("/static/images/batik.avif");
+    background-size: cover; /* or 'contain' depending on your preference */
+    background-position: center;
+    overflow: hidden; /* Ensures the overlay stays within the footer */
+  }
 
-/* class untuk warna border */
-.border-primary {
-  border-color: var(--primary);
-}
-.border-secondary {
-  border-color: var(--secondary);
-}
-.border-accent {
-  border-color: var(--accent);
-}
-.border-white1 {
-  border-color: var(--white1);
-}
-.border-black1 {
-  border-color: var(--black1);
-}
+  /* semua yg besar pake cantana one */
+  h1,
+  h2,
+  h3 {
+    font-family: "Cantata One", serif;
+  }
+  .font-header {
+    font-family: "Cantata One", serif;
+  }
 
-/* Fill color classes */
-.fill-primary {
-  fill: var(--primary);
-}
-
-.fill-secondary {
-  fill: var(--secondary);
-}
-
-.fill-accent {
-  fill: var(--accent);
-}
-
-.fill-white1 {
-  fill: var(--white1);
-}
-
-.fill-black1 {
-  fill: var(--black1);
-}
-
-form input,
-form textarea,
-form select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--secondary);
-  border-radius: 0.375rem;
-}
-
-form input:focus,
-form textarea:focus,
-form select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--secondary);
-}
-
-.footer-bg {
-  position: relative; /* Required for absolute positioning of overlay */
-  background-image: url("/static/images/batik.avif");
-  background-size: cover; /* or 'contain' depending on your preference */
-  background-position: center;
-  overflow: hidden; /* Ensures the overlay stays within the footer */
+  /* yg kecil plus jakarta */
+  p,
+  span,
+  div {
+    font-family: "Plus Jakarta Sans", serif;
+  }
 }
