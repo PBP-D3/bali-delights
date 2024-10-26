@@ -20,6 +20,5 @@ def navbar_links(request):
             "url": "/history/", 
             "filename": "history_icon.html"
         },
-
     }
     return {'links': links}
