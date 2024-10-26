@@ -7,21 +7,25 @@
 
 {% block content %}
 
-
 <!-- Hero Section -->
-<section class=" py-16 min-h-fit md:py-[120px] bg-primary text-black1">
+<section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden">
+    {% comment %} decoration {% endcomment %}
+    <div class="absolute -top-[200px] rotate-0 opacity-5 md:opacity-10 h-fit w-fit md:top-[40px] md:-left-[300px] md:rotate-90">{% include "images/floral-pattern.html" %}</div>
     <div class="flex flex-col items-center mx-auto max-w-7xl md:flex-row">
 
-        <div class="w-full p-8 lg:w-1/2 lg:p-16 max-md:text-center">
-          <h1 class="text-4xl font-extrabold lg:text-6xl font-header">Bali Delights</h1>
-          <p class="mt-4 text-lg lg:text-xl font-body">
-            Discover the best local products from the heart of Bali. From handmade crafts to exotic snacks, we bring the island's charm right to your doorstep.
-          </p>
+        <div class="w-full p-4 md:p-8 lg:w-1/2 max-md:text-center">
+            <div class="p-4 rounded-lg lg:p-8 md:bg-white1 md:backdrop-blur-sm md:shadow-sm w-fit ring-gray-500/[0.1] md:ring-[1px]">
+                <h1 class="text-4xl font-extrabold md:text-5xl lg:text-6xl font-header ">Bali Delights</h1>
+                <p class="mt-4 text-lg lg:text-xl font-body">
+                  Discover the best local products from the heart of Bali. From handmade crafts to exotic snacks, we bring the island's charm right to your doorstep.
+                </p>
+            </div>
         </div>
         <div class="flex items-center justify-center w-full lg:w-1/2 h-80 lg:h-auto">
           <img src="{% static 'images/hero-image.png' %}" alt="Bali Delights Hero" class="object-cover w-full max-w-sm md:max-w-lg ">
         </div>
     </div>
+    
 </section>
 
  <!-- Products Section -->
@@ -47,7 +51,7 @@
 </section>
 
 <!-- Top Reviews Section -->
-<section class="py-20 bg-primary text-black1">
+<section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
   <div class="container mx-auto text-center">
     <h2 class="text-3xl font-bold font-header">What Our Customers Say</h2>
     <p class="mt-4 text-lg text-gray-700 font-body">

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+  <title>Main</title>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+{% endblock meta %}
+
+{% block content %}
+  <h1>Receipt</h1>
+  <p>Transaction ID: {{ cart.id }}</p>
+  <p>Purchase Date: {{ cart.created_at }}</p>
+  <div>
+    {% for item in items %}
+      <div>
+        <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}">
+        <p>{{ item.product_id.name }} x {{ item.quantity }}</p>
+        <p>Total: {{ item.subtotal }}</p>
+      </div>
+    {% endfor %}
+    <p>Total Amount: {{ cart.total_price }}</p>
+  </div>
+{% endblock content %}
