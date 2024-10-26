@@ -5,7 +5,10 @@ from .forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 from products.models import Product
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
+import json
 # Create your views here.
 # Create your views here.
 def show_reviews(request):
@@ -40,9 +43,46 @@ def create_review(request, product_id):
                }
     return render(request, "create_review.html", context)
 
-def edit_review(request):
-    context = []
-    return render(request, "create_review.html", context)
+@csrf_exempt
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user_id=request.user)
+    
+    if request.method == 'POST':
+        # Load JSON data from request
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+
+        # Populate the form with JSON data
+        form = ReviewForm(data, instance=review)
+        
+        if form.is_valid():
+            form.save()
+            updated_review = model_to_dict(review)
+            return JsonResponse({'success': True, 'review': updated_review}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    
+    # GET request for pre-filling form data in modal
+    elif request.method == 'GET':
+        review_data = model_to_dict(review)
+        return JsonResponse({'success': True, 'review': review_data}, status=200)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+
+@csrf_exempt
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user_id=request.user)
+    
+    if request.method == 'POST':
+        review.delete()
+        return JsonResponse({'success': True, 'review_id': review_id}, status=200)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 
 def product_reviews(request, product_id):

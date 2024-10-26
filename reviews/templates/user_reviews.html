@@ -5,10 +5,9 @@
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Reviews</h1>
     
     {% if user_reviews %}
-        <div class="space-y-4">
+        <div class="flex flex-col space-y-4 items-center space-y-4" id="reviews-list">
             {% for review in user_reviews %}
-                <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 flex space-x-4">
-                    <!-- Product Image -->
+                <div class="review-item bg-white shadow-md rounded-lg p-6 border border-gray-200 flex space-x-4 w-3/4" data-review-id="{{ review.id }}">
                     <div class="w-24 h-24 flex-shrink-0">
                         <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="w-full h-full object-cover rounded-md">
                     </div>
@@ -20,9 +19,15 @@
                                 {{ review.product_id.name }}
                             </a>
                         </h3>
-                        <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                        <p class="text-gray-700 mt-2">{{ review.comment|linebreaks }}</p>
+                        <p class="review-rating text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
+                        <div class="text-base review-comment text-gray-700 mt-2">
+                            {{ review.comment|linebreaks }}
+                        </div>
                         <p class="text-sm text-gray-500 mt-1">Reviewed on: {{ review.created_at|date:"F j, Y" }}</p>
+                        
+                        <!-- Edit and Delete Buttons -->
+                        <button class="edit-review-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Edit</button>
+                        <button class="delete-review-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Delete</button>
                     </div>
                 </div>
             {% endfor %}
@@ -30,5 +35,110 @@
     {% else %}
         <p class="text-gray-500">You haven't submitted any reviews yet.</p>
     {% endif %}
+    <br>
 </div>
+
+<!-- Edit Review Modal -->
+<div id="editReviewModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-md w-1/2">
+        <h2 class="text-xl font-semibold mb-4">Edit Review</h2>
+        <form id="editReviewForm">
+            {% csrf_token %}
+            <label for="edit-comment" class="block text-gray-700 font-semibold mb-2">Comment:</label>
+            <textarea id="edit-comment" name="comment" class="w-full p-2 border border-gray-300 rounded-md mb-4" rows="4"></textarea>
+            <label for="edit-rating" class="block text-gray-700 font-semibold mb-2">Rating (1-5):</label>
+            <input id="edit-rating" name="rating" type="number" min="1" max="5" class="w-full p-2 border border-gray-300 rounded-md mb-4">
+            <input type="hidden" id="edit-review-id">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
+            <button type="button" id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2">Cancel</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    
+    // Show the modal with the current review's data for editing
+    document.querySelectorAll(".edit-review-btn").forEach(button => {
+    button.addEventListener("click", function () {
+        const reviewId = this.getAttribute("data-review-id");
+        
+        // Fetch review data to prefill the edit modal
+        fetch(`/reviews/edit-review/${reviewId}/`, {
+            method: "GET",
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("edit-comment").value = data.review.comment;
+                    document.getElementById("edit-rating").value = data.review.rating;
+                    document.getElementById("edit-review-id").value = reviewId;
+                    document.getElementById("editReviewModal").classList.remove("hidden");
+                } else {
+                    alert("Error fetching review data.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+});
+
+
+    // Handle the submit event of the edit form
+    document.getElementById("editReviewForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    const reviewId = document.getElementById("edit-review-id").value;
+    const comment = document.getElementById("edit-comment").value;
+    const rating = document.getElementById("edit-rating").value;
+    
+    fetch(`/reviews/edit-review/${reviewId}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ comment: comment, rating: rating }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const reviewItem = document.querySelector(`[data-review-id='${reviewId}']`);
+            reviewItem.querySelector(".review-comment").textContent = `${data.review.comment}`;
+            reviewItem.querySelector(".review-rating").textContent = `Rating: ${data.review.rating} / 5`;
+            document.getElementById("editReviewModal").classList.add("hidden");
+        } else {
+            alert("Error updating review: " + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => console.error("Error:", error));
+    });
+
+
+
+    // Close the modal
+    document.getElementById("closeModal").addEventListener("click", function () {
+        document.getElementById("editReviewModal").classList.add("hidden");
+    });
+
+    // Delete review with AJAX
+    document.querySelectorAll(".delete-review-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const reviewId = this.getAttribute("data-review-id");
+            fetch(`/reviews/delete-review/${reviewId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    document.querySelector(`[data-review-id='${reviewId}']`).remove();
+                } else {
+                    alert("Error deleting review");
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

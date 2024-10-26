@@ -1,5 +1,5 @@
 from django.urls import path
-from reviews.views import show_reviews, create_review, edit_review, product_reviews, show_xml, show_json, user_reviews
+from reviews.views import show_reviews, create_review, edit_review, delete_review, product_reviews, show_xml, show_json, user_reviews
 
 app_name = 'reviews'
 
@@ -15,6 +15,8 @@ urlpatterns = [
     path('<int:product_id>/xml', show_xml, name = 'show_xml'),
     path('<int:product_id>/json', show_json, name = 'show_json'),
     path('my-review/', user_reviews, name='user_reviews'),
+    path('edit-review/<int:review_id>/', edit_review, name='edit_review'),
+    path('delete-review/<int:review_id>/', delete_review, name='delete_review'),
 
 ]
 

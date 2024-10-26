@@ -2,14 +2,20 @@
 
 {% block content %}
 <div class="product-reviews max-w-4xl mx-auto mt-10">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for {{ product.name }}</h1>
-    
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for<h1>
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ product.name }}</h1>
     {% if reviews %}
-        <div class="space-y-4">
+        <div class="flex flex-col space-y-4 items-center">
             {% for review in reviews %}
-                <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 w-3/4 ">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">{{ review.user_id.username }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                        {% if user.is_authenticated %}
+                            {{ review.user_id.username }}
+                        {% else %}
+                            {{ review.user_id.username|slice:":1" }}{% for char in review.user_id.username %}*{% endfor %}
+                        {% endif %}
+                        </h3>
                         <p class="text-sm text-gray-500">{{ review.created_at|date:"F j, Y" }}</p>
                     </div>
                     <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
