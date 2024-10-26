@@ -22,10 +22,9 @@ class Review(models.Model):
     return f'Review by {self.user.username} on {self.product.name}'
 
 class Like(models.Model):
-  user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-  product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-  review_id = models.ForeignKey(Review, on_delete=models.CASCADE)
-  created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    review_id = models.ForeignKey(Review, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-  def __str__(self):
-    return f'Like by {self.user.username}'
+    def __str__(self):
+        return f'Like by {self.user_id.username} on Review {self.review_id.id}'

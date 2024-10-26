@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .models import Review
+from .models import Review, Like
 from .forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 from products.models import Product
@@ -88,13 +88,25 @@ def delete_review(request, review_id):
 def product_reviews(request, product_id):
     # Fetch product and related reviews
     product = get_object_or_404(Product, id=product_id)
-    reviews = Review.objects.filter(product_id=product_id)  # Assuming related_name='reviews' in the Review model
+    if (request.user.is_authenticated):
+        reviews = Review.objects.filter(product_id=product_id).select_related('user_id')
 
-    context = {
-        'product': product,
-        'reviews': reviews
-    }
-    return render(request, 'product_reviews.html', context)
+        for review in reviews:
+            # Add a `liked` attribute for each review
+            review.liked = review.like_set.filter(user_id=request.user).exists()
+
+        context = {
+            'product': product,
+            'reviews': reviews,
+        }
+        return render(request, 'product_reviews.html', context)
+    else:
+        reviews = Review.objects.filter(product_id=product_id)  # Assuming related_name='reviews' in the Review model
+        context = {
+            'product': product,
+            'reviews': reviews
+        }
+        return render(request, 'product_reviews.html', context)
 
 def show_xml(request, product_id):
     data = Review.objects.filter(product_id=product_id)
@@ -111,3 +123,26 @@ def user_reviews(request):
         'user_reviews': user_reviews,
     }
     return render(request, 'user_reviews.html', context)
+
+@login_required
+@login_required
+@csrf_exempt
+def toggle_like(request, review_id):
+    if request.method == 'POST':
+        review = get_object_or_404(Review, id=review_id)
+        existing_like = Like.objects.filter(user_id=request.user, review_id=review).first()
+
+        if existing_like:
+            # Unlike if the like exists
+            existing_like.delete()
+            liked = False
+        else:
+            # Create a like if it doesn't exist
+            Like.objects.create(user_id=request.user, review_id=review)
+            liked = True
+
+        # Return the total like count and status
+        like_count = Like.objects.filter(review_id=review).count()
+        return JsonResponse({'liked': liked, 'like_count': like_count}, status=200)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
