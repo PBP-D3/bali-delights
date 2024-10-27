@@ -1,8 +1,14 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% block meta %}
+<title>Create Review</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+ <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock meta %}
 {% block content %}
-<div class="create-review max-w-2xl mx-auto mt-10">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Leave a Review for {{ product.name }}</h1>
+<div class="max-w-2xl mx-auto mt-10 create-review">
+    <h1 class="mb-6 text-2xl font-semibold text-gray-800">Leave a Review for {{ product.name }}</h1>
     
     <form method="post" class="space-y-4">
         {% csrf_token %}
@@ -22,9 +28,9 @@
         
         <div class="grid grid-cols-2">
             <a href="{% url 'reviews:product_reviews' product.id %}" class="ml-2 justify-self-start">
-                <input type="button" value="Cancel" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <input type="button" value="Cancel" class="px-4 py-2 font-bold text-white bg-gray-500 rounded hover:bg-gray-700">
             </a>
-            <input type="submit" value="Submit Review" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 max-w-40 justify-self-end">
+            <input type="submit" value="Submit Review" class="px-4 py-2 mr-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 max-w-40 justify-self-end">
         </div>
     </form>
 </div>
