@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'stores',
     'carts',
     'django_browser_reload',
-    'tailwind',
     'theme'
 ]
 
