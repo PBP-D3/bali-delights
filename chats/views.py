@@ -104,13 +104,6 @@ def get_stores(request):
     
     return JsonResponse({'stores': stores_data})
 
-# View to render the add chat page
-@login_required
-def add_chat(request):
-    # Load the initial store list to pass to the template if needed
-    stores = Store.objects.all()
-    return render(request, 'add_chat.html', {'stores': stores})
-
 @login_required
 @csrf_exempt
 def create_chat(request):
