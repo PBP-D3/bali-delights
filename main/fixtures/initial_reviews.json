@@ -1,0 +1,74 @@
+[
+  {
+    "model": "reviews.review",
+    "pk": 1,
+    "fields": {
+      "comment": "Amazing quality! Highly recommended.",
+      "created_at": "2024-10-25T12:00:00Z",
+      "updated_at": "2024-10-25T12:00:00Z",
+      "user_id": 1,
+      "product_id": 1,
+      "rating": 5
+    }
+  },
+  {
+    "model": "reviews.review",
+    "pk": 2,
+    "fields": {
+      "comment": "Good product but a bit overpriced.",
+      "created_at": "2024-10-26T14:30:00Z",
+      "updated_at": "2024-10-26T14:30:00Z",
+      "user_id": 2,
+      "product_id": 2,
+      "rating": 3
+    }
+  },
+  {
+    "model": "reviews.review",
+    "pk": 3,
+    "fields": {
+      "comment": "Satisfied with the purchase. Will buy again!",
+      "created_at": "2024-10-27T09:45:00Z",
+      "updated_at": "2024-10-27T09:45:00Z",
+      "user_id": 3,
+      "product_id": 1,
+      "rating": 4
+    }
+  },
+  {
+    "model": "reviews.review",
+    "pk": 4,
+    "fields": {
+      "comment": "Not as described, quality could be better.",
+      "created_at": "2024-10-27T15:20:00Z",
+      "updated_at": "2024-10-27T15:20:00Z",
+      "user_id": 4,
+      "product_id": 2,
+      "rating": 2
+    }
+  },
+  {
+    "model": "reviews.review",
+    "pk": 5,
+    "fields": {
+      "comment": "Perfect fit for my needs. Love the color!",
+      "created_at": "2024-10-28T08:10:00Z",
+      "updated_at": "2024-10-28T08:10:00Z",
+      "user_id": 2,
+      "product_id": 1,
+      "rating": 5
+    }
+  },
+  {
+    "model": "reviews.review",
+    "pk": 6,
+    "fields": {
+      "comment": "Decent purchase, but arrived late.",
+      "created_at": "2024-10-28T11:55:00Z",
+      "updated_at": "2024-10-28T11:55:00Z",
+      "user_id": 1,
+      "product_id": 2,
+      "rating": 3
+    }
+  }
+]

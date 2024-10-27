@@ -12,15 +12,6 @@ from django.db.models import Count
 
 import json
 # Create your views here.
-# Create your views here.
-def show_reviews(request):
-        # Fetch top 5 reviews with the highest number of likes
-    top_reviews = Review.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:5]
-
-    context = {
-        'top_reviews': top_reviews,
-    }
-    return render(request, 'top_reviews.html', context)
 
 @login_required
 def create_review(request, product_id):

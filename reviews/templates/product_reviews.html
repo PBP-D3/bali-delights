@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="product-reviews max-w-4xl mx-auto px-4 mt-4">
+<div class="max-w-4xl px-4 mx-auto mt-4 product-reviews">
     <!-- url product ke product_details -->
-    <a href="{% url 'products:product_details' product.id %}" class="justify-self-start">
-        <button class="border border-secondary mb-4 bg-secondary hover:bg-transparent hover:text-gray-500 text-white font-bold py-2 px-4 rounded">Back</button>
+    <a href="{% url 'reviews:product_reviews' product.id %}" class="justify-self-start">
+        <button class="px-4 py-2 mb-4 font-bold text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">Back</button>
     </a>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for<h1>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-8">{{ product.name }}</h1>
+    <h1 class="mb-6 text-2xl font-semibold text-gray-800">Reviews for<h1>
+    <h1 class="mb-8 text-2xl font-semibold text-gray-800">{{ product.name }}</h1>
     {% if user.is_authenticated %}
         {% if not user_review_exists %}
-            <a href="{% url 'reviews:create_review' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
+            <a href="{% url 'reviews:create_review' product.id%}" class="px-4 py-2 mr-4 font-bold text-white transition duration-300 ease-in-out transform bg-blue-600 rounded-lg hover:bg-blue-700 hover:-translate-y-1 hover:scale-105">
                     Create your review!
             </a>
         {% else %}
@@ -20,10 +20,10 @@
     <p class="text-gray-500">Login to give your review</p>
     {% endif %}
     {% if reviews %}
-        <div class="flex flex-col space-y-4 items-center mt-4">
+        <div class="flex flex-col items-center mt-4 space-y-4">
             {% for review in reviews %}
-                <div class="bg-primary border-secondary shadow-md rounded-lg p-6 border w-3/4 ">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="w-3/4 p-6 border rounded-lg shadow-md bg-primary border-secondary ">
+                    <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">
                         {% if user.is_authenticated %}
                             {{ review.user_id.username }}
@@ -33,36 +33,36 @@
                         </h3>
                         <p class="text-sm text-gray-500">{{ review.updated_at|date:"F j, Y" }}</p>
                     </div>
-                    <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
+                    <p class="font-semibold text-yellow-500">Rating: {{ review.rating }} / 5</p>
                     <p class="text-gray-700" >{{ review.comment|linebreaks }}</p>
                     
                     <!-- Like Button -->
                         {% if user.is_authenticated %}
                         <div class="flow-root w-full mt-4">
                             {% if review.liked %}
-                            <button class="float-left like-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" data-review-id="{{ review.id }}">
+                            <button class="float-left px-4 py-2 font-bold text-white bg-red-500 rounded like-btn hover:bg-red-700" data-review-id="{{ review.id }}">
                                 Unlike
                             </button>
                             {% else %}
-                            <button class="float-left like-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-review-id="{{ review.id }}">
+                            <button class="float-left px-4 py-2 font-bold text-white bg-green-500 rounded like-btn hover:bg-green-700" data-review-id="{{ review.id }}">
                                 Like
                             </button> 
                             {% endif %}
-                            <span class="float-right flex gap-1">
-                                <div class="grid grid-cols-2 justify-self-end gap-0">
-                                    <span id="like-count-{{ review.id }}" class="text-gray-600 text-right">{{ review.like_set.count }}</span>
+                            <span class="flex float-right gap-1">
+                                <div class="grid grid-cols-2 gap-0 justify-self-end">
+                                    <span id="like-count-{{ review.id }}" class="text-right text-gray-600">{{ review.like_set.count }}</span>
                                     <img src="{% static 'logos/likes.png' %}" alt="Likes" class="ml-0">
                                 </div>
                             </span> 
                         </div>
                         {% else %}
-                           <p class="text-gray-500  mt-4">Login to see likes on a review</p>
+                           <p class="mt-4 text-gray-500">Login to see likes on a review</p>
                         {% endif %}
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-gray-500 mt-4">No reviews yet for this product.</p>
+        <p class="mt-4 text-gray-500">No reviews yet for this product.</p>
     {% endif %}
 </div>
 <br>

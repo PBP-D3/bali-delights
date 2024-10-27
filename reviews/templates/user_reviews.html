@@ -1,33 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="user-reviews max-w-4xl mx-auto px-4 mt-10">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Reviews</h1>
+<div class="max-w-4xl px-4 mx-auto mt-10 user-reviews">
+    <h1 class="mb-6 text-2xl font-semibold text-gray-800">My Reviews</h1>
     
     {% if user_reviews %}
-        <div class="flex flex-col space-y-4 items-center space-y-4" id="reviews-list">
+        <div class="flex flex-col items-center space-y-4" id="reviews-list">
             {% for review in user_reviews %}
-                <div class="review-item bg-white shadow-md rounded-lg p-6 border border-secondary flex space-x-4 w-3/4" data-review-id="{{ review.id }}">
-                    <div class="w-24 h-24 flex-shrink-0">
-                        <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="w-full h-full object-cover rounded-md">
+                <div class="flex w-3/4 p-6 space-x-4 bg-white border rounded-lg shadow-md review-item border-secondary" data-review-id="{{ review.id }}">
+                    <div class="flex-shrink-0 w-24 h-24">
+                        <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-full rounded-md">
                     </div>
                     
                     <!-- Review Details GANTI reviews:product_reviews jadi products:product-details .....-->
                     <div class="w-full">
                         <h3 class="text-lg font-semibold text-gray-900">
-                            <a href="{% url 'products:product_details' review.product_id.id %}" class="hover:underline">
+                            <a href="{% url 'reviews:product_reviews' review.product_id.id %}" class="hover:underline">
                                 {{ review.product_id.name }}
                             </a>
                         </h3>
-                        <p class="review-rating text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                        <div class="text-base review-comment text-gray-700 mt-2 whitespace-pre-line">
+                        <p class="font-semibold text-yellow-500 review-rating">Rating: {{ review.rating }} / 5</p>
+                        <div class="mt-2 text-base text-gray-700 whitespace-pre-line review-comment">
                             {{ review.comment|linebreaks }}
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">Reviewed on: {{ review.created_at|date:"F j, Y" }}</p>
+                        <p class="mt-1 text-sm text-gray-500">Reviewed on: {{ review.created_at|date:"F j, Y" }}</p>
                         <p class="text-sm text-gray-500">Updated on: {{ review.updated_at|date:"F j, Y" }}</p>
 
                         <div class="flow-root w-full">
-                            <span class="float-right flex gap-1">
+                            <span class="flex float-right gap-1">
                                 <p id="like-count-{{ review.id }}">{{ review.like_set.count }}</p>
                                 <p>Likes</p>
                             </span> 
@@ -36,8 +36,8 @@
 
                         <!-- Edit and Delete Buttons -->
                         <div class="grid grid-cols-2">
-                            <button class="edit-review-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 mt-3 rounded ml-2 justify-self-start" data-review-id="{{ review.id }}">Edit</button>
-                            <button class="delete-review-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 mt-3 rounded mr-2 justify-self-end" data-review-id="{{ review.id }}">Delete</button>
+                            <button class="px-3 py-1 mt-3 ml-2 font-bold text-white bg-blue-500 rounded edit-review-btn hover:bg-blue-700 justify-self-start" data-review-id="{{ review.id }}">Edit</button>
+                            <button class="px-3 py-1 mt-3 mr-2 font-bold text-white bg-red-500 rounded delete-review-btn hover:bg-red-700 justify-self-end" data-review-id="{{ review.id }}">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -50,18 +50,18 @@
 </div>
 
 <!-- Edit Review Modal -->
-<div id="editReviewModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-md w-1/2 border border-secondary ">
-        <h2 class="text-xl font-semibold mb-4">Edit Review</h2>
+<div id="editReviewModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-800 bg-opacity-50">
+    <div class="w-1/2 p-6 bg-white border rounded-lg shadow-md border-secondary ">
+        <h2 class="mb-4 text-xl font-semibold">Edit Review</h2>
         <form id="editReviewForm">
             {% csrf_token %}
-            <label for="edit-comment" class="block text-gray-700 font-semibold mb-2">Comment:</label>
-            <textarea id="edit-comment" name="comment" class="w-full p-2 border border-gray-300 rounded-md mb-4" rows="4"></textarea>
-            <label for="edit-rating" class="block text-gray-700 font-semibold mb-2">Rating (1-5):</label>
-            <input id="edit-rating" name="rating" type="number" min="1" max="5" class="w-full p-2 border border-gray-300 rounded-md mb-4">
+            <label for="edit-comment" class="block mb-2 font-semibold text-gray-700">Comment:</label>
+            <textarea id="edit-comment" name="comment" class="w-full p-2 mb-4 border border-gray-300 rounded-md" rows="4"></textarea>
+            <label for="edit-rating" class="block mb-2 font-semibold text-gray-700">Rating (1-5):</label>
+            <input id="edit-rating" name="rating" type="number" min="1" max="5" class="w-full p-2 mb-4 border border-gray-300 rounded-md">
             <input type="hidden" id="edit-review-id">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
-            <button type="button" id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2">Cancel</button>
+            <button type="submit" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Save Changes</button>
+            <button type="button" id="closeModal" class="px-4 py-2 ml-2 font-bold text-white bg-gray-500 rounded hover:bg-gray-700">Cancel</button>
         </form>
     </div>
 </div>
