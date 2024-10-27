@@ -91,22 +91,26 @@ def product_reviews(request, product_id):
     if (request.user.is_authenticated):
         reviews = Review.objects.filter(product_id=product_id).select_related('user_id')
 
+        # If user authenticated
         for review in reviews:
             # Add a `liked` attribute for each review
             review.liked = review.like_set.filter(user_id=request.user).exists()
+            user_review_exists = Review.objects.filter(product_id=product_id, user_id=request.user)
+
 
         context = {
             'product': product,
             'reviews': reviews,
+            'user_review_exists': user_review_exists
         }
-        return render(request, 'product_reviews.html', context)
     else:
         reviews = Review.objects.filter(product_id=product_id)  # Assuming related_name='reviews' in the Review model
         context = {
             'product': product,
-            'reviews': reviews
+            'reviews': reviews,
         }
-        return render(request, 'product_reviews.html', context)
+    
+    return render(request, 'product_reviews.html', context)
 
 def show_xml(request, product_id):
     data = Review.objects.filter(product_id=product_id)
