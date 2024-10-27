@@ -48,16 +48,13 @@
                             </span> 
                         </div>
                         {% else %}
-                            Login to see likes on a review
+                           <p class="text-gray-500">Login to see likes on a review</p>
                         {% endif %}
                 </div>
             {% endfor %}
         </div>
     {% else %}
         <p class="text-gray-500">No reviews yet for this product.</p>
-        {% if not user.is_authenticated %}
-        <p class="text-gray-500">Login to add a review to this product</p>
-        {% endif %}
     {% endif %}
 </div>
 <br>
