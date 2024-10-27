@@ -29,7 +29,7 @@
 <div class="container px-4 mx-auto sm:px-28">
   <div class="p-6 mb-6 bg-white rounded-lg shadow">
     <div class="flex flex-col items-center gap-6 p-4 mb-10 border rounded-lg md:flex-row border-secondary">
-      <img src="{{ store.get_image }}" alt="{{ store.name }}" class="h-48 rounded-md">
+      <img src="{{ store.get_image }}" alt="{{ store.name }}" class="w-[12rem] rounded-md">
       <div class="flex flex-col">
         <h1 class="mb-2 text-3xl font-bold font-header">{{ store.name }}</h1>
         <p class="mb-2 text-sm text-gray-700 font-body">{{ store.location }}</p>
@@ -46,14 +46,17 @@
     {% if products %}
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {% for product in products %}
-          <div class="p-4 overflow-hidden bg-gray-100 rounded-lg shadow-lg">
-            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="object-cover w-full h-32 mb-2">
-            <div class="flex flex-col">
-              <div class="text-xl font-bold">{{ product.name }}</div>
-              <p class="text-base text-gray-700">{{ product.description }}</p>
-              <p class="mt-2 font-bold">Price: ${{ product.price }}</p>
-            </div>
-          </div>
+        <a href="{% url 'products:product_detail' product.id %}" class="hover:shadow-md shadow-white1">
+            <div class="p-4 overflow-hidden bg-gray-100 rounded-lg shadow-lg">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="object-cover w-full h-32 mb-2">
+                    <div class="flex flex-col">
+                    <div class="text-xl font-bold">{{ product.name }}</div>
+                    <p class="text-base text-gray-700 h-[200px] overflow-y-scroll">{{ product.description }}</p>
+                    <p class="mt-2 font-bold">Price: ${{ product.price }}</p>
+                    </div>
+                </div>
+            </a>
+          
         {% endfor %}
       </div>
     {% else %}
