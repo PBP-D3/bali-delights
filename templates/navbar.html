@@ -15,14 +15,16 @@
       {% comment %} links {% endcomment %}
       <div class="md:flex md:gap-[36px] lg:gap-[52px] items-center hidden">
         {% for key, link in links.items %}
-          <a href="{{ link.url }}" class="flex flex-col gap-1 items-center justify-center hover:opacity-80 {% if request.path == link.url %} 
-                text-secondary 
-              {% else %} 
-                text-accent 
-              {% endif %}">
-            {% include "icons/"|add:link.filename %}
-            <span class="text-sm font-medium">{{ key|title }}</span>
-          </a>
+          {% if not link.user_only or  user.is_authenticated %}
+            <a href="{{ link.url }}" class="flex flex-col gap-1 items-center justify-center hover:opacity-80 hover:-translate-y-[2px] transition {% if request.path == link.url %} 
+                  text-secondary 
+                {% else %} 
+                  text-accent 
+                {% endif %}">
+              {% include "icons/"|add:link.filename %}
+              <span class="text-sm font-medium">{{ key|title }}</span>
+            </a>
+          {% endif %}
         {% endfor %}
       </div>
 
@@ -82,6 +84,9 @@
             <span class="mr-1 text-sm">Cart</span>
           </a>
         </span>
+        <a href="{% url 'reviews:user_reviews' %}" class="block px-4 py-2 font-bold text-center text-white transition duration-300 bg-blue-500 rounded hover:bg-blue-600">
+          My Review
+        </a>
         <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-bold text-center text-white transition duration-300 bg-red-500 rounded hover:bg-red-600">
           Logout
         </a>

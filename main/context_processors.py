@@ -6,19 +6,23 @@ def navbar_links(request):
     links = {
         "home": {
             "url": "/", 
-            "filename": "home_icon.html"
+            "filename": "home_icon.html",
+            "user_only": False
         },
         "stores": {
             "url": "/stores/", 
-            "filename": "store_icon.html"
+            "filename": "store_icon.html",
+            "user_only": False
         },
         "chats": {
             "url": "/chats/", 
-            "filename": "chat_icon.html"
+            "filename": "chat_icon.html",
+            "user_only": True
         },
         "history": {
             "url": "/carts/history/", 
-            "filename": "history_icon.html"
+            "filename": "history_icon.html",
+            "user_only": True
         },
     }
     return {'links': links}

@@ -37,6 +37,11 @@
       <span class=""><span class="rounded-full mr-px">BP: </span>${{user.money}}</span>
     </div>
     <a
+      href="{% url 'reviews:user_reviews' %}"
+      class="text-center hover:opacity-80 bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 border border-blue-700 hover:bg-blue-800 text-sm"
+      >My Review</a
+    >
+    <a
       href="{% url 'main:logout' %}"
       class="text-center hover:opacity-80 bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300 border border-red-700 hover:bg-red-800 text-sm"
       >Logout</a
