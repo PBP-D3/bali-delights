@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">
-    <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-bold uppercase">
+
+<div class="mx-72 m-10 bg-white shadow-lg rounded-lg overflow-hidden relative">  <!-- Increased max width -->
+    <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-body font-bold">
         Edit Your Store
     </div>
-    <form class="py-4 px-6" action="{% url 'stores:edit_store' store.id %}" method="POST">
+    <form id="register-form" class="py-4 px-6" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
         <!-- Store Name Field -->
@@ -14,48 +15,100 @@
                 Store Name
             </label>
             <input
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="id_name" name="name" type="text" placeholder="Enter store name" value="{{ store.name }}" required>
         </div>
-
+    
         <!-- Store Description Field -->
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="id_description">
                 Store Description
             </label>
             <textarea
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="id_description" name="description" rows="4" placeholder="Enter store description">{{ store.description }}</textarea>
         </div>
-
-        <!-- Store Image URL Field -->
+    
+        <!-- Image Selection Option -->
         <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">
+                Store Image Option
+            </label>
+            <div class="flex items-center gap-4">
+                <label class="flex items-center text-gray-700">
+                    <input type="radio" name="choice" value="upload" class="mr-2" checked> Upload Image
+                </label>
+                <label class="flex items-center text-gray-700">
+                    <input type="radio" name="choice" value="url" class="mr-2"> Image URL
+                </label>
+            </div>
+        </div>
+    
+        <!-- Store Image Upload Field -->
+        <div id="photo-upload-field" class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="id_photo_upload">
+                Upload Store Image
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id_photo_upload" name="photo_upload" type="file">
+        </div>
+    
+        <!-- Store Image URL Field -->
+        <div id="photo-url-field" class="mb-4" style="display: none;">
             <label class="block text-gray-700 font-bold mb-2" for="id_photo">
                 Store Image URL
             </label>
             <input
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="id_photo" name="photo" type="text" placeholder="Enter image URL" value="{{ store.photo }}" required>
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id_photo" name="photo" type="text" placeholder="Enter image URL">
         </div>
-
+    
+        <!-- Store Location Field -->
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="id_location">
                 Store Location
             </label>
             <input
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="id_location" name="location" type="text" placeholder="Enter store location" value="{{ store.location }}" required>
         </div>
-
+    
         <!-- Submit Button -->
-        <div class="flex items-center justify-center mb-4">
+        <div class="flex items-center justify-center mb-4 gap-4">
             <button
                 class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
                 type="submit">
-                Update Store
+                Register Store
             </button>
+            <a
+                href="{% url 'stores:owner_store_view' store.id %}"
+                class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+                Back
+            </a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const choiceRadios = document.querySelectorAll("input[name='choice']");
+        const uploadField = document.getElementById("photo-upload-field");
+        const urlField = document.getElementById("photo-url-field");
+
+        function toggleFields() {
+            if (document.querySelector("input[name='choice']:checked").value === "upload") {
+                uploadField.style.display = "block";
+                urlField.style.display = "none";
+            } else {
+                uploadField.style.display = "none";
+                urlField.style.display = "block";
+            }
+        }
+
+        choiceRadios.forEach(radio => radio.addEventListener("change", toggleFields));
+        toggleFields();  // Initial toggle based on the default selection
+    });
+</script>
 
 {% endblock %}
