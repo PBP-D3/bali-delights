@@ -52,28 +52,52 @@
 
 <!-- Top Reviews Section -->
 <section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
-  <div class="container mx-auto text-center">
-    <h2 class="text-3xl font-bold font-header">What Our Customers Say</h2>
-    <p class="mt-4 text-lg text-gray-700 font-body">
-      Hear from some of our satisfied customers.
-    </p>
-    <div class="flex flex-wrap justify-center gap-8 mt-8">
-      <!-- Loop through top reviews -->
-      {% comment %} {% for review in top_reviews %}
-      <div class="w-full p-6 bg-white border rounded-lg shadow-lg sm:w-1/2 lg:w-1/3 border-secondary">
-        <p class="text-sm text-gray-700 font-body">{{ review.text|truncatewords:20 }}</p>
-        <div class="mt-4 text-sm font-bold text-secondary">- {{ review.user.username }}</div>
-        <div class="flex items-center mt-2">
-          {% for i in "12345" %}
-          <svg class="w-5 h-5 {{ review.rating|floatformat >= i|yesno:'text-accent,text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 15l5.2 3.1-1.4-5.8L18 8.7l-6-.5L10 3 8 8.2 2 8.7l4.2 3.6-1.4 5.8z" />
-          </svg>
-          {% endfor %}
-        </div>
-      </div>
-      {% endfor %} {% endcomment %}
+  <div class="mx-auto max-w-7xl">
+    <h1 class="mb-8 text-3xl font-semibold text-center text-gray-800">Top Reviews</h1>
+    
+    <div class="flex py-4 space-x-6 overflow-x-auto">
+        {% for review in top_reviews %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden min-w-[300px] w-72 flex-shrink-0 border border-secondary">
+                <!-- Product Image -->
+                <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
+                
+                <div class="p-6">
+                    <!-- Product and Reviewer Details -->
+                    <h3 class="text-lg font-semibold text-gray-900 min-h-24">
+                        {{ review.product_id.name}}
+                    </h3>
+                    <p class="text-gray-500">Reviewed by: 
+                        {% if user.is_authenticated %}
+                            {{ review.user_id.username }}
+                        {% else %}
+                            {{ review.user_id.username|slice:":1" }}{% for char in review.user_id.username %}*{% endfor %}
+                        {% endif %}
+                    </p>
+                    
+                    <!-- Rating and Likes -->
+                    <div class="grid grid-cols-2">
+                        <p class="mr-4 font-semibold text-yellow-500">Rating: {{ review.rating }} / 5</p>
+                        <div class="grid grid-cols-2 gap-0 justify-self-end">
+                            <span class="text-right text-gray-600">{{ review.num_likes }}</span>
+                            <img src="{% static 'logos/likes.png' %}" alt="Likes" class="ml-0">
+                        </div>
+                    </div>
+                    
+                    <!-- Short Description -->
+                    <p class="mt-4 text-gray-700">
+                        {{ review.comment|truncatechars:30 }}
+                    </p>
+
+                    <!-- Link to Product GANTI LINK 'products:product_details'-->
+                    <a href="{% url 'reviews:product_reviews' review.product_id.id %}"
+                       class="block py-2 mt-6 font-bold text-center text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">
+                        View Product
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
+</div>
 </section> 
 
 <!-- Join Now Section -->

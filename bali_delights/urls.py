@@ -25,7 +25,7 @@ urlpatterns = [
     path('', include('main.urls')),
     path('chats/', include('chats.urls')),
     path('reviews/', include('reviews.urls')),
-    path('products/', include('products.urls')),
+    path('products/', include('products.urls', namespace='products')),
     path('carts/', include('carts.urls', namespace='carts')),
     path('stores/', include('stores.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
