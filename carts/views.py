@@ -36,29 +36,44 @@ def submit_order(request):
     form = PasswordConfirmForm(request.user, request.POST)
     if form.is_valid():
       try:
-        # Fetch the pending cart explicitly to avoid MultipleObjectsReturned error
-        cart = Cart.objects.get(user_id=request.user, status='pending')
-        
-        items = cart.items.select_related('product_id')
-        total_price = sum(item.subtotal for item in items)
+        # Use an atomic transaction to ensure data consistency
+        with transaction.atomic():
+          cart = Cart.objects.get(user_id=request.user, status='pending')
+          items = cart.items.select_related('product_id')
+          total_price = sum(item.subtotal for item in items)
 
-        if request.user.money < total_price:
-          return JsonResponse({"success": False, "message": "Insufficient funds."})
+          if request.user.money < total_price:
+            return JsonResponse({"success": False, "message": "Insufficient funds."})
 
-        # Update user balance and stock
-        request.user.money -= total_price
-        request.user.save()
-        for item in items:
-          item.product_id.stock -= item.quantity
-          item.product_id.save()
+          # Check if the user is attempting to buy their own product
+          for item in items:
+            product = item.product_id
+            if product.store_id.owner_id == request.user:
+              return JsonResponse({"success": False, "message": "You cannot buy your own product."})
 
-        cart.status = 'paid'
-        cart.total_price = total_price
-        cart.save()
+          # Deduct from user's balance
+          request.user.money -= total_price
+          request.user.save()
 
-        # Clear cart items after purchase
-        cart.items.all().delete()  # Clear cart items
-        return JsonResponse({"success": True, "total_price": total_price, "remaining_balance": request.user.money})
+          # Update stock and distribute money to shop owners
+          for item in items:
+            product = item.product_id
+            store_owner = product.store_id.owner_id
+            product.stock -= item.quantity
+            product.save()
+
+            # Add payment to shop owner's balance
+            store_owner.money += item.subtotal
+            store_owner.save()
+
+          # Mark the cart as 'paid'
+          cart.status = 'paid'
+          cart.total_price = total_price
+          cart.save()
+
+          # Clear cart items after purchase
+          cart.items.all().delete()
+          return JsonResponse({"success": True, "total_price": total_price, "remaining_balance": request.user.money})
 
       except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Cart not found."}, status=404)
@@ -116,10 +131,18 @@ def add_to_cart(request):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user_id=request.user)
 
+    # Check if user is trying to add their own product
+    if product.store_id.owner_id == request.user:
+      return JsonResponse({'success': False, 'message': 'You cannot add your own product to the cart.'}, status=403)
+    
     if product.stock <= 0:
       return JsonResponse({'success': False, 'message': 'Stock is empty.'})
 
-    cart_item, created = CartItem.objects.get_or_create(cart_id=cart, product_id=product, quantity=1, price=product.price, subtotal=quantity * product.price)
+    cart_item, created = CartItem.objects.get_or_create(
+      cart_id=cart, 
+      product_id=product, 
+      defaults={'quantity': quantity, 'price': product.price, 'subtotal': quantity * product.price}
+    )
 
     # Update the total price of the cart
     cart.total_price = sum(item.subtotal for item in cart.items.all())
@@ -131,6 +154,8 @@ def add_to_cart(request):
       'total_price': cart.total_price,
       'remaining_stock': product.stock - cart_item.quantity
     })
+    
+  return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
   
 @csrf_exempt
 @login_required
