@@ -2,241 +2,156 @@
 {% load static %}
 
 {% block meta %}
-<title>Produts</title>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
- <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main</title>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
 <!-- Search Bar -->
-<div class="pt-20">
-    <form method="GET" class="search-form">
-        <input type="text" name="search" placeholder="Search products..." class="search-input" value="{{ request.GET.search }}">
-        <button type="submit" class="search-button">Search</button>
+<div class="flex flex-col gap-6 px-8 py-6 mx-auto md:gap-10 max-w-7xl md:px-12 lg:px-20">
+  
+  <div class="flex justify-center">
+    <form method="GET" class="flex items-center w-full max-w-xs gap-2 px-4">
+      <input 
+        type="text" 
+        name="search" 
+        placeholder="Search products..." 
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+        value="{{ request.GET.search }}">
+      <button 
+        type="submit" 
+        class="px-3 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600">
+        Search
+      </button>
     </form>
-</div>
-
-<!-- Filtering Form -->
-<div>
-    <form method="GET" class="filter-form"><span>Sort by: </span>
-        <select name="category" class="dropdown" onchange="this.form.submit()">
-            <option value="">Select Category</option>
-            {% for category in categories %}
-                <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
-                    {{ category.0 }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <select name="sort" class="dropdown" onchange="this.form.submit()">
-            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Price: Lowest</option>
-            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Price: Highest</option>
-        </select>
+  </div>
+  
+  <!-- Filtering Form -->
+  <div class="flex justify-center">
+    <form method="GET" class="flex items-center w-full max-w-md gap-4">
+      <label class="font-semibold">Sort by:</label>
+      <select 
+        name="category" 
+        class="w-1/2 p-2 border border-gray-300 rounded-lg" 
+        onchange="this.form.submit()">
+        <option value="">Select Category</option>
+        {% for category in categories %}
+          <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
+            {{ category.0 }}
+          </option>
+        {% endfor %}
+      </select>
+  
+      <select 
+        name="sort" 
+        class="w-1/2 p-2 border border-gray-300 rounded-lg" 
+        onchange="this.form.submit()">
+        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Price: Lowest</option>
+        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Price: Highest</option>
+      </select>
     </form>
-</div>
-
-<!-- Product card -->
-<div class="product-grid">
+  </div>
+  
+  <!-- Product Grid -->
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
     {% for product in products %}
-    <div class="bg-gray-100 product-card">
+      <div class="p-4 transition-transform duration-200 transform bg-gray-100 rounded-lg shadow-sm hover:shadow-lg hover:ring-1 hover:ring-[]">
         <a href="{% url 'products:product_detail' product.id %}">
-            <div class="card-content">
-                <h3 class="product-name">{{ product.name }}</h3>
-                {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
-                {% else %} 
-                    <p>No image available</p>
-                {% endif %}
-                <p class="product-price">Price: {{ product.price }}</p>
-                <p class="product-category">Category: {{ product.category }}</p>
-                Rating: <span style="color: gold;">{{ product.average_rating|floatformat:2|default:"0" }} / 5 </span>
-            </div>
+          <div class="text-center">
+            <h3 class="mb-2 text-lg font-bold line-clamp-2">{{ product.name }}</h3>
+            {% if product.image_url %}
+              <img 
+                src="{{ product.image_url }}" 
+                alt="{{ product.name }}" 
+                class="object-cover w-full h-48 mb-4 rounded-md">
+            {% else %} 
+              <p class="text-sm text-gray-500">No image available</p>
+            {% endif %}
+            <p class="font-semibold text-gray-700">Price: {{ product.price }}</p>
+            <p class="text-gray-600">Stock: {{ product.stock }}</p>
+            <p class="text-gray-600">Category: {{ product.category }}</p>
+            <div class="text-yellow-500">Rating: {{ product.average_rating|floatformat:2|default:"-" }} {% if product.average_rating %}/ 5{% endif %}</div>
+          </div>
         </a>
-    
-    </div>
+        <div class="flex justify-between mt-4">
+        <button 
+          onclick="addToCart({{ product.id }})" 
+          class="px-3 py-2 rounded text-black1 bg-primary hover:bg-secondary">
+          Add to Cart
+        </button>
+        <a 
+          href="{% url 'reviews:product_reviews' product.id %}" 
+          class="px-3 py-2 text-white rounded bg-secondary hover:bg-amber-800">
+          Reviews
+        </a>
+      </div>
+      </div>
     {% endfor %}
+  </div>
 </div>
 
-<style>
-    .add-product-button {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .product-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-        padding: 20px;
-    }
-    .product-card {
-        width: 200px;
-        height: 350px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 5px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: transform 0.2s;
-    }
-    .product-card:hover {
-        transform: scale(1.00);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    .card-content {
-        flex-grow: 1;
-    }
-    .product-name {
-        font-weight: bold;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2; 
-        -webkit-box-orient: vertical;
-    }
-    .product-price, .product-category, .rating-placeholder {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .product-image {
-        max-width: 100%;
-        height: 150px;
-        object-fit: cover;
-        margin: auto;
-        display: block;
-        margin-bottom: 10px;
-    }
-    .rating-placeholder {
-        color: #FFC0CB;
-    }
-    .button-group {
-        display: flex;
-        gap: 10px;
-    }
-    .edit-btn {
-        background-color: wheat;
-        color: black;
-    }
-    .delete-btn {
-        background-color: red;
-        color: black;
-    }
-    .filter-form {
-        margin-bottom: 20px;
-    }
-    .filter-form select {
-        margin-right: 10px;
-        padding: 5px;
-    }
-    .dropdown {
-        width: 150px;  
-        height: 30px;  
-        padding: 5px;  
-        font-size: 14px;  
-        border-radius: 4px;  
-        border: 1px solid #ccc;  
-        background-color: #fff; 
-    }
-    .search-form {
-        margin-bottom: 20px;
-    }
-    .search-input {
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 200px;
-    }
-    .search-button {
-        padding: 5px 10px;
-        background-color: #5c543c;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .search-button:hover {
-        background-color: #4a432c;
-    }
-    
-</style>
 <script>
-    function deleteProduct(productId) {
-        if (confirm("Are you sure you want to delete this product?")) {
-            fetch(`{% url 'products:delete_product' 0 %}`.replace('0', productId), {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Refresh the page to show the updated product list
-                    location.reload();
-                } else {
-                    alert('Error deleting product');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+  function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      fetch(`{% url 'products:delete_product' 0 %}`.replace('0', productId), {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('Error deleting product');
         }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  }
+
+  function submitForm() {
+    const form = document.getElementById("ProductForm");
+    const formData = new FormData(form);
+
+    fetch("{% url 'products:add_product' %}", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        closeModal();
+      } else {
+        alert(data.message || "An error occurred.");
+      }
+    })
+    .catch(error => console.error("Error:", error));
+  }
+
+  function addToCart(productId, stock) {
+    if (stock === 0) {
+      alert("This item is out of stock.");
+      return;
     }
 
-    document.getElementById("submitProductEntry").addEventListener("click", function(event) {
-        event.preventDefault();
-        submitForm();
+    fetch("{% url 'carts:add_to_cart' %}", {
+      method: 'POST',
+      body: new URLSearchParams({ product_id: productId }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Product successfully added to cart.");
+      } else {
+        alert(`Error: ${data.message}`);
+      }
     });
-    
-    function submitForm() {
-        const form = document.getElementById("ProductForm");
-        const formData = new FormData(form);
-    
-        fetch("{% url 'products:add_product' %}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                closeModal();
-                // Optional: Reload product list or update the page dynamically.
-            } else {
-                alert(data.message || "An error occurred.");
-            }
-        })
-        .catch(error => console.error("Error:", error));
-    }
-
-    function addProductToList(product) {
-        const productGrid = document.querySelector('.product-grid');
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card bg-gray-100';
-        productCard.innerHTML = `
-            <a href="/products/${product.id}/">
-                <div class="card-content">
-                    <h3 class="product-name">${product.name}</h3>
-                    ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="product-image">` : `<p>No image available</p>`}
-                    <p class="product-price">Price: ${product.price}</p>
-                    <p class="product-category">Category: ${product.category}</p>
-                </div>
-            </a>
-        `;
-        productGrid.appendChild(productCard);
-    }
-    function openModal() {
-        document.getElementById('productModal').classList.remove('hidden');
-    }
-    
-    function closeModal() {
-        document.getElementById('productModal').classList.add('hidden');
-    }
+  }
 </script>
 {% endblock content %}
