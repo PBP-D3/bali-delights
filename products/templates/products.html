@@ -89,7 +89,7 @@
 
                 <div class="mb-4">
                     <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL</label>
-                    <input type="url" id="image_url" name="image_url" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <input type="text" id="image_url" name="image_url" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
             </form>
         </div>
@@ -116,7 +116,7 @@
                 {% endif %}
                 <p class="product-price">Price: {{ product.price }}</p>
                 <p class="product-category">Category: {{ product.category }}</p>
-                <p>Rating: <span class="rating-placeholder">⭐️⭐️⭐️⭐️⭐️</span></p>
+                <p><span class="rating-placeholder">Total reviews:</span> {{ product.total_likes }}</p>
             </div>
         </a>
         {% if user.is_authenticated and user.role == "shop_owner" %}
@@ -186,7 +186,7 @@
         margin-bottom: 10px;
     }
     .rating-placeholder {
-        color: #FFD700; /* Gold color for rating stars */
+        color: #FFC0CB;
     }
     .button-group {
         display: flex;
@@ -235,15 +235,16 @@
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
             },
-            body: new FormData(document.querySelector('#ProductForm')),
+            body: formData,
         })
-        .then(response => {
-            if (response.ok) {
-                alert('Product added successfully!');
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
                 closeModal();
-                location.reload(); // Refresh to display the new product
+                location.reload();
             } else {
-                alert('Failed to add product');
+                alert('Failed to add product: ' + JSON.stringify(data.errors));
             }
         })
         .catch(error => {
