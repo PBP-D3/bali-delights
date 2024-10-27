@@ -1,25 +1,25 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<div class="product-reviews max-w-4xl mx-auto px-4 mt-10">
+<div class="product-reviews max-w-4xl mx-auto px-4 mt-4">
+    <a href="{% url 'reviews:product_reviews' product.id %}" class="justify-self-start">
+        <button class="mb-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</button>
+    </a>
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for<h1>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ product.name }}</h1>
-    <br>
+    <h1 class="text-2xl font-semibold text-gray-800 mb-8">{{ product.name }}</h1>
     {% if user.is_authenticated %}
         {% if not user_review_exists %}
-            <a href="{% url 'reviews:create_review' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
+            <a href="{% url 'products:product_details' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
                     Create your review!
             </a>
         {% else %}
                 <p class="text-gray-500">You have already made a review on this product.</p>
         {% endif %}
-        <br><br>
     {% else %}
     <p class="text-gray-500">Login to give your review</p>
-    <br><br>
     {% endif %}
     {% if reviews %}
-        <div class="flex flex-col space-y-4 items-center">
+        <div class="flex flex-col space-y-4 items-center mt-4">
             {% for review in reviews %}
                 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 w-3/4 ">
                     <div class="flex justify-between items-center mb-4">
@@ -33,28 +33,35 @@
                         <p class="text-sm text-gray-500">{{ review.updated_at|date:"F j, Y" }}</p>
                     </div>
                     <p class="text-yellow-500 font-semibold">Rating: {{ review.rating }} / 5</p>
-                    <p class="text-gray-700">{{ review.comment|linebreaks }}</p>
-
-                    <br>
+                    <p class="text-gray-700" >{{ review.comment|linebreaks }}</p>
+                    
                     <!-- Like Button -->
                         {% if user.is_authenticated %}
-                        <div class="flow-root w-full">
-                            <button class="float-left like-btn" data-review-id="{{ review.id }}">
-                                {% if review.liked %} Unlike {% else %} Like {% endif %}
+                        <div class="flow-root w-full mt-4">
+                            {% if review.liked %}
+                            <button class="float-left like-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" data-review-id="{{ review.id }}">
+                                Unlike
                             </button>
+                            {% else %}
+                            <button class="float-left like-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-review-id="{{ review.id }}">
+                                Like
+                            </button> 
+                            {% endif %}
                             <span class="float-right flex gap-1">
-                                <p id="like-count-{{ review.id }}">{{ review.like_set.count }}</p>
-                                <p>Likes</p>
+                                <div class="grid grid-cols-2 justify-self-end gap-0">
+                                    <span id="like-count-{{ review.id }}" class="text-gray-600 text-right">{{ review.like_set.count }}</span>
+                                    <img src="{% static 'logos/likes.png' %}" alt="Likes" class="ml-0">
+                                </div>
                             </span> 
                         </div>
                         {% else %}
-                           <p class="text-gray-500">Login to see likes on a review</p>
+                           <p class="text-gray-500  mt-4">Login to see likes on a review</p>
                         {% endif %}
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-gray-500">No reviews yet for this product.</p>
+        <p class="text-gray-500 mt-4">No reviews yet for this product.</p>
     {% endif %}
 </div>
 <br>
@@ -72,8 +79,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }).then(response => response.json()).then(data => {
                 if (data.liked) {
                     this.textContent = "Unlike";
+                    this.className = "float-left like-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded";
                 } else {
                     this.textContent = "Like";
+                    this.className = "float-left like-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded";
                 }
                 // Update the displayed like count
                 document.querySelector(`#like-count-${reviewId}`).textContent = data.like_count;

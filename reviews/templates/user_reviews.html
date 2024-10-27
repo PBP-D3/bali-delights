@@ -15,7 +15,7 @@
                     <!-- Review Details GANTI reviews:product_reviews jadi products:product-details .....-->
                     <div class="w-full">
                         <h3 class="text-lg font-semibold text-gray-900">
-                            <a href="{% url 'reviews:product_reviews' review.product_id.id %}" class="hover:underline">
+                            <a href="{% url 'products:product_details' review.product_id.id %}" class="hover:underline">
                                 {{ review.product_id.name }}
                             </a>
                         </h3>
