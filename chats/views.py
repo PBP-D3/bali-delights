@@ -49,6 +49,9 @@ def list_chats(request):
                     'id': chat.sender.id,
                     'username': chat.sender.username,
                 },
+                'store': {
+                    'id': chat.store.id,
+                },
                 'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
                 'last_message_content': last_message.content if last_message else ""
             })
@@ -74,7 +77,19 @@ def list_chats(request):
     context = {'chats': chat_data}
     return render(request, 'chats.html', context=context)
 
-User = get_user_model()
+def chat_with_cust(request, store_id, customer_id):
+    store = get_object_or_404(Store, id=store_id)
+    cust = get_object_or_404(User, id=customer_id)
+
+    chat, created = Chat.objects.get_or_create(store=store, sender=cust)
+    messages = Message.objects.filter(chat=chat).order_by('timestamp')
+
+    return render(request, 'chat_personal.html', {
+        'chat': chat,
+        'messages': messages,
+        'store': store,
+        'cust_name': cust.username,
+    })
 
 @login_required
 def chat_with_store(request, store_id):

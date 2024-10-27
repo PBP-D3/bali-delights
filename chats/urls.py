@@ -8,6 +8,7 @@ from chats.views import (
     create_chat,
     delete_chat,
     edit_message,
+    chat_with_cust,
     chats_view  # Import the chats_view function
 )
 
@@ -20,6 +21,8 @@ urlpatterns = [
 
     # Specific chat view with a store
     path('<int:store_id>/', chat_with_store, name='chat_with_store'),
+
+    path('<int:store_id>/<int:customer_id>/', chat_with_cust, name="chat_with_cust"),
 
     # AJAX endpoint to fetch messages for a specific chat
     path('api/chats/<int:chat_id>/messages/', get_chat_messages, name='get_chat_messages'),

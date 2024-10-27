@@ -35,7 +35,7 @@
            data-chat-id="{% if user.role == 'shop_owner' %}{{ chat.user.id }}{% else %}{{ chat.store.id }}{% endif %}"
            oncontextmenu="showDeleteOption(event, {% if user.role == 'shop_owner' %}{{ chat.id }}{% else %}{{ chat.id }}{% endif %})">
            
-          <a href="{% if user.role == 'shop_owner' %}{% url 'chat_with_store' chat.user.id %}{% else %}{% url 'chat_with_store' chat.store.id %}{% endif %}">
+          <a href="{% if user.role == 'shop_owner' %}{% url 'chat_with_cust' store_id=chat.store.id customer_id=chat.user.id %}{% else %}{% url 'chat_with_store' chat.store.id %}{% endif %}">
               <div class="flex items-center space-x-3">
                   <!-- Image conditional, but only display store image since there's no user photo -->
                   {% if user.role != 'shop_owner' %}
