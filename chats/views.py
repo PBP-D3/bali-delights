@@ -6,6 +6,8 @@ from stores.models import Store  # Adjust the import if the module path is corre
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.db.models import Max
+from django.utils.html import strip_tags
+
 
 User = get_user_model()
 
@@ -68,7 +70,7 @@ def list_chats(request):
                 'store': {
                     'id': chat.store.id,
                     'name': chat.store.name,
-                    'photo_url': chat.store.photo if chat.store.photo else '/static/images/default_avatar.jpg',
+                    'photo_url': chat.store.get_image if chat.store.get_image else '/static/images/default_avatar.jpg',
                 },
                 'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
                 'last_message_content': last_message.content if last_message else ""
@@ -110,7 +112,7 @@ def chat_with_store(request, store_id):
 @csrf_exempt
 def send_message(request, chat_id):
     if request.method == 'POST':
-        message_content = request.POST.get('message')
+        message_content = strip_tags(request.POST.get('message'))
         chat = Chat.objects.get(id=chat_id)
         message = Message.objects.create(chat=chat, sender=request.user, content=message_content)
         return JsonResponse({
@@ -123,7 +125,7 @@ def send_message(request, chat_id):
 
 @login_required
 def get_stores(request):
-    search_query = request.GET.get('search', '')
+    search_query = strip_tags(request.GET.get('search', ''))
     print(search_query)
 
     # Retrieve all stores or filter by search query
@@ -137,7 +139,7 @@ def get_stores(request):
         {
             'id': store.id,
             'name': store.name,
-            'photo_url': store.photo if isinstance(store.photo, str) else store.photo.url if store.photo else '/static/images/default_avatar.jpg'
+            'photo_url': store.get_image() 
         }
         for store in stores
     ]
@@ -178,7 +180,7 @@ def delete_chat(request, chat_id):
 @csrf_exempt
 def edit_message(request, message_id):
     if request.method == 'POST':
-        new_content = request.POST.get('content', '').strip()
+        new_content = strip_tags(request.POST.get('content', '')).strip()
 
         if not new_content:
             print("Edit failed: Content is empty.")

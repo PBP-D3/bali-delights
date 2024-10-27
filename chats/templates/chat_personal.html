@@ -11,12 +11,10 @@
 
 <div class="flex flex-col h-[calc(100vh-10rem)] items-center w-full">
   <div class="flex items-center justify-between w-full max-w-6xl p-3 bg-white shadow">
-    <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">Back</a>
+    <a href="{% url 'list_chats' %}" class="bg-amber-800 hover:bg-amber-900 text-white px-3 py-1 rounded hover:bg-[#A4896C] text-base lg:text-lg transition-all">Back</a>
     <div class="flex items-center space-x-2">
-      {% if store.photo and not cust_name %}
-        <img class="w-8 h-8 rounded-full" src="{{ store.photo.url }}" alt="{{ store.name }}" />
-      {% endif %}
-      <span class="text-sm font-medium text-gray-800">{% if not cust_name %}{{ store.name }}{% else %}{{ cust_name }}{% endif %}</span>
+      <img class="w-8 h-8 rounded-full" src="{{ store.get_image }}" alt="{{ store.name }}" />
+      <span class="text-2xl font-medium text-gray-800">{% if not cust_name %}{{ store.name }}{% else %}{{ cust_name }}{% endif %}</span>
     </div>
     <div class="w-12"></div>
   </div>
@@ -27,8 +25,8 @@
     <form id="chatForm" method="POST" class="flex space-x-2">
       {% csrf_token %}
       <input type="text" name="message" id="messageInput" placeholder="Type a message"
-             class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <button type="submit" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">
+             class="w-full p-2 text-sm border border-gray-300 rounded-lg md:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <button type="submit" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm md:text-base lg:text-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2.94 2.94a1.5 1.5 0 012.12 0l8.49 8.49a1.5 1.5 0 010 2.12l-2.12 2.12a1.5 1.5 0 01-2.12 0L2.94 5.06a1.5 1.5 0 010-2.12zm0 8.49l3.54 3.54-3.54-3.54z" />
         </svg>
@@ -67,7 +65,7 @@
           $.each(response.messages, function(index, message) {
             const messageItem = `
               <div class="flex ${message.sender_is_user ? 'justify-end' : ''} mb-1">
-                <div class="p-2 rounded-lg max-w-xs ${message.sender_is_user ? 'bg-[#C6AC8F] text-white' : 'bg-[#EAE0D5] text-gray-800'} text-sm message-bubble" 
+                <div class="p-2 rounded-lg max-w-xs ${message.sender_is_user ? 'bg-[#C6AC8F] text-white' : 'bg-[#EAE0D5] text-gray-800'} text-sm md:text-base lg:text-lg message-bubble" 
                      data-message-id="${message.id}">
                   <p>${message.content}</p>
                 </div>
@@ -75,7 +73,7 @@
             `;
             $('#messageList').append(messageItem);
           });
-          scrollToBottom();
+          // scrollToBottom();
 
           // Attach right-click event for edit
           $('.message-bubble').on('contextmenu', function(event) {

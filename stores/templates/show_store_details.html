@@ -29,8 +29,10 @@
   </span>
 </div>
 
-<div class="container flex flex-col gap-6 px-4 mx-auto sm:px-28 md:gap-12 lg:gap-20">
+<div class="flex flex-col gap-6 px-4 mx-auto w-max-7xl sm:px-28 md:gap-12 lg:gap-20">
   <div class="p-6 mb-6 bg-white rounded-lg shadow">
+    
+    {% comment %} store details {% endcomment %}
     <div class="flex flex-col items-center gap-6 p-4 mb-10 border rounded-lg md:flex-row border-secondary">
       <img src="{{ store.get_image }}" alt="{{ store.name }}" class="w-[12rem] rounded-md">
       <div class="flex flex-col">
@@ -60,51 +62,49 @@
             class="px-3 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600">
             Search
           </button>
-           <button 
-            type="button" 
-            id="resetFilter" 
-            class="px-3 py-2 text-white bg-red-700 rounded-lg hover:bg-red-800">
-            X
-          </button>
+          
 
         </form>
       </div>
     </div>
     {% if products %}
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="productsContainer">
-        {% for product in products %}
-          <div class="p-4 transition-transform duration-200 transform bg-gray-100 rounded-lg shadow-sm hover:shadow-lg hover:ring-1 hover:ring-[]">
-            <a href="{% url 'products:product_detail' product.id %}">
-              <div class="text-center">
-                <h3 class="mb-2 text-lg font-bold line-clamp-2">{{ product.name }}</h3>
-                {% if product.image_url %}
-                  <img 
-                    src="{{ product.image_url }}" 
-                    alt="{{ product.name }}" 
-                    class="object-cover w-full h-48 mb-4 rounded-md">
-                {% else %} 
-                  <p class="text-sm text-gray-500">No image available</p>
-                {% endif %}
-                <p class="font-semibold text-gray-700">Price: {{ product.price }}</p>
-                <p class="text-gray-600">Stock: {{ product.stock }}</p>
-                <p class="text-gray-600">Category: {{ product.category }}</p>
-                <div class="text-yellow-500">Rating: {{ product.average_rating|floatformat:2|default:"-" }} {% if product.average_rating %}/ 5{% endif %}</div>
-              </div>
-            </a>
-            <div class="flex justify-between mt-4">
-              <button 
-                onclick="addToCart({{ product.id }}, {{ product.stock }})" 
-                class="px-3 py-2 rounded text-black1 bg-primary hover:bg-secondary">
-                Add to Cart
-              </button>
-              <a 
-                href="{% url 'reviews:product_reviews' product.id %}" 
-                class="px-3 py-2 text-white rounded bg-secondary hover:bg-amber-800">
-                Reviews
-              </a>
-            </div>
+      {% for product in products %}
+      <div class="p-4 transition-all duration-200 transform bg-gray-100 rounded-lg shadow-sm hover:shadow-lg hover:ring-1 hover:ring-[]">
+        <a href="{% url 'products:product_detail' product.id %}">
+          <div class="text-center h-[400px]">
+            <h3 class="mb-2 text-lg font-bold h-14 line-clamp-2">{{ product.name }}</h3>
+            {% if product.image_url %}
+              <img 
+                src="{{ product.image_url }}" 
+                alt="{{ product.name }}" 
+                class="object-cover w-full h-48 mb-4 rounded-md">
+            {% else %} 
+              <p class="flex items-center justify-center w-full h-48 mb-4 text-sm text-center text-gray-500 bg-black opacity-15">No image available</p>
+            {% endif %}
+            <p class="font-semibold text-gray-700">Price: ${{ product.price }}</p>
+            <p class="text-gray-600">Stock: {{ product.stock }}</p>
+            <p class="text-gray-600">Category: {{ product.category }}</p>
+            <div class="text-yellow-500">Rating: {{ product.average_rating|floatformat:2|default:"-" }} {% if product.average_rating %}/ 5{% endif %}</div>
           </div>
-        {% endfor %}
+        </a>
+        <div class="flex justify-between mt-4">
+          {% if user.is_authenticated %}
+          
+          <button 
+            onclick="addToCart({{ product.id }})" 
+            class="px-3 py-2 transition-all rounded text-black1 bg-primary hover:bg-yellow-400 hover:bg-[rgb(189,159, 126)]">
+            Add to Cart
+          </button>
+          {% endif %}
+        <a 
+          href="{% url 'reviews:product_reviews' product.id %}" 
+          class="px-3 py-2 text-white rounded bg-secondary hover:bg-amber-800">
+          Reviews
+        </a>
+      </div>
+      </div>
+    {% endfor %}
       </div>
     {% else %}
       <p class="text-gray-700">No products available for this store.</p>
@@ -137,54 +137,5 @@
     });
   }
 
-  document.getElementById('searchForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-
-    const searchQuery = this.search.value; // Get the search query
-    fetch("{% url 'products:show_products' %}?search=" + encodeURIComponent(searchQuery) + "&store_id=" + encodeURIComponent(storeId), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Update the products display area based on the response
-      const productsContainer = document.getElementById('productsContainer');
-      productsContainer.innerHTML = ''; // Clear existing products
-      
-      if (data.products.length) {
-        data.products.forEach(product => {
-          const productElement = `
-            <div class="p-4 transition-transform duration-200 transform bg-gray-100 rounded-lg shadow-sm hover:shadow-lg hover:ring-1 hover:ring-[]">
-              <a href="/products/${product.id}/">  <!-- Directly using the product ID here -->
-                <div class="text-center">
-                  <h3 class="mb-2 text-lg font-bold line-clamp-2">${product.name}</h3>
-                  ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="object-cover w-full h-48 mb-4 rounded-md">` : `<p class="text-sm text-gray-500">No image available</p>`}
-                  <p class="font-semibold text-gray-700">Price: ${product.price}</p>
-                  <p class="text-gray-600">Stock: ${product.stock}</p>
-                  <p class="text-gray-600">Category: ${product.category}</p>
-                  <div class="text-yellow-500">Rating: ${product.average_rating ? product.average_rating.toFixed(2) : '-'} ${product.average_rating ? '/ 5' : ''}</div>
-                </div>
-              </a>
-              <div class="flex justify-between mt-4">
-                <button onclick="addToCart(${product.id}, ${product.stock})" class="px-3 py-2 rounded text-black1 bg-primary hover:bg-secondary">Add to Cart</button>
-                <a href="/reviews/${product.id}/" class="px-3 py-2 text-white rounded bg-secondary hover:bg-amber-800">Reviews</a>
-              </div>
-            </div>
-          `;
-          productsContainer.innerHTML += productElement; // Add the product element to the container
-        });
-      } else {
-        productsContainer.innerHTML = '<p class="text-gray-700">No products found.</p>';
-      }
-    });
-  });
-
-  document.getElementById('resetFilter').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default button behavior
-    document.getElementById('searchForm').search.value = ''; // Clear the search input
-    document.getElementById('searchForm').submit(); // Resubmit the form to reset the filter
-  });
 </script>
 {% endblock %}

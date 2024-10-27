@@ -11,56 +11,56 @@
     <div class="flex justify-center">
       <div class="flex flex-wrap justify-center gap-6 text-center text-[#c9bfb1]">
         <!-- Categories Icon -->
-        <a href="{% url 'products:show_products' %}?category=" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/categories_icon.png' %}" alt="Categories Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category="&sort=asc class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/categories_icon.png' %}" alt="Categories Icon" class="w-6 h-6">
           <span>All</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Clothes Icon -->
-        <a href="{% url 'products:show_products' %}?category=Clothes" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/clothes_icon.png' %}" alt="Clothes Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Clothes&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/clothes_icon.png' %}" alt="Clothes Icon" class="w-6 h-6">
           <span>Clothes</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Jewelries Icon -->
-        <a href="{% url 'products:show_products' %}?category=Jewelries" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/jewelries_icon.png' %}" alt="Jewelries Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Jewelries&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/jewelries_icon.png' %}" alt="Jewelries Icon" class="w-6 h-6">
           <span>Jewelries</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Crafts Icon -->
-        <a href="{% url 'products:show_products' %}?category=Crafts" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/crafts_icon.jpg' %}" alt="Crafts Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Crafts&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/crafts_icon.jpg' %}" alt="Crafts Icon" class="w-6 h-6">
           <span>Crafts</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Arts Icon -->
-        <a href="{% url 'products:show_products' %}?category=Arts" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/arts_icon.png' %}" alt="Arts Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Arts&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/arts_icon.png' %}" alt="Arts Icon" class="w-6 h-6">
           <span>Arts</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Snacks Icon -->
-        <a href="{% url 'products:show_products' %}?category=Snacks" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/snacks_icon.png' %}" alt="Snacks Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Snacks&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/snacks_icon.png' %}" alt="Snacks Icon" class="w-6 h-6">
           <span>Snacks</span>
         </a>
         
         <span class="hidden md:inline">|</span>
 
         <!-- Drinks Icon -->
-        <a href="{% url 'products:show_products' %}?category=Drinks" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
-          <img src="{% static 'images/drinks_icon.png' %}" alt="Drinks Icon" class="w-6 h-6">
+        <a href="{% url 'products:show_products' %}?category=Drinks&sort=asc" class="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 hover:text-[#e0d1c1]">
+          <img src="{% static 'images/subnav/drinks_icon.png' %}" alt="Drinks Icon" class="w-6 h-6">
           <span>Drinks</span>
         </a>
       </div>
