@@ -31,10 +31,15 @@ def show_products(request, category=None):
     if request.method == 'GET' and 'category' in request.GET:
         category = request.GET.get('category')
 
+    search_query = request.GET.get('search', '')
+    
+    products = Product.objects.all()
+
     if category:
-        products = Product.objects.filter(category=category)
-    else:
-        products = Product.objects.all()  
+        products = products.filter(category=category)
+    
+    if search_query:
+        products = products.filter(name__icontains=search_query)
 
     # Sort products by price if specified in the query parameter
     sort_order = request.GET.get('sort', 'asc')  # Default sort is ascending
@@ -53,6 +58,7 @@ def show_products(request, category=None):
         'categories': categories,
         'selected_category': category,
         'sort_order': sort_order,
+        'search_query': search_query,  
     }
 
     return render(request, "products.html", context)

@@ -16,7 +16,7 @@
         <div class="flex items-center justify-center">
             <div class="flex gap-8 text-center" style="color: #c9bfb1">
                 <!-- Categories Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/categories_icon.png' %}" alt="Categories Icon" class="h-6 w-6 mr-2">
                         <span>Categories</span>
@@ -24,7 +24,7 @@
                 </a>
                 <span>|</span>
                 <!-- Clothes Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Clothes" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/clothes_icon.png' %}" alt="Clothes Icon" class="h-6 w-6 mr-2">
                         <span>Clothes</span>
@@ -32,7 +32,7 @@
                 </a>
                 <span>|</span>
                 <!-- Jewelries Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Jewelries" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/jewelries_icon.png' %}" alt="Jewelries Icon" class="h-6 w-6 mr-2">
                         <span>Jewelries</span>
@@ -40,7 +40,7 @@
                 </a>
                 <span>|</span>
                 <!-- Crafts Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Crafts" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/crafts_icon.jpg' %}" alt="Crafts Icon" class="h-6 w-6 mr-2">
                         <span>Crafts</span>
@@ -48,7 +48,7 @@
                 </a>
                 <span>|</span>
                 <!-- Arts Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Arts" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/arts_icon.png' %}" alt="Arts Icon" class="h-6 w-6 mr-2">
                         <span>Arts</span>
@@ -56,7 +56,7 @@
                 </a>
                 <span>|</span>
                 <!-- Snacks Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Snacks" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/snacks_icon.png' %}" alt="Snacks Icon" class="h-6 w-6 mr-2">
                         <span>Snacks</span>
@@ -64,7 +64,7 @@
                 </a>
                 <span>|</span>
                 <!-- Drinks Icon -->
-                <a href="#" class="nav-link">
+                <a href="{% url 'products:show_products' %}?category=Drinks" class="nav-link">
                     <div class="flex items-center">
                         <img src="{% static 'images/drinks_icon.png' %}" alt="Drinks Icon" class="h-6 w-6 mr-2">
                         <span>Drinks</span>
