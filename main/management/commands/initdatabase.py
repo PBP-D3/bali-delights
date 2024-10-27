@@ -2,6 +2,8 @@ from django.core.management import BaseCommand, call_command
 from main.models import User
 from products.models import Product
 from stores.models import Store
+from reviews.models import Review, Like
+from carts.models import Cart, CartItem
 
 class Command(BaseCommand):
     help = "DEV COMMAND: Fill database with a set of data for testing purposes"
@@ -15,6 +17,11 @@ class Command(BaseCommand):
 
         # Load initial products
         self.load_products()
+        
+        self.load_reviews()
+        
+        self.load_carts()
+    
 
     def load_users(self):
         call_command('loaddata', 'initial_users')
@@ -35,4 +42,26 @@ class Command(BaseCommand):
         for product in Product.objects.all():
             # For example, if you need to ensure product fields are not null
             product.save()  # Save again if you've modified anything
+    
+    def load_reviews(self):
+        call_command('loaddata', 'initial_reviews')
+         # If you need to modify any fields after loading, do it here
+        for review in Review.objects.all():
+            # For example, if you need to ensure product fields are not null
+            review.save()  # Save again if you've modified anything
+        for like in Like.objects.all():
+            # For example, if you need to ensure product fields are not null
+            like.save()  # Save again if you've modified anything
+            
+    def load_carts(self):
+        call_command('loaddata', 'initial_reviews')
+         # If you need to modify any fields after loading, do it here
+        for cart in Cart.objects.all():
+            # For example, if you need to ensure product fields are not null
+            cart.save()  # Save again if you've modified anything
+        for cartitem in CartItem.objects.all():
+            # For example, if you need to ensure product fields are not null
+            cartitem.save()  # Save again if you've modified anything
+        
+        
         
