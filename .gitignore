@@ -7,7 +7,7 @@ db.sqlite3
 media
 # Ignore database files
 *.sqlite3  
-.env
+env
 
 # Ignore Python bytecode and __pycache__ directories
 __pycache__/
