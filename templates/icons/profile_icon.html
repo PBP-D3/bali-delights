@@ -32,18 +32,18 @@
     id="tooltip"
     class="absolute -left-[175px] mt-3 bg-white shadow-md rounded-lg py-3 px-6 z-10 flex flex-col gap-4 w-[200px] overflow-x-hidden hidden"
   >
-    <div class="flex flex-col text-gray-800 w-full text-base font-bold overflow-hidden">
+    <div class="flex flex-col w-full overflow-hidden text-base font-bold text-gray-800">
       <span class="text-lg">{{user.username}}</span>
-      <span class=""><span class="rounded-full mr-px">BP: </span>${{user.money}}</span>
+      <span class=""><span class="mr-px rounded-full">BP: </span>${{user.money}}</span>
     </div>
     <a
       href="{% url 'reviews:user_reviews' %}"
-      class="text-center hover:opacity-80 bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 border border-blue-700 hover:bg-blue-800 text-sm"
-      >My Review</a
+      class="px-4 py-2 text-sm font-bold text-center text-white transition duration-300 border rounded hover:opacity-80 bg-secondary border-secondbg-secondary hover:bg-accent"
+      >My Reviews</a
     >
     <a
       href="{% url 'main:logout' %}"
-      class="text-center hover:opacity-80 bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300 border border-red-700 hover:bg-red-800 text-sm"
+      class="px-4 py-2 text-sm font-bold text-center text-white transition duration-300 bg-red-600 border border-red-700 rounded hover:opacity-80 hover:bg-red-800"
       >Logout</a
     >
   </div>
