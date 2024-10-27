@@ -9,27 +9,26 @@
 {% block content %}
 <!-- Store Image and Buttons -->
 <div class="px-6 pt-20 store-details md:px-12">
-    <!-- Navigation Buttons -->
-    <ul class="flex items-center mt-4 mb-8 space-x-4 font-body px-28">
-      <li class="text-base text-gray-500">
-        <a href="{% url 'stores:show_stores' %}" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Stores</a>
-      </li>
-      <li>
-        <svg xmlns="http://www.w3.org/2000/svg" class="fill-gray-400 w-3.5 -rotate-90" viewBox="0 0 24 24">
-          <path fill-rule="evenodd"
-            d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
-            clip-rule="evenodd" data-original="#000000"></path>
-        </svg>
-      </li>
-      <li class="text-base text-gray-500">
-        <a href="{% url 'stores:owner_store_view' store.id %}" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Store Details</a>
-      </li>
-    </ul>
+  <!-- Navigation Buttons -->
+  <ul class="flex items-center mt-4 mb-8 space-x-4 font-body px-28">
+    <li class="text-base text-gray-500">
+      <a href="{% url 'stores:show_stores' %}" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Stores</a>
+    </li>
+    <li>
+      <svg xmlns="http://www.w3.org/2000/svg" class="fill-gray-400 w-3.5 -rotate-90" viewBox="0 0 24 24">
+        <path fill-rule="evenodd"
+          d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+          clip-rule="evenodd" data-original="#000000"></path>
+      </svg>
+    </li>
+    <li class="text-base text-gray-500">
+      <a href="{% url 'stores:owner_store_view' store.id %}" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Store Details</a>
+    </li>
+  </ul>
   <img src="{{ store.get_image }}" alt="{{ store.name }}" class="self-center w-20 h-20 ml-20 store-image ">
   <h1 class="ml-20 store-name">{{ store.name }}</h1>
   <h1 class="ml-20 font-normal font-body">{{ store.description }}</h1>
   <h1 class="ml-20 font-normal font-body">{{ store.location }}</h1>
-  
   
   <!-- Edit and Delete Store Buttons -->
   <div class="mt-4 ml-20">
@@ -51,7 +50,6 @@
 <!-- Modal structure for adding a new product -->
 <div id="productModal" class="fixed inset-0 z-50 flex items-start justify-center hidden overflow-y-auto bg-gray-800 bg-opacity-50">
   <div class="w-full max-w-md mx-4 my-16 overflow-hidden bg-white rounded-lg shadow-lg">
-
     <!-- Modal header -->
     <div class="flex items-center justify-between p-4 border-b">
       <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
@@ -98,7 +96,7 @@
             <option value="Arts">Arts</option>
             <option value="Snacks">Snacks</option>
             <option value="Drinks">Drinks</option>
-            </select>
+          </select>
         </div>
 
         <!-- Image Upload Field -->
@@ -117,81 +115,44 @@
     <!-- Modal footer -->
     <div class="flex justify-end p-4 border-t border-gray-200">
       <button type="button" class="px-4 py-2 mr-2 font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600" onclick="closeModal()">Cancel</button>
-      <button type="button" id="submitProductEntry" class="px-4 py-2 font-bold text-white bg-indigo-700 rounded-lg hover:bg-indigo-600" onclick="submitForm()">Save</button>
+      <button type="button" id="submitProductEntry" class="px-4 py-2 font-bold text-white bg-indigo-700 rounded-lg hover:bg-indigo-800">Add Product</button>
     </div>
   </div>
 </div>
 
-<!-- Products List -->
-<div class="container mx-auto px-28">
-  <div class="p-6 mb-6 bg-white rounded">
-    <h2 class="mb-4 text-2xl font-semibold">Products</h2>
-    {% if products %}
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {% for product in products %}
-        <div class="flex flex-col h-full p-4 space-y-3 overflow-hidden bg-gray-100 rounded shadow-lg">
-          <!-- Product Image -->
-          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="object-cover w-full h-32 mb-2">
-          
-          <!-- Product Details -->
-          <div class="">
-            <div class="text-xl font-bold">{{ product.name }}</div>
-            <p class="text-gray-700 h-[200px] overflow-y-scroll">{{ product.description }}</p>
-            <p class="font-semibold text-gray-900">${{ product.price }}</p>
-            <p class="text-gray-500">Stock: {{ product.stock }}</p>
-          </div>
-
-          <!-- Edit and Delete Buttons -->
-          <div class="flex justify-between mt-2">
-            <a href="{% url 'products:edit_product' product.id %}" class="px-3 py-1 text-white transition bg-blue-500 rounded hover:bg-blue-600">Edit</a>
-            <form action="{% url 'products:delete_product' product.id %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="px-3 py-1 text-white transition bg-red-500 rounded hover:bg-red-600">Delete</button>
-            </form>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="text-gray-500">No products available for this store.</p>
-    {% endif %}
-  </div>
-</div>
-
 <script>
-  // Open Modal
+  // Modal control functions
   function openModal() {
     document.getElementById("productModal").classList.remove("hidden");
   }
 
-  // Close Modal
   function closeModal() {
     document.getElementById("productModal").classList.add("hidden");
   }
 
-  // Submit Form
-  function submitForm() {
-    const form = document.getElementById('ProductForm');
+  // AJAX to handle product submission
+  document.getElementById("submitProductEntry").addEventListener("click", function () {
+    const form = document.getElementById("ProductForm");
     const formData = new FormData(form);
-    fetch(form.action, {
-      method: 'POST',
+
+    fetch("{% url 'products:add_product' %}", {
+      method: "POST",
       body: formData,
-      headers: {
-        'X-CSRFToken': '{{ csrf_token }}'
-      }
     })
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        location.reload();  // Reload the page to show updated product list
+        // Handle success - e.g., refresh product list or display message
+        alert("Product added successfully!");
+        closeModal(); // Close the modal
       } else {
-        alert(data.message || 'An error occurred. Please try again.');
+        // Handle error
+        alert("Failed to add product: " + data.error);
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('An error occurred. Please try again.');
     });
-  }
+  });
 </script>
-{% endblock %}
+{% endblock content %}
