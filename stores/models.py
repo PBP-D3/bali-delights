@@ -9,6 +9,7 @@ class Store(models.Model):
   location = models.CharField(max_length=255, blank=True)
   description = models.TextField(blank=True)
   photo = models.CharField(max_length=255, blank=True)
+  location = models.CharField(max_length=100)
   owner_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stores')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
