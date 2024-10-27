@@ -153,6 +153,9 @@ def create_chat(request):
         store = get_object_or_404(Store, id=store_id)
         print(store.name)
         
+        # Membuat atau mendapatkan chat yang sudah ada
+        chat, created = Chat.objects.get_or_create(sender=request.user, store=store)
+        
         # Return the chat ID so the frontend can redirect
         return JsonResponse({'success': True, 'store_id': store.id})
 
