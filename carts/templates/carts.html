@@ -11,8 +11,8 @@
 {% block content %}
 
 {% if not items %}
-  <div class="flex flex-col items-center justify-start w-full h-screen gap-16 py-20 mx-auto text-center md:mb-20 lg:pt-0 max-w-7xl">
-    <div>
+  <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-20 mx-auto text-center md:mb-20 lg:pt-0 max-w-7xl">
+    <div class="lg:mt-12">
       {% include "icons/emptycart_icon.html" %}
     </div>
     <div class="">
@@ -41,6 +41,7 @@
             <div class="flex flex-col gap-2">
               <p class="font-bold">{{ item.product_id.name }} </p>
               <p>Price: <span class="original-price">${{ item.price }}</p>
+              <p>Stock: <span class="">{{ item.product_id.stock }}</p>
                 <span class="flex items-center gap-4">
                   <p>QTY: </p>
                   <input type="number" value="{{ item.quantity }}" min="0" max="{{ item.product_id.stock }}" data-item-id="{{ item.id }}" class="quantity-input w-fit border-[1px] border-accent p-1 rounded">
@@ -50,7 +51,7 @@
           
           </div>
           <div class="flex h-[100%] gap-1 w-[160px] justify-end items-center text-end pr-2 max-md:py-16">
-             <p>Subtotal: <span class="h-full subtotal">${{ item.subtotal }}</span></p>
+             <p>Subtotal: $<span class="h-full subtotal">{{ item.subtotal }}</span></p>
           </div>
         </div>
         <div class="w-full h-px border border-gray-500 separator-after"> </div>
@@ -68,7 +69,10 @@
       <h2 class="text-lg">Order Summary</h2>
       <div class="flex flex-col gap-8">
 
-        <p class="flex justify-between w-full text-xl"><span >Total:</span> <span id="total-price">${{ total_price }}</span></p>
+        <p class="flex justify-between w-full text-xl"><span >Total:</span> 
+          <span>
+            $<span id="total-price">{{ total_price }}</span>
+          </span></p>
         <form id="order-form" method="post" class="flex flex-col gap-8">
           <input type="password" id="password" name="password" placeholder="Enter your password" required>
           <button type="submit" class="w-full py-4 text-center transition-opacity rounded-lg px-auto bg-black1 text-white1 hover:opacity-85">Submit Order</button>

@@ -27,7 +27,7 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex gap-4 mt-auto">
-                        <a href="{% if is_user_store_view %}{% url 'stores:owner_store_view' store.id %}{% else %}{% url 'stores:show_store_details' store.id %}{% endif %}"
+                        <a href="{% if is_user_store_view or user.is_authenticated and store.owner_id == user %}{% url 'stores:owner_store_view' store.id %}{% else %}{% url 'stores:show_store_details' store.id %}{% endif %}"
                            class="w-40 text-center px-5 py-2.5 rounded-lg text-sm font-medium border border-current bg-secondary text-white hover:bg-transparent hover:text-gray-500 transition-all duration-300">
                             Go to Store Page
                         </a>
