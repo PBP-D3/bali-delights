@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block meta %}
-<title>Bali Delights - Chat</title>
+<title>Chat</title>
+ <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 {% endblock meta %}
 
 {% block content %}
-{% include 'navbar.html' %}
 
-<div class="max-w-4xl p-4 mx-auto bg-white rounded-lg shadow-lg">
+<div class="h-screen max-w-4xl px-4 py-12 mx-auto bg-[fff] rounded-lg shadow-lg md:mt-12 md:px-8 lg:px-16">
     <!-- Messages Header -->
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-3xl font-bold text-gray-800">Messages</h2>
@@ -46,7 +47,7 @@
                   {% endif %}
                   
                   <div>
-                      <h3 class="font-semibold text-gray-800">
+                      <h3 class="text-lg font-semibold text-gray-800">
                           {% if user.role == 'shop_owner' %}
                               {{ chat.user.username }}
                           {% else %}

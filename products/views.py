@@ -18,31 +18,45 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .forms import ProductForm  # Ensure you import your ProductForm
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import Product, Store
+from django.utils.html import escape
+from django.utils.html import strip_tags
 
 @csrf_exempt
 @login_required
 @require_POST
-def add_product(request):
-    if request.is_ajax():
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.store_id = request.user  # Ensure this is set to the correct store
-            product.save()
-            return JsonResponse({"success": True})
-        else:
-            return JsonResponse({"success": False, "message": "Form validation error.", "errors": form.errors})
-    return JsonResponse({"success": False, "message": "Invalid request."})
+def add_product(request, store_id):
+  if request.method == 'POST':
+    # Sanitize input fields using escape or another clean method
+    form_data = {field: escape(value) for field, value in request.POST.items()}
+    form = ProductForm(form_data, request.FILES)
+    
+    if form.is_valid():
+      product = form.save(commit=False)
+      store = get_object_or_404(Store, id=store_id)
+      product.store_id = store
+      product.save()
+      return JsonResponse({"success": True})
+    
+    else:
+      return JsonResponse({
+        "success": False,
+        "message": "Form validation error.",
+        "errors": form.errors
+      })
+  return JsonResponse({"success": False, "message": "Invalid request."})
 
 def show_products(request, category=None):
-    # Category filter
+   # Category filter
     if request.method == 'GET' and 'category' in request.GET:
         category = request.GET.get('category')
+        
+    search_query = strip_tags(request.GET.get('search', ''))
 
-    search_query = request.GET.get('search', '')
-    
     products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
 
+    # Apply category filtering if provided
     if category:
         products = products.filter(category=category)
     
@@ -55,17 +69,18 @@ def show_products(request, category=None):
     elif sort_order == 'asc':
         products = products.order_by('price')
     else:
-        products = products.order_by('id') 
-
+        products = products.order_by('id')
+        
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
 
+    # Prepare context for rendering the full HTML view
     context = {
         'products': products,
         'categories': categories,
         'selected_category': category,
         'sort_order': sort_order,
-        'search_query': search_query,  
+        'search_query': request.GET.get('search', ''),
     }
 
     return render(request, "products.html", context)
@@ -75,16 +90,15 @@ def product_detail(request, product_id):
     return render(request, "product_detail.html", {"product": product})
 
 def edit_product(request, product_id):
-    product = Product.objects.get(pk = product_id)
+  product = get_object_or_404(Product, pk=product_id)
+  form = ProductForm(request.POST or None, instance=product)
 
-    form = ProductForm(request.POST or None, instance=product)
+  if form.is_valid() and request.method == "POST":
+    form.save()
+    return HttpResponseRedirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
 
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return HttpResponseRedirect(reverse('products:show_products'))
-
-    context = {'form': form}
-    return render(request, "edit_product.html", context)
+  context = {'form': form}
+  return render(request, "edit_product.html", context)
 
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
