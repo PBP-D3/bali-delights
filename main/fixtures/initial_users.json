@@ -6,7 +6,7 @@
       "username": "user1",
       "password": "a",
       "role": "normal_user",
-      "money": 100,
+      "money": 1000,
       "created_at": "2024-10-24T10:00:00Z"
     }
   },
@@ -17,7 +17,7 @@
       "username": "user2",
       "password": "a",
       "role": "normal_user",
-      "money": 150,
+      "money": 1500,
       "created_at": "2024-10-24T10:00:00Z"
     }
   },
@@ -28,7 +28,7 @@
       "username": "owner1",
       "password": "a",
       "role": "shop_owner",
-      "money": 200,
+      "money": 2000,
       "created_at": "2024-10-24T10:00:00Z"
     }
   },
@@ -39,7 +39,7 @@
       "username": "owner2",
       "password": "a",
       "role": "shop_owner",
-      "money": 250,
+      "money": 2500,
       "created_at": "2024-10-24T10:00:00Z"
     }
   },
@@ -50,7 +50,7 @@
       "username": "admin",
       "password": "a",
       "role": "shop_owner",
-      "money": 300,
+      "money": 3000,
       "created_at": "2024-10-24T10:00:00Z",
       "is_superuser": true,
       "is_staff": true
@@ -63,7 +63,7 @@
       "username": "owner3",
       "password": "a",
       "role": "shop_owner",
-      "money": 300,
+      "money": 3000,
       "created_at": "2024-10-24T10:00:00Z"
     }
   },
@@ -74,7 +74,7 @@
       "username": "owner4",
       "password": "a",
       "role": "shop_owner",
-      "money": 350,
+      "money": 3500,
       "created_at": "2024-10-24T10:00:00Z"
     }
   }
