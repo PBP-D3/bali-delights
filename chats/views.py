@@ -128,11 +128,10 @@ def create_chat(request):
 
 @login_required
 @csrf_exempt
-def delete_chat(request):
-    if request.method == 'POST':
-        chat_id = request.POST.get('chat_id')
+def delete_chat(request, chat_id):
+    if request.method == "POST":
         try:
-            chat = Chat.objects.get(id=chat_id, sender=request.user)
+            chat = get_object_or_404(Chat, id=chat_id, sender=request.user)
             chat.delete()
             return JsonResponse({"success": True})
         except Chat.DoesNotExist:

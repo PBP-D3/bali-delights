@@ -23,7 +23,7 @@ urlpatterns = [
     # API endpoint to get the list of stores
     path('api/stores/', get_stores, name='get_stores'),
     
-    path('api/delete_chat/', delete_chat, name='delete_chat'),
+    path('api/chats/<int:chat_id>/delete/', delete_chat, name='delete_chat'),
     
     path('api/messages/<int:message_id>/edit/', edit_message, name='edit_message'),
 ]

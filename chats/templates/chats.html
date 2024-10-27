@@ -99,7 +99,7 @@
   function confirmDeleteChat() {
     if (selectedChatId) {
       $.ajax({
-        url: `/chats/api/delete_chat/`,  // The URL endpoint to delete chat
+        url: `/chats/api/chats/${selectedChatId}/delete/`,  // The URL endpoint to delete chat
         type: 'POST',
         data: {
           chat_id: selectedChatId,
