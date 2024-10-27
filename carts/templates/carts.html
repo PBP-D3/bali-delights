@@ -10,12 +10,12 @@
 
 {% if not items %}
   <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-40 mx-auto text-center max-w-7xl md:pt-6 lg:pt-0">
-    <div >
+    <div>
       {% include "icons/emptycart_icon.html" %}
     </div>
     <div class="">
       <h4 class="mb-2 text-lg font-bold md:text-2xl">Looks like your cart is empty</h4>
-      <p class="text-sm md:text-base">Lets start shopping!</p>
+      <p class="text-sm md:text-base">Let's start shopping!</p>
     </div>
     <a href="/products" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
   </div>
@@ -27,11 +27,12 @@
 
     <div id="cart-items">
       {% for item in items %}
-      <div>
+      <div class="cart-item">
         <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}">
-        <p>{{ item.product_id.name }}</p>
+        <p>{{ item.product_id.name }} - Price: <span class="original-price">{{ item.price }}</span></p>
         <input type="number" value="{{ item.quantity }}" min="0" max="{{ item.product_id.stock }}" data-item-id="{{ item.id }}" class="quantity-input">
         <p>Subtotal: <span class="subtotal">{{ item.subtotal }}</span></p>
+        <button class="remove-item" data-item-id="{{ item.id }}">Remove</button>
       </div>
       {% endfor %}
     </div>
@@ -49,7 +50,6 @@
   </div>
 {% endif %}
 
-
 <script>
   document.querySelectorAll('.quantity-input').forEach(input => {
     input.addEventListener('change', event => {
@@ -64,7 +64,47 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          // Update the subtotal for this item
           event.target.closest('.cart-item').querySelector('.subtotal').textContent = data.subtotal;
+
+          // Recalculate the grand total
+          recalculateGrandTotal();
+        }
+      });
+    });
+  });
+
+  function recalculateGrandTotal() {
+    const subtotals = document.querySelectorAll('.subtotal');
+    let total = 0;
+    subtotals.forEach(subtotal => {
+      total += parseFloat(subtotal.textContent);
+    });
+    document.getElementById('total-price').textContent = total.toFixed(2); // Update total price
+  }
+
+  // Add event listener for remove buttons
+  document.querySelectorAll('.remove-item').forEach(button => {
+    button.addEventListener('click', event => {
+      const itemId = DOMPurify.sanitize(event.target.dataset.itemId);
+
+      fetch("{% url 'carts:remove_cart_item' %}", {
+        method: 'POST',
+        body: new URLSearchParams({ item_id: itemId }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (data.empty) {
+            // Reload the page if the cart is empty
+            location.reload();
+          } else {
+            // Remove the item from the cart display
+            event.target.closest('.cart-item').remove();
+            // Recalculate the grand total
+              recalculateGrandTotal();
+          }
         }
       });
     });
@@ -89,6 +129,7 @@
     .then(data => {
       if (data.success) {
         alert(`Order successful! Remaining balance: ${data.remaining_balance}`);
+        location.reload(); // Reload the page after successful order
       } else {
         alert(`Order failed: ${data.message}`);
       }
