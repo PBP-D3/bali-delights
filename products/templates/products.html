@@ -10,6 +10,14 @@
 {% include 'subnav.html' %}
 <h1>Product</h1>
 
+<!-- Search Bar -->
+<div>
+    <form method="GET" class="search-form">
+        <input type="text" name="search" placeholder="Search products..." class="search-input" value="{{ request.GET.search }}">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+</div>
+
 <!-- Filtering Form -->
 <div>
     <form method="GET" class="filter-form"><span>Sort by: </span>
@@ -215,6 +223,26 @@
         border-radius: 4px;  
         border: 1px solid #ccc;  
         background-color: #fff; 
+    }
+    .search-form {
+        margin-bottom: 20px;
+    }
+    .search-input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 200px;
+    }
+    .search-button {
+        padding: 5px 10px;
+        background-color: #5c543c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .search-button:hover {
+        background-color: #4a432c;
     }
     
 </style>
