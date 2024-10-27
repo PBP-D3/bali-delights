@@ -29,7 +29,7 @@
   </span>
 </div>
 
-<div class="flex flex-col gap-6 px-4 mx-auto w-max-7xl sm:px-28 md:gap-12 lg:gap-20">
+<div class="flex flex-col gap-6 px-16 mx-auto w-max-7xl md:px-12 lg md:gap-12 lg:gap-20 lg:px-28">
   <div class="p-6 mb-6 bg-white rounded-lg shadow">
     
     {% comment %} store details {% endcomment %}
@@ -74,9 +74,9 @@
         <a href="{% url 'products:product_detail' product.id %}">
           <div class="text-center h-[400px]">
             <h3 class="mb-2 text-lg font-bold h-14 line-clamp-2">{{ product.name }}</h3>
-            {% if product.image_url %}
+            {% if product.get_image %}
               <img 
-                src="{{ product.image_url }}" 
+                src="{{ product.get_image }}" 
                 alt="{{ product.name }}" 
                 class="object-cover w-full h-48 mb-4 rounded-md">
             {% else %} 

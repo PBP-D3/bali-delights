@@ -9,7 +9,7 @@
 
 {% block content %}
 <!-- Store Image and Navigation Buttons -->
-<div class="w-full px-6 pt-3 pb-8 mx-auto md:pb-20 store-details md:px-12 max-w-7xl">
+<div class="w-full px-20 pt-3 pb-8 mx-auto md:pb-20 store-details md:px-16 max-w-7xl lg:px-28">
   <!-- Navigation Buttons -->
   <ul class="flex items-center mt-4 mb-8 space-x-4 font-body ">
     <li class="text-base text-gray-500">
@@ -57,7 +57,7 @@
 
   <!-- Search Form -->
   <div class="mb-4">
-    <form id="searchForm" class="flex items-center w-full gap-2" method="GET" action="{% url 'stores:show_store_details' store.id %}">
+    <form id="searchForm" class="flex items-center w-full gap-2" method="GET" action="{% url 'stores:owner_store_view' store.id %}?owner_view=true">
      
       <input 
         type="text" 
@@ -81,8 +81,8 @@
         <a href="{% url 'products:product_detail' product.id %}">
           <div class="text-center">
             <h3 class="mb-2 text-lg font-bold line-clamp-2 h-14">{{ product.name }}</h3>
-            {% if product.image_url %}
-              <img src="{{ product.image_url }}" alt="{{ product.name }}" class="object-cover w-full h-48 mb-4 rounded-md">
+            {% if product.get_image %}
+              <img src="{{ product.get_image }}" alt="{{ product.name }}" class="object-cover w-full h-48 mb-4 rounded-md">
             {% else %}
               <p class="h-48 mb-4 text-sm text-gray-500 bg-black/5">No image available</p>
             {% endif %}

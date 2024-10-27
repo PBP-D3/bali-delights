@@ -7,8 +7,8 @@
 
 {% block content %}
 <div class="flex flex-col items-center max-w-3xl gap-6 p-6 mx-auto border border-gray-300 rounded-lg md:flex-row">
-  {% if product.image_url %}
-    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full max-w-xs rounded-lg md:max-w-sm">
+  {% if product.get_image %}
+    <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full max-w-xs rounded-lg md:max-w-sm">
   {% endif %}
   <div class="flex flex-col gap-4 text-center md:text-left">
     <h1 class="text-2xl font-bold">{{ product.name }}</h1>
