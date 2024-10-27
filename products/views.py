@@ -42,7 +42,6 @@ def add_product(request):
     return JsonResponse({"success": False, "message": "Invalid request method."})
 
 def show_products(request, category=None):
-    print("test show")
     # Category filter
     if request.method == 'GET' and 'category' in request.GET:
         category = request.GET.get('category')

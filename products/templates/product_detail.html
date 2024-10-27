@@ -16,6 +16,11 @@
         <p><strong>Category:</strong> {{ product.category }}</p>
         <p><strong>Description:</strong> {{ product.description }}</p>
         <p><strong>Rating:</strong> ⭐️⭐️⭐️⭐️⭐️</p> <!-- Placeholder rating -->
+        <div class="button-container">
+            <a href="#">
+                <button class="add-to-cart-button">Add to cart</button>
+            </a>
+        </div>
         <p><strong>Created at:</strong> {{ product.created_at }}</p>
         <p><strong>Updated at:</strong> {{ product.updated_at }}</p>
     </div>
@@ -42,6 +47,24 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center; 
+        margin-top: 10px; 
+    }
+    .add-to-cart-button {
+        background-color: wheat; 
+        color: white; 
+        border: none; 
+        border-radius: 10px; 
+        padding: 10px 20px; 
+        cursor: pointer; 
+        font-size: 16px; 
+        transition: background-color 0.3s; 
+    }
+    .add-to-cart-button:hover {
+        background-color: #5C4033; 
     }
 </style>
 
