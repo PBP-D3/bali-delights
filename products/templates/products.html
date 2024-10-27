@@ -35,85 +35,6 @@
     </form>
 </div>
 
-<!-- Add Product Button -->
-{% if user.is_authenticated and user.role == "shop_owner" %}
-<div class="flex justify-center mb-4">
-    <button class="px-4 py-2 rounded-lg edit-btn" onclick="openModal()">Add New Product</button>
-</div>
-{% endif %}
-
-<!-- Modal structure -->
-<div id="productModal" class="fixed inset-0 z-50 flex items-start justify-center hidden overflow-y-auto bg-gray-800 bg-opacity-50">
-    <div class="w-full max-w-md mx-4 my-16 overflow-hidden bg-white rounded-lg shadow-lg">
-
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-4 border-b">
-            <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
-            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeModal()">
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="sr-only">Close modal</span>
-            </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="px-6 py-4 space-y-4 form-style">
-            <form id="ProductForm" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="name" name="name" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="description" name="description" rows="3" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-                    <input type="number" id="price" name="price" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
-                    <input type="number" id="stock" name="stock" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                    <select id="category" name="category" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
-                        {% for category in categories %}
-                        <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
-                            {{ category.0 }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Image Upload Field -->
-                <div class="mb-4">
-                    <label for="image_file" class="block text-sm font-medium text-gray-700">Upload Image</label>
-                    <input type="file" id="image_file" name="image_file" class="block w-full p-2 mt-1 text-gray-700 border border-gray-300 rounded-md" accept="image/*">
-                </div>
-
-                <div class="mb-4">
-                    <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL (optional)</label>
-                    <input type="text" id="image_url" name="image_url" class="block w-full p-2 mt-1 border border-gray-300 rounded-md">
-                </div>
-            </form>
-        </div>
-
-        <!-- Modal footer -->
-        <div class="flex justify-end p-4 border-t border-gray-200">
-            <button type="button" class="px-4 py-2 mr-2 font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600" onclick="closeModal()">Cancel</button>
-            <button type="submit" id="submitProductEntry" class="px-4 py-2 font-bold text-white bg-indigo-700 rounded-lg hover:bg-indigo-600" onclick="submitForm()">Save</button>
-        </div>
-    </div>
-</div>
-
 <!-- Product card -->
 <div class="product-grid">
     {% for product in products %}
@@ -131,16 +52,7 @@
                 Rating: <span style="color: gold;">{{ product.average_rating|floatformat:2|default:"0" }} / 5 </span>
             </div>
         </a>
-        {% if user.is_authenticated and user.role == "shop_owner" %}
-        <div class="flex justify-between mt-4 button-group">
-            <a href="{% url 'products:edit_product' product.id %}">
-                <button class="px-4 py-2 rounded-lg edit-btn">Edit</button>
-            </a>
-            <a href="javascript:void(0);" onclick="deleteProduct({{ product.id }})">
-                <button class="px-4 py-2 rounded-lg delete-btn">Delete</button>
-            </a>
-        </div>
-        {% endif %}
+    
     </div>
     {% endfor %}
 </div>
@@ -170,7 +82,7 @@
         transition: transform 0.2s;
     }
     .product-card:hover {
-        transform: scale(1.05);
+        transform: scale(1.00);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .card-content {
