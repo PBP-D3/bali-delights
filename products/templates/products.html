@@ -8,8 +8,6 @@
 
 {% block content %}
 {% include 'subnav.html' %}
-<h1>Product</h1>
-
 <!-- Search Bar -->
 <div>
     <form method="GET" class="search-form">
@@ -124,7 +122,7 @@
                 {% endif %}
                 <p class="product-price">Price: {{ product.price }}</p>
                 <p class="product-category">Category: {{ product.category }}</p>
-                <p><span class="rating-placeholder">Total reviews:</span> {{ product.total_likes }}</p>
+                Rating: <span style="color: gold;">{{ product.average_rating|floatformat:2|default:"0" }} / 5 </span>
             </div>
         </a>
         {% if user.is_authenticated and user.role == "shop_owner" %}
@@ -247,39 +245,52 @@
     
 </style>
 <script>
-    function openModal() {
-        document.getElementById('productModal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-        document.getElementById('productModal').classList.add('hidden');
-    }
-
     function submitForm() {
         const formData = new FormData(document.getElementById('ProductForm'));
-        
+
         fetch("{% url 'products:add_product' %}", {
-            method: "POST",
+            method: 'POST',
+            body: formData,
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
             },
-            body: formData,
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
                 closeModal();
-                location.reload();
+                addProductToList(data.product);
             } else {
-                alert('Failed to add product: ' + JSON.stringify(data.errors));
+                alert('Error: ' + JSON.stringify(data.errors));
             }
         })
         .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred. Please try again.");
+            console.error('Error:', error);
         });
     }
 
+    function addProductToList(product) {
+        const productGrid = document.querySelector('.product-grid');
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card bg-gray-100';
+        productCard.innerHTML = `
+            <a href="/products/${product.id}/">
+                <div class="card-content">
+                    <h3 class="product-name">${product.name}</h3>
+                    ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="product-image">` : `<p>No image available</p>`}
+                    <p class="product-price">Price: ${product.price}</p>
+                    <p class="product-category">Category: ${product.category}</p>
+                </div>
+            </a>
+        `;
+        productGrid.appendChild(productCard);
+    }
+    function openModal() {
+        document.getElementById('productModal').classList.remove('hidden');
+    }
+    
+    function closeModal() {
+        document.getElementById('productModal').classList.add('hidden');
+    }
 </script>
 {% endblock content %}

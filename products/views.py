@@ -8,23 +8,32 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 from django.http import JsonResponse
-from django.db.models import Count
+from django.db.models import Avg
 
 @login_required
+@require_POST
 def add_product(request):
-    if request.user.role != "shop_owner":
-        return JsonResponse({"success": False, "message": "Permission denied."})
-
     form = ProductForm(request.POST)
-
+    
     if form.is_valid():
-        new_product = form.save(commit=False)
-        new_product.store_id = request.user.store  
-        new_product.save() 
+        product = form.save(commit=False)
+        product.store_id = request.user.store  # Assuming the user has a store associated
+        product.save()
+        
+        # Prepare the response data
+        response_data = {
+            'id': product.id,
+            'name': product.name,
+            'description': product.description,
+            'price': str(product.price),
+            'stock': product.stock,
+            'category': product.category,
+            'image_url': product.image_url,
+            'created_at': product.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return JsonResponse({'success': True, 'product': response_data})
 
-        return JsonResponse({"success": True, "message": "Product added successfully!"})
-
-    return JsonResponse({"success": False, "message": "Invalid data.", "errors": form.errors})
+    return JsonResponse({'success': False, 'errors': form.errors})
 
 def show_products(request, category=None):
     # Category filter
@@ -33,7 +42,7 @@ def show_products(request, category=None):
 
     search_query = request.GET.get('search', '')
     
-    products = Product.objects.all()
+    products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
 
     if category:
         products = products.filter(category=category)
@@ -41,14 +50,13 @@ def show_products(request, category=None):
     if search_query:
         products = products.filter(name__icontains=search_query)
 
-    # Sort products by price if specified in the query parameter
-    sort_order = request.GET.get('sort', 'asc')  # Default sort is ascending
+    sort_order = request.GET.get('sort', 'id')
     if sort_order == 'desc':
         products = products.order_by('-price')
-    else:
+    elif sort_order == 'asc':
         products = products.order_by('price')
-        
-    products = products.annotate(total_likes=Count('review'))
+    else:
+        products = products.order_by('id') 
 
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
