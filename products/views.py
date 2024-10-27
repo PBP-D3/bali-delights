@@ -9,31 +9,21 @@ from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 from django.http import JsonResponse
 from django.db.models import Avg
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+import os
 
 @login_required
 @require_POST
 def add_product(request):
-    form = ProductForm(request.POST)
-    
-    if form.is_valid():
-        product = form.save(commit=False)
-        product.store_id = request.user.store  # Assuming the user has a store associated
-        product.save()
-        
-        # Prepare the response data
-        response_data = {
-            'id': product.id,
-            'name': product.name,
-            'description': product.description,
-            'price': str(product.price),
-            'stock': product.stock,
-            'category': product.category,
-            'image_url': product.image_url,
-            'created_at': product.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-        }
-        return JsonResponse({'success': True, 'product': response_data})
-
-    return JsonResponse({'success': False, 'errors': form.errors})
+    if request.method == "POST" and request.is_ajax():
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"success": True})
+        else:
+            return JsonResponse({"success": False, "message": "Form validation error."})
+    return JsonResponse({"success": False, "message": "Invalid request."})
 
 def show_products(request, category=None):
     # Category filter
