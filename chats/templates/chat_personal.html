@@ -9,26 +9,25 @@
 {% include 'navbar.html' %}
 
 <div class="flex flex-col h-[calc(100vh-10rem)] items-center w-full">
-  <div class="w-full bg-white shadow p-3 flex items-center justify-between max-w-6xl">
-    <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">Back</a>
+  <div class="flex items-center justify-between w-full max-w-6xl p-3 bg-white shadow">
+    <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-4 py-2 rounded hover:bg-[#A4896C] text-sm">Back</a>
     <div class="flex items-center space-x-2">
       {% if store.photo and not cust_name %}
-        <img class="w-8 h-8 rounded-full" src="{{ store.photo.url }}" alt="{{ store.name }}" />
       {% endif %}
-      <span class="font-medium text-gray-800 text-sm">{% if not cust_name %}{{ store.name }}{% else %}{{ cust_name }}{% endif %}</span>
+      <span class="text-xl font-medium text-gray-800">{% if not cust_name %}{{ store.name }}{% else %}{{ cust_name }}{% endif %}</span>
     </div>
     <div class="w-12"></div>
   </div>
 
   <div id="messageList" class="flex-1 w-full max-w-6xl p-4 overflow-y-auto bg-gray-100"></div>
 
-  <div class="w-full max-w-6xl bg-white p-3 border-t border-gray-200">
+  <div class="w-full max-w-6xl p-3 bg-white border-t border-gray-200">
     <form id="chatForm" method="POST" class="flex space-x-2">
       {% csrf_token %}
       <input type="text" name="message" id="messageInput" placeholder="Type a message"
-             class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+             class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
       <button type="submit" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2.94 2.94a1.5 1.5 0 012.12 0l8.49 8.49a1.5 1.5 0 010 2.12l-2.12 2.12a1.5 1.5 0 01-2.12 0L2.94 5.06a1.5 1.5 0 010-2.12zm0 8.49l3.54 3.54-3.54-3.54z" />
         </svg>
       </button>
@@ -36,13 +35,13 @@
   </div>
 </div>
 
-<div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg w-full max-w-md p-6">
-    <h3 class="text-2xl font-semibold mb-4">Edit Message</h3>
-    <textarea id="editMessageContent" class="w-full p-2 border border-gray-300 rounded-lg mb-4" rows="3"></textarea>
+<div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-800 bg-opacity-50">
+  <div class="w-full max-w-md p-6 bg-white rounded-lg">
+    <h3 class="mb-4 text-2xl font-semibold">Edit Message</h3>
+    <textarea id="editMessageContent" class="w-full p-2 mb-4 border border-gray-300 rounded-lg" rows="3"></textarea>
     <div class="flex justify-end space-x-2">
-      <button id="saveEditBtn" class="bg-secondary text-white px-4 py-2 rounded">Save</button>
-      <button onclick="closeEditModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+      <button id="saveEditBtn" class="px-4 py-2 text-white rounded bg-secondary">Save</button>
+      <button onclick="closeEditModal()" class="px-4 py-2 text-white bg-gray-400 rounded">Cancel</button>
     </div>
   </div>
 </div>
@@ -74,7 +73,7 @@
             `;
             $('#messageList').append(messageItem);
           });
-          scrollToBottom();
+          //scrollToBottom();
 
           // Attach right-click event for edit
           $('.message-bubble').on('contextmenu', function(event) {
@@ -93,7 +92,7 @@
     }
 
     loadMessages();
-    setInterval(loadMessages, 1000);
+    setInterval(loadMessages, 2000);
 
     function closeEditModal() {
       $('#editModal').addClass('hidden');
