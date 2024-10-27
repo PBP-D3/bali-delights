@@ -25,14 +25,17 @@ Selain itu, aplikasi ini memiliki fitur **e-commerce**, di mana pengguna dapat m
 ### Manfaat Aplikasi Bali Delights
 
 1. **Rekomendasi Toko dan Produk Terbaik**
+
    - Bali Delights membantu pengguna menemukan toko-toko terbaik yang menawarkan suvenir khas Bali dengan kualitas tinggi.
    - Pengguna dapat melihat ulasan, penilaian, dan deskripsi detail mengenai produk yang ditawarkan di berbagai toko, sehingga mereka dapat memilih dengan lebih percaya diri.
 
 2. **Mendukung Pengrajin Lokal dan UMKM di Bali**
+
    - Aplikasi ini membantu mempromosikan dan memberdayakan para pengrajin lokal dengan memberi mereka platform untuk menjual hasil karya mereka. Hal ini berdampak positif bagi perekonomian lokal, terutama bagi pengrajin kecil dan menengah.
    - Dengan berfokus pada produk buatan tangan dan bernilai budaya tinggi, Bali Delights turut menjaga kelestarian seni dan kerajinan tradisional Bali.
 
 3. **Fitur E-commerce yang Nyaman**
+
    - Pengguna dapat melakukan pembelian suvenir dengan mudah melalui fitur e-commerce yang tersedia di aplikasi. Semua proses transaksi, mulai dari pemilihan produk hingga pembayaran, dilakukan dengan aman dan nyaman.
    - Aplikasi ini mendukung pembayaran digital, yang memudahkan wisatawan asing untuk membeli produk tanpa perlu khawatir tentang konversi mata uang atau metode pembayaran.
 
@@ -44,30 +47,35 @@ Dengan **Bali Delights**, pengalaman mendapatkan suvenir dari Bali menjadi lebih
 ## III. Daftar Modul yang Akan Dikembangkan dalam Aplikasi Bali Delights
 
 1. **Modul Toko**
+
    - Pengelolaan data toko (tambah, edit, hapus).
    - Menampilkan informasi toko (nama, lokasi, deskripsi, jam buka).
    - Fitur pencarian dan filter untuk menemukan toko berdasarkan kategori atau lokasi.
    - Fitur rekomendasi toko.
 
 2. **Modul Produk**
+
    - Pengelolaan data produk (tambah, edit, hapus).
    - Menampilkan detail produk (nama, deskripsi, harga, foto, kategori).
    - Fitur pencarian dan filter untuk menemukan produk berdasarkan kategori, harga, atau popularitas.
    - Fitur stok produk untuk mengelola ketersediaan barang.
 
 3. **Modul Review**
+
    - Pengguna dapat memberikan ulasan dan rating untuk produk dan toko.
    - Menampilkan ulasan pengguna (komentar, rating, tanggal).
    - Fitur moderasi untuk mengelola dan menyetujui ulasan yang masuk.
    - Statistik ulasan untuk setiap produk dan toko.
 
 4. **Modul Keranjang**
+
    - Menambahkan produk ke dalam keranjang belanja.
    - Mengelola isi keranjang (tambah, hapus, ubah jumlah produk).
    - Menghitung total biaya dan menampilkan rincian pesanan.
    - Fitur checkout untuk memproses pembayaran.
 
 5. **Modul Analytics dan Forms Recommendation System**
+
    - Menganalisis data penjualan (total penjualan, produk terlaris, dll.).
    - Laporan interaksi pengguna dengan produk dan toko (like, reviews, dll.).
    - Menyediakan insights untuk pengembangan bisnis dan strategi pemasaran.
@@ -75,11 +83,12 @@ Dengan **Bali Delights**, pengalaman mendapatkan suvenir dari Bali menjadi lebih
    - Forms juga akan berpengaruh kepada insights yang didapat dari modul analytics.
 
 6. **Modul Pengguna**
+
    - Pendaftaran dan autentikasi pengguna (login, logout, registrasi).
    - Profil pengguna (pengaturan akun, preferensi, dan informasi pribadi).
    - Riwayat pembelian dan transaksi.
    - Pengelolaan wishlist atau daftar favorit.
-  
+
 7. **Modul Chat dengan Penjual**:
    - Membuat chat baru dengan penjual dari halaman produk atau toko.
    - Pembeli bisa chat dengan penjual untuk menanyakan mengenai produk dan pengiriman.
@@ -101,13 +110,16 @@ Sebagai pelanggan, pengguna aplikasi Bali Delights memiliki peran utama dalam me
 #### Authorizations:
 
 1. **Menjelajahi Produk**
+
    - Pelanggan dapat mencari dan menjelajahi berbagai kategori suvenir yang tersedia, mulai dari kerajinan tangan, pakaian tradisional, hingga perhiasan khas Bali.
 
 2. **Membaca dan Menulis Ulasan**
+
    - Pelanggan dapat melihat ulasan dan penilaian dari pengguna lain tentang produk dan toko, yang membantu mereka membuat keputusan yang lebih baik saat berbelanja.
    - Setelah melakukan pembelian, pelanggan didorong untuk memberikan ulasan dan rating mengenai produk dan pengalaman berbelanja mereka, membantu penjual dan pelanggan lainnya.
 
 3. **Membuat Pembelian**
+
    - Pelanggan dapat menambahkan produk ke keranjang belanja dan melakukan pembayaran.
 
 4. **Analytics**
@@ -120,12 +132,15 @@ Penjual di aplikasi Bali Delights berfungsi sebagai penyedia produk suvenir yang
 #### Authorizations:
 
 1. **Mengelola Produk**
+
    - Penjual dapat menambahkan, mengedit, dan menghapus produk yang mereka tawarkan, termasuk menyertakan deskripsi, foto, dan harga.
 
 2. **Memperbarui Stok dan Harga**
+
    - Penjual harus memperbarui status stok dan harga produk secara berkala untuk memastikan informasi yang ditampilkan akurat.
 
 3. **Mengelola Ulasan dan Feedback**
+
    - Penjual dapat melihat ulasan yang diberikan oleh pelanggan dan merespons feedback untuk meningkatkan layanan dan kualitas produk.
 
 4. **Analytics**
