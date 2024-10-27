@@ -11,7 +11,7 @@
 <h1>Product</h1>
 
 <!-- Filtering Form -->
- <div>
+<div>
     <form method="GET" class="filter-form"><span>Sort by: </span>
         <select name="category" class="dropdown" onchange="this.form.submit()">
             <option value="">Select Category</option>
@@ -31,13 +31,78 @@
 
 <!-- Add Product Button -->
 {% if user.is_authenticated and user.role == "shop_owner" %}
-<div class="add-product-button">
-    <a href="#">
-    <button class="edit-btn rounded-lg px-4 py-2">Add New Product</button>
-    </a>
+<div class="flex justify-center mb-4">
+    <button class="edit-btn rounded-lg px-4 py-2" onclick="openModal()">Add New Product</button>
 </div>
 {% endif %}
 
+<!-- Modal structure -->
+<div id="productModal" class="hidden fixed inset-0 z-50 flex items-start justify-center bg-gray-800 bg-opacity-50 overflow-y-auto">
+    <div class="bg-white w-full max-w-md mx-4 my-16 rounded-lg shadow-lg overflow-hidden">
+
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
+            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeModal()">
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="px-6 py-4 space-y-4 form-style">
+            <form id="ProductForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <input type="number" id="price" name="price" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+                    <input type="number" id="stock" name="stock" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="category" name="category" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                        {% for category in categories %}
+                        <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
+                            {{ category.0 }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL</label>
+                    <input type="url" id="image_url" name="image_url" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="flex justify-end p-4 border-t border-gray-200">
+            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2" onclick="closeModal()">Cancel</button>
+            <button type="submit" id="submitProductEntry" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg" onclick="submitForm()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Product card -->
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card bg-gray-100">
@@ -46,7 +111,7 @@
                 <h3 class="product-name">{{ product.name }}</h3>
                 {% if product.image_url %}
                     <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
+                {% else %} 
                     <p>No image available</p>
                 {% endif %}
                 <p class="product-price">Price: {{ product.price }}</p>
@@ -104,7 +169,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
-        -webkit-line-clamp: 2; /* Show up to 2 lines */
+        -webkit-line-clamp: 2; 
         -webkit-box-orient: vertical;
     }
     .product-price, .product-category, .rating-placeholder {
@@ -153,4 +218,39 @@
     }
     
 </style>
+<script>
+    function openModal() {
+        document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function submitForm() {
+        const formData = new FormData(document.getElementById('ProductForm'));
+        
+        fetch("{% url 'products:add_product' %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: new FormData(document.querySelector('#ProductForm')),
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Product added successfully!');
+                closeModal();
+                location.reload(); // Refresh to display the new product
+            } else {
+                alert('Failed to add product');
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        });
+    }
+
+</script>
 {% endblock content %}
