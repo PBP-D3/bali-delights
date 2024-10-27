@@ -7,7 +7,7 @@
     {% if user_reviews %}
         <div class="flex flex-col space-y-4 items-center space-y-4" id="reviews-list">
             {% for review in user_reviews %}
-                <div class="review-item bg-white shadow-md rounded-lg p-6 border border-gray-200 flex space-x-4 w-3/4" data-review-id="{{ review.id }}">
+                <div class="review-item bg-white shadow-md rounded-lg p-6 border border-secondary flex space-x-4 w-3/4" data-review-id="{{ review.id }}">
                     <div class="w-24 h-24 flex-shrink-0">
                         <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="w-full h-full object-cover rounded-md">
                     </div>
@@ -51,7 +51,7 @@
 
 <!-- Edit Review Modal -->
 <div id="editReviewModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-md w-1/2">
+    <div class="bg-white p-6 rounded-lg shadow-md w-1/2 border border-secondary ">
         <h2 class="text-xl font-semibold mb-4">Edit Review</h2>
         <form id="editReviewForm">
             {% csrf_token %}

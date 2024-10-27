@@ -123,6 +123,7 @@ def show_json(request, product_id):
     data = Review.objects.filter(product_id=product_id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
+@login_required
 def user_reviews(request):
     user_reviews = Review.objects.filter(user_id=request.user).select_related('product_id')
     
