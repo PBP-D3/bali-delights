@@ -12,18 +12,23 @@
     <!-- Messages Header -->
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-3xl font-bold text-gray-800">Messages</h2>
-        <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">+</button>
+
+        <!-- Button to Open Add Chat Modal -->
+        <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">
+            +
+        </button>
     </div>
 
     <!-- Search Input -->
     <div class="w-full mb-4">
-        <input type="text" id="searchMessages" placeholder="Search messages" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" id="searchMessages" placeholder="Search messages"
+               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
 
     <!-- Chat List Container -->
     <div id="chatList">
         {% for chat in chats %}
-        <div class="chat-item block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200 cursor-pointer" data-chat-id="{{ chat.store.id }}" oncontextmenu="showDeleteOption(event, {{ chat.store.id }})" ontouchstart="startLongPress(event, {{ chat.store.id }})">
+        <div class="chat-item block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200 cursor-pointer" data-chat-id="{{ chat.store.id }}" oncontextmenu="showDeleteOption(event, {{ chat.store.id }})">
             <a href="{% url 'chat_with_store' chat.store.id %}">
                 <div class="flex items-center space-x-3">
                     <img src="{{ chat.store.photo_url }}" alt="{{ chat.store.name }}" class="w-10 h-10 rounded-full">
@@ -49,11 +54,20 @@
 <div id="addChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-lg">
         <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat!</h3>
-        <input type="text" id="searchStores" placeholder="Search stores" class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <!-- Search Store Input -->
+        <input type="text" id="searchStores" placeholder="Search stores"
+               class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <!-- Store List -->
         <div id="storeList" class="space-y-2 max-h-60 overflow-y-auto">
             <!-- Store list populated here via AJAX -->
         </div>
-        <button onclick="closeAddChatModal()" class="absolute top-5 right-5 bg-secondary text-black rounded-full w-8 h-8 flex items-center justify-center">✕</button>
+
+        <!-- Close Button -->
+        <button onclick="closeAddChatModal()" class="absolute top-5 right-5 bg-secondary text-black rounded-full w-8 h-8 flex items-center justify-center">
+            ✕
+        </button>
     </div>
 </div>
 
@@ -71,73 +85,126 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-  let selectedChatId = null;
-  let pressTimer;
+  $(document).ready(function() {
+    let selectedChatId = null;
 
-  // Show delete confirmation on right-click or long press
-  function showDeleteOption(event, chatId) {
-    event.preventDefault();
-    selectedChatId = chatId;
-    $('#deleteChatModal').removeClass('hidden');
-  }
+    // Function to show delete confirmation modal on right-click
+    function showDeleteOption(event, chatId) {
+      event.preventDefault(); // Prevent the default context menu
+      selectedChatId = chatId; // Store the selected chat ID
+      $('#deleteChatModal').removeClass('hidden'); // Show delete confirmation modal
+    }
 
-  function startLongPress(event, chatId) {
-    pressTimer = setTimeout(function() {
-      showDeleteOption(event, chatId);
-    }, 700);  // 700 ms for long press
-  }
+    // Function to confirm delete
+    function confirmDeleteChat() {
+      if (selectedChatId) {
+        $.ajax({
+          url: `/chats/api/chats/${selectedChatId}/delete/`,  // The URL endpoint to delete chat
+          type: 'POST',
+          data: {
+            chat_id: selectedChatId,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function(response) {
+            if (response.success) {
+              $(`[data-chat-id="${selectedChatId}"]`).remove();  // Remove the chat item from the DOM
+              closeDeleteChatModal();
+              if ($('#chatList').children().length === 0) {
+                $('#noChatsMessage').show();
+              }
+            } else {
+              console.log("Error deleting chat:", response.error);
+            }
+          },
+          error: function(xhr, errmsg, err) {
+            console.log("AJAX error deleting chat:", errmsg);
+          }
+        });
+      }
+    }
 
-  // Cancel long press if touch ends or moves
-  document.addEventListener("touchend", function() {
-    clearTimeout(pressTimer);
-  });
-  document.addEventListener("touchmove", function() {
-    clearTimeout(pressTimer);
-  });
+    // Function to close delete chat modal
+    function closeDeleteChatModal() {
+      $('#deleteChatModal').addClass('hidden');
+      selectedChatId = null;
+    }
 
-  // Function to confirm delete
-  function confirmDeleteChat() {
-    if (selectedChatId) {
+    // Function to show the add chat modal
+    window.openAddChatModal = function() {
+      $('#addChatModal').removeClass('hidden');
+    }
+
+    // Function to close the add chat modal
+    window.closeAddChatModal = function() {
+      $('#addChatModal').addClass('hidden');
+    }
+
+    // Load and display stores dynamically (you already have this)
+    function loadStores(query = "") {
       $.ajax({
-        url: `/chats/api/chats/${selectedChatId}/delete/`,  // The URL endpoint to delete chat
+        url: '{% url "get_stores" %}',
+        type: 'GET',
+        data: { search: query },
+        success: function(response) {
+          $('#storeList').empty();
+          if (response.stores.length === 0) {
+            $('#storeList').append('<p class="text-gray-500 text-center">No stores found</p>');
+          } else {
+            $.each(response.stores, function(index, store) {
+              const storeItem = `
+                <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg hover:bg-gray-200 cursor-pointer" data-store-id="${store.id}">
+                  <img src="${store.photo_url || '/static/images/default_avatar.jpg'}" alt="Photo" class="w-10 h-10 rounded-full object-cover mr-4" />
+                  <div class="flex-grow">
+                    <span class="font-semibold text-gray-800">${store.name}</span>
+                  </div>
+                </div>
+              `;
+              $('#storeList').append(storeItem);
+            });
+          }
+        },
+        error: function(xhr, errmsg, err) {
+          console.log('Error loading stores:', errmsg);
+        }
+      });
+    }
+
+    // Load all stores on page load
+    loadStores();
+
+    // Search stores as the user types in the search box
+    $('#searchStores').on('keyup', function() {
+      const query = $(this).val();
+      loadStores(query);
+    });
+
+    // Handle store click to create chat and redirect
+    $('#storeList').on('click', 'div[data-store-id]', function() {
+      const storeId = $(this).data('store-id');
+      $.ajax({
+        url: '{% url "create_chat" %}',
         type: 'POST',
         data: {
-          chat_id: selectedChatId,
+          store_id: storeId,
           csrfmiddlewaretoken: '{{ csrf_token }}'
         },
         success: function(response) {
           if (response.success) {
-            $(`[data-chat-id="${selectedChatId}"]`).remove();  // Remove the chat item from the DOM
-            closeDeleteChatModal();
-            if ($('#chatList').children().length === 0) {
-              $('#noChatsMessage').show();
-            }
-          } else {
-            console.log("Error deleting chat:", response.error);
+            // Redirect to the chat with the selected store
+            window.location.href = `/chats/${response.chat_id}/`;
           }
         },
         error: function(xhr, errmsg, err) {
-          console.log("AJAX error deleting chat:", errmsg);
+          console.log('Error creating chat:', errmsg);
         }
       });
-    }
-  }
+    });
 
-  // Function to close delete chat modal
-  function closeDeleteChatModal() {
-    $('#deleteChatModal').addClass('hidden');
-    selectedChatId = null;
-  }
-
-  // Function to show the add chat modal
-  function openAddChatModal() {
-    $('#addChatModal').removeClass('hidden');
-  }
-
-  // Function to close the add chat modal
-  function closeAddChatModal() {
-    $('#addChatModal').addClass('hidden');
-  }
+    // Expose delete functions to window for global access
+    window.showDeleteOption = showDeleteOption;
+    window.confirmDeleteChat = confirmDeleteChat;
+    window.closeDeleteChatModal = closeDeleteChatModal;
+  });
 </script>
 
 {% endblock content %}

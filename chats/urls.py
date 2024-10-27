@@ -1,12 +1,9 @@
 from django.urls import path
-from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, add_chat, get_stores, create_chat, delete_chat, edit_message
+from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, get_stores, create_chat, delete_chat, edit_message
 
 urlpatterns = [
     # Main chat list page
     path('', list_chats, name='list_chats'),
-
-    # Page to add a new chat
-    path('add/', add_chat, name='add_chat'),
 
     # Specific chat view with store
     path('<int:store_id>/', chat_with_store, name='chat_with_store'),
