@@ -12,12 +12,10 @@
   <div class="w-full bg-white shadow p-3 flex items-center justify-between max-w-6xl">
     <a href="{% url 'list_chats' %}" class="bg-[#C6AC8F] text-white px-3 py-1 rounded hover:bg-[#A4896C] text-sm">Back</a>
     <div class="flex items-center space-x-2">
-      {% if store.photo %}
+      {% if store.photo and not cust_name %}
         <img class="w-8 h-8 rounded-full" src="{{ store.photo.url }}" alt="{{ store.name }}" />
-      {% else %}
-        <img class="w-8 h-8 rounded-full" src="{% static 'images/default_avatar.jpg' %}" alt="{{ store.name }}" />
       {% endif %}
-      <span class="font-medium text-gray-800 text-sm">{{ store.name }}</span>
+      <span class="font-medium text-gray-800 text-sm">{% if not cust_name %}{{ store.name }}{% else %}{{ cust_name }}{% endif %}</span>
     </div>
     <div class="w-12"></div>
   </div>
