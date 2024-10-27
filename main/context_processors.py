@@ -4,8 +4,8 @@ from django.templatetags.static import static
 
 def navbar_links(request):
     links = {
-        "home": {
-            "url": "/", 
+        "products": {
+            "url": "/products", 
             "filename": "home_icon.html",
             "user_only": False
         },
