@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import Chat, Message
-from stores.models import Store
+from stores.models import Store  # Adjust the import if the module path is correct
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.db.models import Max
@@ -20,45 +20,69 @@ def get_chat_messages(request, chat_id):
     message_data = []
     for message in messages:
         message_data.append({
-            'id': message.id,  # Include the message ID here
+            'id': message.id,
             'content': message.content,
             'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'sender_is_user': message.sender == request.user,  # Check if the sender is the current user
+            'sender_is_user': message.sender == request.user,
         })
 
     return JsonResponse({'messages': message_data})
 
-
 @login_required
 def list_chats(request):
     user = request.user
-    chats = Chat.objects.filter(sender=user) \
-        .annotate(last_message_time=Max('messages__timestamp')) \
-        .order_by('-last_message_time')
-
     chat_data = []
-    for chat in chats:
-        store = chat.store
-        # Get the last message content, if it exists
-        last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+
+    if user.role == "shop_owner":
+        # If the user is a shop owner, get stores they own
+        owned_stores = Store.objects.filter(owner_id=user.id)
         
-        chat_data.append({
-            'store': {
-                'id': store.id,
-                'name': store.name,
-                'photo_url': store.photo if store.photo else '/static/images/default_avatar.jpg',
-            },
-            'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
-            'last_message_content': last_message.content if last_message else ""
-        })
+        # Get chats associated with these stores
+        chats = Chat.objects.filter(store__in=owned_stores).annotate(last_message_time=Max('messages__timestamp')).order_by('-last_message_time')
+        
+        for chat in chats:
+            # Get the last message content and user details
+            last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+            chat_data.append({
+                'id':chat.id,
+                'user': {
+                    'id': chat.sender.id,
+                    'username': chat.sender.username,
+                },
+                'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
+                'last_message_content': last_message.content if last_message else ""
+            })
+
+    else:
+        # For normal users, get chats they initiated
+        chats = Chat.objects.filter(sender=user).annotate(last_message_time=Max('messages__timestamp')).order_by('-last_message_time')
+        
+        for chat in chats:
+            # Get the last message content
+            last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+            chat_data.append({
+                'id':chat.id,
+                'store': {
+                    'id': chat.store.id,
+                    'name': chat.store.name,
+                    'photo_url': chat.store.photo if chat.store.photo else '/static/images/default_avatar.jpg',
+                },
+                'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
+                'last_message_content': last_message.content if last_message else ""
+            })
 
     context = {'chats': chat_data}
     return render(request, 'chats.html', context=context)
 
-@login_required   
+User = get_user_model()
+
+@login_required
 def chat_with_store(request, store_id):
+    # Retrieve the store based on the provided store ID and make sure it matches the owner (logged-in user)
     store = get_object_or_404(Store, id=store_id)
-    chat, created = Chat.objects.get_or_create(sender=request.user, store=store)  # Create chat if it doesn't exist
+
+    # Retrieve or create a chat between the logged-in user and the store
+    chat, created = Chat.objects.get_or_create(sender=request.user, store=store)
     messages = Message.objects.filter(chat=chat).order_by('timestamp')
 
     return render(request, 'chat_personal.html', {
@@ -85,6 +109,7 @@ def send_message(request, chat_id):
 @login_required
 def get_stores(request):
     search_query = request.GET.get('search', '')
+    print(search_query)
 
     # Retrieve all stores or filter by search query
     if search_query:
@@ -109,22 +134,22 @@ def get_stores(request):
 def create_chat(request):
     if request.method == 'POST':
         store_id = request.POST.get('store_id')
+        print(store_id)
         store = get_object_or_404(Store, id=store_id)
-
-        # Check if a chat already exists with this store
-        chat, created = Chat.objects.get_or_create(sender=request.user, store=store)
-
+        print(store.name)
+        
         # Return the chat ID so the frontend can redirect
-        return JsonResponse({'success': True, 'chat_id': chat.id})
+        return JsonResponse({'success': True, 'store_id': store.id})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @login_required
 @csrf_exempt
 def delete_chat(request, chat_id):
+    print(chat_id)
     if request.method == "POST":
         try:
-            chat = get_object_or_404(Chat, id=chat_id, sender=request.user)
+            chat = get_object_or_404(Chat, id=chat_id)
             chat.delete()
             return JsonResponse({"success": True})
         except Chat.DoesNotExist:
@@ -150,7 +175,27 @@ def edit_message(request, message_id):
             return JsonResponse({"success": True})
         
         except Exception as e:
-            print(f"Error in edit_message view: {e}")  # This will log the exact issue in the console
+            print(f"Error in edit_message view: {e}")
             return JsonResponse({"success": False, "error": "Server error occurred"}, status=500)
 
     return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+
+@login_required
+def chats_view(request):
+    user = request.user
+    chats = None
+
+    if user.role == "shop_owner":
+        # Retrieve all stores owned by this shop owner
+        owner_stores = Store.objects.filter(owner=user)  # Retrieve stores based on the owner's ID
+        # Retrieve all chats associated with these stores
+        chats = Chat.objects.filter(store__in=owner_stores).select_related('sender', 'store')
+    else:
+        # For normal users, retrieve only the chats they initiated
+        chats = Chat.objects.filter(sender=user).select_related('store')
+
+    context = {
+        'chats': chats,
+        'user': user
+    }
+    return render(request, 'chats.html', context)
