@@ -2,22 +2,45 @@
 {% load static %}
 
 {% block meta %}
-  <title>Main</title>
+  <title>Receipt</title>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-  <h1>Receipt</h1>
-  <p>Transaction ID: {{ cart.id }}</p>
-  <p>Purchase Date: {{ cart.created_at }}</p>
-  <div>
+<div class="container px-6 mx-auto my-10 md:px-10 xl:px-20 max-w-7xl">
+  <h1 class="text-2xl font-bold">Receipt</h1>
+  <p class="mt-2 text-lg">Transaction ID: <span class="font-semibold">{{ order.id }}</span></p>
+  <p class="text-lg">Purchase Date: <span class="font-semibold">{{ order.created_at }}</span></p>
+  
+  <div class="p-6 mt-5 bg-white rounded-lg shadow-md">
+    <h2 class="mb-4 text-xl font-bold">Order Details</h2>
+    
     {% for item in items %}
-      <div>
-        <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}">
-        <p>{{ item.product_id.name }} x {{ item.quantity }}</p>
-        <p>Total: {{ item.subtotal }}</p>
+      <div class="flex items-center justify-between py-2 border-b border-gray-300">
+        <div class="flex items-center gap-4">
+          <img src="{{ item.product.image_url|default:'static/images/fallback_image.png' }}" 
+               alt="{{ item.product.name }}" 
+               height="90" width="90"
+               class="rounded-md" 
+               onerror="this.onerror=null; this.src='static/images/fallback_image.png';">
+          <div>
+            <p class="font-bold">{{ item.product.name }}</p>
+            <p class="">Qty: {{ item.quantity }}</p>
+            <p>Total: <span class="font-semibold">${{ item.subtotal }}</span></p>
+          </div>
+        </div>
       </div>
+    {% empty %}
+      <p>No items found for this order.</p>
     {% endfor %}
-    <p>Total Amount: {{ cart.total_price }}</p>
+    
+    <div class="mt-4">
+      <p class="flex justify-between text-xl"><span>Total Amount:</span> <span class="font-semibold">${{ order.total_price }}</span></p>
+    </div>
   </div>
+
+  <div class="flex justify-center mt-6">
+    <a href="/carts" class="px-8 py-3 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f]">Back to Cart</a>
+  </div>
+</div>
 {% endblock content %}
