@@ -63,7 +63,7 @@ def register_store(request):
 def edit_store(request, id):
     store = get_object_or_404(Store, id=id)
     if request.method == 'POST':
-        form = StoreForm(request.POST, instance=store)
+        form = StoreForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
             form.save()
             return redirect('stores:owner_store_view', store.id)
