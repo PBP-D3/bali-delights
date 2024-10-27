@@ -21,6 +21,10 @@
                 <button class="add-to-cart-button">Add to cart</button>
             </a>
         </div>
+        {% comment %} <a href="{% url 'reviews:product_reviews' product.id %}" class="ml-2 justify-self-start"> {% endcomment %}
+        <a href="#" class="ml-2 justify-self-start">
+            <input type="button" value="Check Reviews" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        </a>
         <p><strong>Created at:</strong> {{ product.created_at }}</p>
         <p><strong>Updated at:</strong> {{ product.updated_at }}</p>
     </div>
