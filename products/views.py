@@ -8,38 +8,23 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 from django.http import JsonResponse
+from django.db.models import Count
 
 @login_required
-@require_POST
 def add_product(request):
-    print("test add")
     if request.user.role != "shop_owner":
         return JsonResponse({"success": False, "message": "Permission denied."})
 
-    if request.method == "POST":
-        print(request.POST)
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        stock = request.POST.get("stock")
-        category = request.POST.get("category")
-        image_url = request.POST.get("image_url")
-        user = request.user  
+    form = ProductForm(request.POST)
 
-        new_product = Product(
-            name=name,
-            description=description,
-            price=price,
-            stock=stock,
-            category=category,
-            image_url=image_url,
-            store_id=user.store 
-        )
-        new_product.save()
+    if form.is_valid():
+        new_product = form.save(commit=False)
+        new_product.store_id = request.user.store  
+        new_product.save() 
 
         return JsonResponse({"success": True, "message": "Product added successfully!"})
 
-    return JsonResponse({"success": False, "message": "Invalid request method."})
+    return JsonResponse({"success": False, "message": "Invalid data.", "errors": form.errors})
 
 def show_products(request, category=None):
     # Category filter
@@ -57,6 +42,8 @@ def show_products(request, category=None):
         products = products.order_by('-price')
     else:
         products = products.order_by('price')
+        
+    products = products.annotate(total_likes=Count('review'))
 
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
