@@ -6,7 +6,7 @@ __pycache__
 db.sqlite3
 media
 # Ignore database files
-*.sqlite3  # Adjust this to your specific database file extension if necessary
+*.sqlite3  
 .env
 
 # Ignore Python bytecode and __pycache__ directories
