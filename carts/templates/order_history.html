@@ -8,13 +8,33 @@
 {% endblock meta %}
 
 {% block content %}
-  <h1>Order History</h1>
-  {% for cart in carts %}
-    <div>
-      <p>Transaction ID: {{ cart.id }}</p>
-      <p>Purchase Date: {{ cart.created_at }}</p>
-      <p>Total Price: {{ cart.total_price }}</p>
-      <a href="{% url 'carts:receipt' cart.id %}">View Receipt</a>
-    </div>
-  {% endfor %}
-{% endblock content %}
+<div class="container mx-auto my-5">
+  <h1 class="text-2xl font-bold">Order History</h1>
+
+  {% if orders.count > 0 %}
+  <table class="min-w-full mt-5 divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Order Date</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Total Price</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {% for order in orders %}
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap">{{ order.created_at }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">${{ order.total_price }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <a href="{% url 'carts:receipt_view' order.id %}">View Receipt</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% else %}
+  <p>No orders found.</p>
+  {% endif %}
+</div>
+{% endblock %}
