@@ -10,45 +10,73 @@
 
 {% if not items %}
   <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-40 mx-auto text-center max-w-7xl md:pt-6 lg:pt-0">
-    <div >
+    <div>
       {% include "icons/emptycart_icon.html" %}
     </div>
     <div class="">
       <h4 class="mb-2 text-lg font-bold md:text-2xl">Looks like your cart is empty</h4>
-      <p class="text-sm md:text-base">Lets start shopping!</p>
+      <p class="text-sm md:text-base">Let's start shopping!</p>
     </div>
-    <a href="/products" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
+    <a href="/carts/products" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
   </div>
 {% else %}
-  <div>
-    <h1>Shopping Cart</h1>
-    <p>Username: {{ user.username }}</p>
-    <p>Current Balance: {{ user.money }}</p>
+  <div class="flex justify-between gap-10 px-6 py-10 mx-auto max-md:gap-[120px] w-min-fit max-md:flex-col max-w-7xl md:py-10 md:px-10">
 
-    <div id="cart-items">
-      {% for item in items %}
-      <div>
-        <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}">
-        <p>{{ item.product_id.name }}</p>
-        <input type="number" value="{{ item.quantity }}" min="0" max="{{ item.product_id.stock }}" data-item-id="{{ item.id }}" class="quantity-input">
-        <p>Subtotal: <span class="subtotal">{{ item.subtotal }}</span></p>
+    {% comment %} left side {% endcomment %}
+    <div class="flex flex-col md:w-[60%] max-h-screen gap-6">
+      <div class="font-bold">
+        <h1 class="mb-2 text-2xl font-bold">Shopping Cart</h1>
+        <p class="">Username: {{ user.username }}</p>
+        <p class="">BP: ${{ user.money }}</p>
       </div>
-      {% endfor %}
-    </div>
-    
-    <button id="explore-products">Explore More Products</button>
 
-    <div>
-      <h2>Order Summary</h2>
-      <p>Total: <span id="total-price">{{ total_price }}</span></p>
-      <form id="order-form" method="post">
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-        <button type="submit">Submit Order</button>
-      </form>
+      {% comment %} for loop {% endcomment %}
+      <div id="cart-items" class="flex flex-col gap-10 p-4 overflow-y-scroll shadow-md rounded-xl">
+      {% for item in items %}
+        <div class="flex gap-4 rounded-md shadow-md cart-item shadow-accent">
+          <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}" height="90" width="90" class="self-center rounded-md" >
+          <div class="flex justify-between py-6">
+            <div class="flex flex-col gap-2">
+              <p class="font-bold">{{ item.product_id.name }} </p>
+              <p>Price: <span class="original-price">${{ item.price }}</p>
+                <span class="flex items-center gap-4">
+                  <p>QTY: </p>
+                  <input type="number" value="{{ item.quantity }}" min="0" max="{{ item.product_id.stock }}" data-item-id="{{ item.id }}" class="quantity-input w-fit border-[1px] border-accent p-1 rounded">
+                  <button class="flex items-center justify-center w-6 h-6 p-4 transition-all rounded-md remove-item bg-accent text-white1 hover:opacity-80" data-item-id="{{ item.id }}">X</button>
+                </span>
+            </div>
+          
+          </div>
+          <div class="flex h-[100%] gap-1 w-[160px] justify-end items-center text-end pr-2 max-md:py-16">
+             <p>Subtotal: <span class="h-full subtotal">${{ item.subtotal }}</span></p>
+          </div>
+        </div>
+        <div class="w-full h-px border border-gray-500 separator-after"> </div>
+        {% endfor %}
+      </div>
+
+      {% comment %} button {% endcomment %}
+      <div>
+        <button id="explore-products" class="w-full py-4 text-sm font-bold transition rounded-lg text-white1 bg-secondary hover:opacity-90 ring-1 ring-accent px-auto">Explore More Products</button>
+      </div>
     </div>
+
+    {% comment %} right side {% endcomment %}
+    <div class="flex flex-col md:w-[40%]  gap-10  p-10 bg-white rounded-2xl border-px border h-fit shadow-md" >
+      <h2 class="text-lg">Order Summary</h2>
+      <div class="flex flex-col gap-8">
+
+        <p class="flex justify-between w-full text-xl"><span >Total:</span> <span id="total-price">${{ total_price }}</span></p>
+        <form id="order-form" method="post" class="flex flex-col gap-8">
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+          <button type="submit" class="w-full py-4 text-center transition-opacity rounded-lg px-auto bg-black1 text-white1 hover:opacity-85">Submit Order</button>
+        </form>
+      </div>
+    </div>
+
+    
   </div>
 {% endif %}
-
 
 <script>
   document.querySelectorAll('.quantity-input').forEach(input => {
@@ -64,7 +92,54 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          // Update the subtotal for this item
           event.target.closest('.cart-item').querySelector('.subtotal').textContent = data.subtotal;
+
+          // Recalculate the grand total
+          recalculateGrandTotal();
+        }
+      });
+    });
+  });
+
+  function recalculateGrandTotal() {
+    const subtotals = document.querySelectorAll('.subtotal');
+    let total = 0;
+    subtotals.forEach(subtotal => {
+      total += parseFloat(subtotal.textContent);
+    });
+    document.getElementById('total-price').textContent = total.toFixed(2); // Update total price
+  }
+
+  // Add event listener for remove buttons
+  document.querySelectorAll('.remove-item').forEach(button => {
+    button.addEventListener('click', event => {
+      const itemId = DOMPurify.sanitize(event.target.dataset.itemId);
+      fetch("{% url 'carts:remove_cart_item' %}", {
+        method: 'POST',
+        body: new URLSearchParams({ item_id: itemId }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (data.empty) {
+            // Reload the page if the cart is empty
+            location.reload();
+          } else {
+            const cartItem = event.target.closest('.cart-item');
+            const separator = cartItem.nextElementSibling;
+            
+            // Remove the cart item and the separator if it exists
+            if (separator && separator.classList.contains('separator-after')) {
+              separator.remove();
+            }
+            cartItem.remove();
+            // Remove the item from the cart display
+            event.target.closest('.cart-item').remove();
+            // Recalculate the grand total
+              recalculateGrandTotal();
+          }
         }
       });
     });
@@ -89,6 +164,7 @@
     .then(data => {
       if (data.success) {
         alert(`Order successful! Remaining balance: ${data.remaining_balance}`);
+        location.reload(); // Reload the page after successful order
       } else {
         alert(`Order failed: ${data.message}`);
       }

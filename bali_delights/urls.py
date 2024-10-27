@@ -17,14 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('chats/', include('chats.urls')),
     path('reviews/', include('reviews.urls')),
-    path('products/', include('products.urls')),
+    path('products/', include('products.urls', namespace='products')),
     path('carts/', include('carts.urls', namespace='carts')),
     path('stores/', include('stores.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

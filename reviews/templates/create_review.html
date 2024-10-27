@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="create-review max-w-2xl mx-auto mt-10">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Leave a Review for {{ product.name }}</h1>
+    
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        <div>
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+            {{ form.comment.errors }}
+        </div>
+        
+        <div>
+            {{ form.rating.label_tag }} (1 to 5)
+            {{ form.rating }}
+            {{ form.rating.errors }}
+        </div>
+        
+        <div class="grid grid-cols-2">
+            <a href="{% url 'reviews:product_reviews' product.id %}" class="ml-2 justify-self-start">
+                <input type="button" value="Cancel" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            </a>
+            <input type="submit" value="Submit Review" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 max-w-40 justify-self-end">
+        </div>
+    </form>
+</div>
+{% endblock %}

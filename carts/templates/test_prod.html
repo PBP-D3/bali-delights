@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+  <title>Main</title>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+{% endblock meta %}
+
+{% block content %}
+<h1>Products</h1>
+<table>
+  <tr>
+    <th>Add to Cart</th>
+    <th>Item Name</th>
+    <th>Price</th>
+    <th>Image</th>
+    <th>Description</th>
+    <th>Category</th>
+    <th>Stock</th>
+    <th>Rating</th>
+  </tr>
+
+  {% for product in products %}
+  <tr>
+    <td>
+      <button 
+        onclick="addToCart({{ product.id }}, {{ product.stock }})"
+        class="add-to-cart-button">
+        Add to Cart
+      </button>
+    </td>
+    <td>{{ product.name }}</td>
+    <td>{{ product.price }}</td>
+    <td><img src="{{ product.image_url }}" alt="{{ product.name }}" /></td>
+    <td>{{ product.description }}</td>
+    <td>{{ product.category }}</td>
+    <td>{{ product.stock }}</td>
+    <td>{{ product.rating }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script>
+  function addToCart(productId, stock) {
+    if (stock === 0) {
+      alert("This item is out of stock.");
+      return;
+    }
+    
+    fetch("{% url 'carts:add_to_cart' %}", {
+      method: 'POST',
+      body: new URLSearchParams({ product_id: productId }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Product successfully added to cart.");
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    });
+  }
+</script>
+
+{% endblock %}
