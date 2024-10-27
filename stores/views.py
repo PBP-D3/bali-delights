@@ -45,7 +45,7 @@ def search_stores(request):
 @login_required(login_url="/login")
 def register_store(request):
     if request.method == 'POST':
-        form = StoreForm(request.POST)
+        form = StoreForm(request.POST, request.FILES)
         if form.is_valid():
             store = form.save(commit=False)
             store.owner_id = request.user
@@ -59,8 +59,9 @@ def register_store(request):
     # Handle GET request
     else:
         form = StoreForm()
-    
-    return render(request, 'register_store.html', {'form': form})  # Keep this for other usage
+        
+    # For non-AJAX or GET requests
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required(login_url="/login")
 def edit_store(request, id):

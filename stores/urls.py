@@ -1,5 +1,7 @@
 from django.urls import path
 from stores.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'stores'
 
