@@ -11,5 +11,4 @@ urlpatterns = [
   path('api/add-to-cart/', views.add_to_cart, name='add_to_cart'),
   path('api/update-item/', views.update_cart_item, name='update_cart_item'),
   path('api/remove-item/', views.remove_cart_item, name='remove_cart_item'),  
-  path('products/', views.show_products, name='show_products'),
 ]

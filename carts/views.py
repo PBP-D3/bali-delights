@@ -47,6 +47,11 @@ def submit_order(request):
         # Check if the user is trying to buy their own product
         for item in items:
           product = item.product_id
+          if item.quantity > product.stock:
+            return JsonResponse({
+              "success": False,
+              "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
+          })
           if product.store_id.owner_id == request.user:
             return JsonResponse({"success": False, "message": "You cannot buy your own product."})
 
@@ -90,7 +95,19 @@ def submit_order(request):
 
 @login_required
 def order_history(request):
-  orders = Order.objects.filter(user_id=request.user).order_by('-created_at')
+  sort_by = request.GET.get('sort_by', 'created_at')  # Default sort by date
+  sort_direction = request.GET.get('sort_direction', 'asc')  # Default direction
+
+  # Check for valid sort_by options
+  if sort_by not in ['created_at', 'total_price']:
+    sort_by = 'created_at'  # Fallback to default if invalid
+
+  # Determine the order by clause based on the sort_direction
+  if sort_direction == 'desc':
+    orders = Order.objects.filter(user_id=request.user).order_by(f'-{sort_by}')
+  else:
+    orders = Order.objects.filter(user_id=request.user).order_by(sort_by)
+
   return render(request, 'order_history.html', {'orders': orders})
 
 @login_required
@@ -123,14 +140,6 @@ def remove_cart_item(request):
 
     except CartItem.DoesNotExist:
       return JsonResponse({"success": False, "message": "Item not found."}, status=404)
-
-@login_required
-def show_products(request):
-  products = Product.objects.all()  # Retrieve all products from the database
-  context = {
-    'products': products
-  }
-  return render(request, "test_prod.html", context)
 
 @csrf_exempt
 @login_required
@@ -180,7 +189,15 @@ def update_cart_item(request):
       cart_id__user_id=request.user, 
       cart_id__status='pending'
     )
+    
     item.quantity = quantity
+    # Check if quantity exceeds stock
+    product = item.product_id
+    if item.quantity > product.stock:
+      return JsonResponse({
+        "success": False,
+        "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
+    })
     item.subtotal = item.quantity * item.price
     item.save()
 
