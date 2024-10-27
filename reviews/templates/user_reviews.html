@@ -13,7 +13,7 @@
                     </div>
                     
                     <!-- Review Details GANTI reviews:product_reviews jadi products:product-details .....-->
-                    <div>
+                    <div class="w-full">
                         <h3 class="text-lg font-semibold text-gray-900">
                             <a href="{% url 'reviews:product_reviews' review.product_id.id %}" class="hover:underline">
                                 {{ review.product_id.name }}
@@ -35,8 +35,10 @@
 
 
                         <!-- Edit and Delete Buttons -->
-                        <button class="edit-review-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Edit</button>
-                        <button class="delete-review-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 mt-3 rounded" data-review-id="{{ review.id }}">Delete</button>
+                        <div class="grid grid-cols-2">
+                            <button class="edit-review-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 mt-3 rounded ml-2 justify-self-start" data-review-id="{{ review.id }}">Edit</button>
+                            <button class="delete-review-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 mt-3 rounded mr-2 justify-self-end" data-review-id="{{ review.id }}">Delete</button>
+                        </div>
                     </div>
                 </div>
             {% endfor %}

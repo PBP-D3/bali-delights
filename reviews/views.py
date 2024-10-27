@@ -8,17 +8,19 @@ from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
+from django.db.models import Count
+
 import json
 # Create your views here.
 # Create your views here.
 def show_reviews(request):
-    # reviews = Review.objects.all() kalo mau cek semua review
-    reviews = Review.objects.filter(user_id=request.user.id)
-    context = {
-        'reviews' : reviews,
-    }
+        # Fetch top 5 reviews with the highest number of likes
+    top_reviews = Review.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:5]
 
-    return render(request, "reviews.html", context)
+    context = {
+        'top_reviews': top_reviews,
+    }
+    return render(request, 'top_reviews.html', context)
 
 @login_required
 def create_review(request, product_id):
@@ -95,9 +97,10 @@ def product_reviews(request, product_id):
         for review in reviews:
             # Add a `liked` attribute for each review
             review.liked = review.like_set.filter(user_id=request.user).exists()
-            user_review_exists = Review.objects.filter(product_id=product_id, user_id=request.user)
+        
+        user_review_exists = Review.objects.filter(product_id=product_id, user_id=request.user)
 
-
+        
         context = {
             'product': product,
             'reviews': reviews,
@@ -128,7 +131,6 @@ def user_reviews(request):
     }
     return render(request, 'user_reviews.html', context)
 
-@login_required
 @login_required
 @csrf_exempt
 def toggle_like(request, review_id):
