@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>{{ product.name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="product-details flex flex-col md:flex-row items-center md:items-start mx-auto">
+    {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+    {% endif %}
+    <div class="product-info ml-0 md:ml-6 mt-6 md:mt-0">
+        <h1 style="text-align: center"><strong>{{ product.name }}</strong></h1>
+        <p><strong>Price:</strong> {{ product.price }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Category:</strong> {{ product.category }}</p>
+        <p><strong>Description:</strong> {{ product.description }}</p>
+        <div class="button-container gap-10">
+            <a href="{% url 'reviews:product_reviews' product.id %}" class="ml-2 justify-self-start">
+                <input type="button" value="Check Reviews" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            </a>
+            <a href="#">
+                <input type="button" value="Add to cart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+            </a>
+        </div>
+        <a href="{% url 'products:show_products' %}">
+            <input type="button" value="Back" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded">
+        </a>
+    </div>
+</div>
+
+<style>
+    .product-details {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 5px;
+        max-width: 800px;
+        margin: auto;
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .product-image {
+        max-width: 300px;
+        height: auto;
+        border-radius: 5px;
+    }
+    .product-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center; 
+        margin-top: 10px; 
+    }
+    .add-to-cart-button {
+        background-color: wheat; 
+        color: white; 
+        border: none; 
+        border-radius: 10px; 
+        padding: 10px 20px; 
+        cursor: pointer; 
+        font-size: 16px; 
+        transition: background-color 0.3s; 
+    }
+    .add-to-cart-button:hover {
+        background-color: #5C4033; 
+    }
+</style>
+
+{% endblock content %}
