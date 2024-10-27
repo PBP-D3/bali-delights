@@ -36,7 +36,6 @@ def search_stores(request):
     else:
         stores = Store.objects.all()
     
-    # Check if the request is for the user's stores and pass the variable
     is_user_store_view = request.path == '/stores/show_user_store/'
     
     html = render_to_string('search_stores.html', {'stores': stores, 'is_user_store_view': is_user_store_view})
@@ -45,22 +44,20 @@ def search_stores(request):
 @login_required(login_url="/login")
 def register_store(request):
     if request.method == 'POST':
-        form = StoreForm(request.POST)
+        form = StoreForm(request.POST, request.FILES)
         if form.is_valid():
             store = form.save(commit=False)
             store.owner_id = request.user
             store.save()
-            # Prepare response data
             data = {
                 'html': render_to_string('search_stores.html', {'stores': Store.objects.filter(owner_id=request.user)}),
             }
-            return JsonResponse(data)  # Return JSON response
+            return JsonResponse(data) 
 
-    # Handle GET request
     else:
         form = StoreForm()
-    
-    return render(request, 'register_store.html', {'form': form})  # Keep this for other usage
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required(login_url="/login")
 def edit_store(request, id):
