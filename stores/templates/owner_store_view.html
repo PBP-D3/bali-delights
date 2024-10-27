@@ -3,76 +3,195 @@
 
 {% block meta %}
 <title>{{ store.name }} - Store Details</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-<ul class="flex items-center font-body space-x-4 mt-4 px-28">
-    <li class="text-gray-500 text-base">
+<!-- Store Image and Buttons -->
+<div class="px-6 pt-20 store-details md:px-12">
+    <!-- Navigation Buttons -->
+    <ul class="flex items-center mt-4 mb-8 space-x-4 font-body px-28">
+      <li class="text-base text-gray-500">
         <a href="{% url 'stores:show_stores' %}" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Stores</a>
-    </li>
-    <li>
-      <svg xmlns="http://www.w3.org/2000/svg" class="fill-gray-400 w-3.5 -rotate-90" viewBox="0 0 24 24">
-        <path fill-rule="evenodd"
-          d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
-          clip-rule="evenodd" data-original="#000000"></path>
-      </svg>
-    </li>
-    <li class="text-gray-500 text-base cursor-pointer">
-        <a href="" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">{{ store.name }}</a>
-    </li>
-</ul>
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" class="fill-gray-400 w-3.5 -rotate-90" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+            clip-rule="evenodd" data-original="#000000"></path>
+        </svg>
+      </li>
+      <li class="text-base text-gray-500">
+        <a href="{% url 'stores:owner_store_view' store.id %}" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Store Details</a>
+      </li>
+    </ul>
+  <img src="{{ store.get_image }}" alt="{{ store.name }}" class="self-center w-20 h-20 ml-20 store-image ">
+  <h1 class="ml-20 store-name">{{ store.name }}</h1>
+  <h1 class="ml-20 font-normal font-body">{{ store.description }}</h1>
+  <h1 class="ml-20 font-normal font-body">{{ store.location }}</h1>
+  
+  
+  <!-- Edit and Delete Store Buttons -->
+  <div class="mt-4 ml-20">
+    <a href="{% url 'stores:edit_store' store.id %}" class="px-4 py-2 text-white transition bg-blue-500 rounded hover:bg-blue-600">Edit Store</a>
+    <form action="{% url 'stores:delete_store' store.id %}" method="post" class="inline">
+      {% csrf_token %}
+      <button type="submit" class="px-4 py-2 text-white transition bg-red-500 rounded hover:bg-red-600">Delete Store</button>
+    </form>
+  </div>
+</div>
 
-<div class="container mx-auto px-28">
-    <div class="bg-white rounded p-6 mb-6">
-        <div class="flex flex-row items-center gap-20 mx-40 mb-10 rounded border border-secondary p-4">
-            <img src="{{ store.get_image }}" alt="{{ store.name }}" class="h-48 rounded">
-            <div class="flex flex-col h-fit">
-                <h1 class="text-3xl font-header font-bold mb-4">{{ store.name }}</h1>
-                <p class="text-gray-700 font-body text-sm mb-4 w-fit">{{ store.location }}</p>
-                <p class="text-gray-700 font-body text-base mb-4 w-fit">{{ store.description }}</p>
-                <div class="font-body max-w-fit h-fit rounded-lg overflow-hidden gap-6 flex">
-                    <a href="" 
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Add Product
-                    </a>
-                    <a href="{% url 'stores:edit_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Edit Store
-                    </a>
-                    <a href="{% url 'stores:delete_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Delete Store
-                    </a>
-                </div>                
-            </div>
+<!-- Add Product Button -->
+{% if user.is_authenticated and user.role == "shop_owner" %}
+<div class="flex justify-center mb-4">
+  <button class="px-4 py-2 rounded-lg edit-btn bg-accent text-white1" onclick="openModal()">Add New Product</button>
+</div>
+{% endif %}
+
+<!-- Modal structure for adding a new product -->
+<div id="productModal" class="fixed inset-0 z-50 flex items-start justify-center hidden overflow-y-auto bg-gray-800 bg-opacity-50">
+  <div class="w-full max-w-md mx-4 my-16 overflow-hidden bg-white rounded-lg shadow-lg">
+
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b">
+      <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
+      <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeModal()">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+    </div>
+
+    <!-- Modal body -->
+    <div class="px-6 py-4 space-y-4 form-style">
+      <form id="ProductForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" id="name" name="name" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
         </div>
         
-        <h2 class="text-2xl font-semibold mb-4">Products</h2>
-        {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {% for product in products %}
-                <div class="bg-gray-100 rounded overflow-hidden shadow-lg p-4 flex flex-col h-full space-y-3">
-                    <!-- Product Image -->
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-32 object-cover mb-2">
-                    
-                    <!-- Product Details -->
-                    <div class="flex-grow">
-                        <div class="font-bold text-xl">{{ product.name }}</div>
-                        <p class="text-gray-700 text-base">{{ product.description }}</p>
-                        <p class="font-bold mt-2">Price: ${{ product.price }}</p>
-                    </div>
-                    
-                    <!-- Button Container -->
-                    <div class="w-max mx-auto border-2 border-[#333] rounded-lg overflow-hidden flex mt-auto">
-                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Edit Product</a>
-                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold outline-none hover:bg-[#333] hover:text-white transition-all">Delete Product</a>
-                    </div>
-                </div>                
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No products available for this store.</p>
-        {% endif %}
+        <div class="mb-4">
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="description" name="description" rows="3" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+          <input type="number" id="price" name="price" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+          <input type="number" id="stock" name="stock" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+          <select name="category" id="category" class="w-full p-2 border rounded">
+            <option value="" disabled selected>Select a category</option>
+            <option value="Clothes">Clothes</option>
+            <option value="Jewelries">Jewelries</option>
+            <option value="Crafts">Crafts</option>
+            <option value="Arts">Arts</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Drinks">Drinks</option>
+            </select>
+        </div>
+
+        <!-- Image Upload Field -->
+        <div class="mb-4">
+          <label for="image_file" class="block text-sm font-medium text-gray-700">Upload Image</label>
+          <input type="file" id="image_file" name="image_file" class="block w-full p-2 mt-1 text-gray-700 border border-gray-300 rounded-md" accept="image/*">
+        </div>
+
+        <div class="mb-4">
+          <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL (optional)</label>
+          <input type="text" id="image_url" name="image_url" class="block w-full p-2 mt-1 border border-gray-300 rounded-md">
+        </div>
+      </form>
     </div>
+
+    <!-- Modal footer -->
+    <div class="flex justify-end p-4 border-t border-gray-200">
+      <button type="button" class="px-4 py-2 mr-2 font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600" onclick="closeModal()">Cancel</button>
+      <button type="button" id="submitProductEntry" class="px-4 py-2 font-bold text-white bg-indigo-700 rounded-lg hover:bg-indigo-600" onclick="submitForm()">Save</button>
+    </div>
+  </div>
 </div>
-{% endblock content %}
+
+<!-- Products List -->
+<div class="container mx-auto px-28">
+  <div class="p-6 mb-6 bg-white rounded">
+    <h2 class="mb-4 text-2xl font-semibold">Products</h2>
+    {% if products %}
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for product in products %}
+        <div class="flex flex-col h-full p-4 space-y-3 overflow-hidden bg-gray-100 rounded shadow-lg">
+          <!-- Product Image -->
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="object-cover w-full h-32 mb-2">
+          
+          <!-- Product Details -->
+          <div class="">
+            <div class="text-xl font-bold">{{ product.name }}</div>
+            <p class="text-gray-700 h-[200px] overflow-y-scroll">{{ product.description }}</p>
+            <p class="font-semibold text-gray-900">${{ product.price }}</p>
+            <p class="text-gray-500">Stock: {{ product.stock }}</p>
+          </div>
+
+          <!-- Edit and Delete Buttons -->
+          <div class="flex justify-between mt-2">
+            <a href="{% url 'products:edit_product' product.id %}" class="px-3 py-1 text-white transition bg-blue-500 rounded hover:bg-blue-600">Edit</a>
+            <form action="{% url 'products:delete_product' product.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="px-3 py-1 text-white transition bg-red-500 rounded hover:bg-red-600">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">No products available for this store.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Open Modal
+  function openModal() {
+    document.getElementById("productModal").classList.remove("hidden");
+  }
+
+  // Close Modal
+  function closeModal() {
+    document.getElementById("productModal").classList.add("hidden");
+  }
+
+  // Submit Form
+  function submitForm() {
+    const form = document.getElementById('ProductForm');
+    const formData = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();  // Reload the page to show updated product list
+      } else {
+        alert(data.message || 'An error occurred. Please try again.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    });
+  }
+</script>
+{% endblock %}
