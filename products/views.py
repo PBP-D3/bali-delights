@@ -13,16 +13,25 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import os
 
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .forms import ProductForm  # Ensure you import your ProductForm
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
 @login_required
 @require_POST
 def add_product(request):
-    if request.method == "POST" and request.is_ajax():
+    if request.is_ajax():
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.store_id = request.user  # Ensure this is set to the correct store
+            product.save()
             return JsonResponse({"success": True})
         else:
-            return JsonResponse({"success": False, "message": "Form validation error."})
+            return JsonResponse({"success": False, "message": "Form validation error.", "errors": form.errors})
     return JsonResponse({"success": False, "message": "Invalid request."})
 
 def show_products(request, category=None):
