@@ -5,10 +5,19 @@
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">Reviews for<h1>
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ product.name }}</h1>
     <br>
-    <a href="{% url 'reviews:create_review' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
-            Create your review!
-    </a>
+    {% if user.is_authenticated %}
+        {% if not user_review_exists %}
+            <a href="{% url 'reviews:create_review' product.id%}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mr-4">
+                    Create your review!
+            </a>
+        {% else %}
+                <p class="text-gray-500">You have already made a review on this product.</p>
+        {% endif %}
+        <br><br>
+    {% else %}
+    <p class="text-gray-500">Login to give your review</p>
     <br><br>
+    {% endif %}
     {% if reviews %}
         <div class="flex flex-col space-y-4 items-center">
             {% for review in reviews %}
@@ -46,8 +55,12 @@
         </div>
     {% else %}
         <p class="text-gray-500">No reviews yet for this product.</p>
+        {% if not user.is_authenticated %}
+        <p class="text-gray-500">Login to add a review to this product</p>
+        {% endif %}
     {% endif %}
 </div>
+<br>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
