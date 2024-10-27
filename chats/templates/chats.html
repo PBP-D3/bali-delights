@@ -13,10 +13,12 @@
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-3xl font-bold text-gray-800">Messages</h2>
 
-        <!-- Button to Open Add Chat Modal -->
+        <!-- Button to Open Add Chat Modal, only visible for normal users -->
+        {% if user.role != "shop_owner" %}
         <button onclick="openAddChatModal()" class="bg-secondary text-black rounded-full w-10 h-10 flex items-center justify-center">
             +
         </button>
+        {% endif %}
     </div>
 
     <!-- Search Input -->
@@ -27,30 +29,55 @@
 
     <!-- Chat List Container -->
     <div id="chatList">
-        {% for chat in chats %}
-        <div class="chat-item block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200 cursor-pointer" data-chat-id="{{ chat.store.id }}" oncontextmenu="showDeleteOption(event, {{ chat.store.id }})">
-            <a href="{% url 'chat_with_store' chat.store.id %}">
-                <div class="flex items-center space-x-3">
-                    <img src="{{ chat.store.photo_url }}" alt="{{ chat.store.name }}" class="w-10 h-10 rounded-full">
-                    <div>
-                        <h3 class="font-semibold text-gray-800">{{ chat.store.name }}</h3>
-                        <p class="text-gray-500 text-sm">Last message at {{ chat.last_message_time }}</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
+      {% for chat in chats %}
+      {{ chat.created_at }}
+      <div class="chat-item block bg-gray-100 p-4 rounded-lg mb-2 hover:bg-gray-200 cursor-pointer"
+           data-chat-id="{% if user.role == 'shop_owner' %}{{ chat.user.id }}{% else %}{{ chat.store.id }}{% endif %}"
+           oncontextmenu="showDeleteOption(event, {% if user.role == 'shop_owner' %}{{ chat.id }}{% else %}{{ chat.id }}{% endif %})">
+           
+          <a href="{% if user.role == 'shop_owner' %}{% url 'chat_with_store' chat.user.id %}{% else %}{% url 'chat_with_store' chat.store.id %}{% endif %}">
+              <div class="flex items-center space-x-3">
+                  <!-- Image conditional, but only display store image since there's no user photo -->
+                  {% if user.role != 'shop_owner' %}
+                  <img src="{{ chat.store.photo_url }}" alt="{{ chat.store.name }}" class="w-10 h-10 rounded-full">
+                  {% endif %}
+                  
+                  <div>
+                      <h3 class="font-semibold text-gray-800">
+                          {% if user.role == 'shop_owner' %}
+                              {{ chat.user.username }}
+                          {% else %}
+                              {{ chat.store.name }}
+                          {% endif %}
+                      </h3>
+                      <p class="text-gray-500 text-sm">
+                          {% if user.role == "shop_owner" %}
+                              Message from {{ chat.user.username }} at {{ chat.last_message_time }}
+                          {% else %}
+                              Last message at {{ chat.last_message_time }}
+                          {% endif %}
+                      </p>
+                  </div>
+              </div>
+          </a>
+      </div>
+      {% endfor %}
+    </div>    
 
     <!-- No Chats Message -->
     {% if chats|length == 0 %}
     <div id="noChatsMessage" class="text-center text-gray-600 mt-8">
+        {% if user.role == "shop_owner" %}
+        No chats yet. You will see messages here when customers reach out to you.
+        {% else %}
         No chats. Start a chat with your favorite merchant!
+        {% endif %}
     </div>
     {% endif %}
 </div>
 
-<!-- Modal for Adding Chat (Initially Hidden) -->
+<!-- Modal for Adding Chat (Initially Hidden), only for normal users -->
+{% if user.role != "shop_owner" %}
 <div id="addChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-lg">
         <h3 class="text-2xl font-bold mb-4 text-gray-800">Start a Chat!</h3>
@@ -70,6 +97,7 @@
         </button>
     </div>
 </div>
+{% endif %}
 
 <!-- Confirmation Dialog for Deleting Chat -->
 <div id="deleteChatModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 hidden">
@@ -99,7 +127,7 @@
     function confirmDeleteChat() {
       if (selectedChatId) {
         $.ajax({
-          url: `/chats/api/chats/${selectedChatId}/delete/`,  // The URL endpoint to delete chat
+          url: `/chats/api/chats/${selectedChatId}/delete/`, 
           type: 'POST',
           data: {
             chat_id: selectedChatId,
@@ -107,17 +135,12 @@
           },
           success: function(response) {
             if (response.success) {
-              $(`[data-chat-id="${selectedChatId}"]`).remove();  // Remove the chat item from the DOM
-              closeDeleteChatModal();
-              if ($('#chatList').children().length === 0) {
-                $('#noChatsMessage').show();
-              }
-            } else {
-              console.log("Error deleting chat:", response.error);
+              // Redirect to the chat with the selected store
+              window.location.href = `/chats/`;
             }
           },
           error: function(xhr, errmsg, err) {
-            console.log("AJAX error deleting chat:", errmsg);
+            console.log('Error creating chat:', errmsg);
           }
         });
       }
@@ -129,7 +152,8 @@
       selectedChatId = null;
     }
 
-    // Function to show the add chat modal
+    {% if user.role != "shop_owner" %}
+    // Function to show the add chat modal, only if the button is visible
     window.openAddChatModal = function() {
       $('#addChatModal').removeClass('hidden');
     }
@@ -139,7 +163,7 @@
       $('#addChatModal').addClass('hidden');
     }
 
-    // Load and display stores dynamically (you already have this)
+    // Load and display stores dynamically (if available)
     function loadStores(query = "") {
       $.ajax({
         url: '{% url "get_stores" %}',
@@ -191,7 +215,7 @@
         success: function(response) {
           if (response.success) {
             // Redirect to the chat with the selected store
-            window.location.href = `/chats/${response.chat_id}/`;
+            window.location.href = `/chats/${response.store_id}/`;
           }
         },
         error: function(xhr, errmsg, err) {
@@ -199,6 +223,7 @@
         }
       });
     });
+    {% endif %}
 
     // Expose delete functions to window for global access
     window.showDeleteOption = showDeleteOption;

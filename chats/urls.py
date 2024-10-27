@@ -1,11 +1,24 @@
 from django.urls import path
-from chats.views import list_chats, get_chat_messages, chat_with_store, send_message, get_stores, create_chat, delete_chat, edit_message
+from chats.views import (
+    list_chats,
+    get_chat_messages,
+    chat_with_store,
+    send_message,
+    get_stores,
+    create_chat,
+    delete_chat,
+    edit_message,
+    chats_view  # Import the chats_view function
+)
 
 urlpatterns = [
-    # Main chat list page
+    # Main chat list page for normal users
     path('', list_chats, name='list_chats'),
 
-    # Specific chat view with store
+    # Main chat interface view for both user types (normal user and shop owner)
+    path('chats/', chats_view, name='chats_view'),  # <--- Add this line for the chats_view
+
+    # Specific chat view with a store
     path('<int:store_id>/', chat_with_store, name='chat_with_store'),
 
     # AJAX endpoint to fetch messages for a specific chat
@@ -15,12 +28,14 @@ urlpatterns = [
     path('api/chats/create/', create_chat, name='create_chat'), 
 
     # API endpoint to send a message within an existing chat
-    path('api/chats/<int:chat_id>/send/', send_message, name='send_message'),  # For actual messaging in chat
+    path('api/chats/<int:chat_id>/send/', send_message, name='send_message'),
 
     # API endpoint to get the list of stores
     path('api/stores/', get_stores, name='get_stores'),
     
+    # API endpoint to delete a chat
     path('api/chats/<int:chat_id>/delete/', delete_chat, name='delete_chat'),
     
+    # API endpoint to edit a message
     path('api/messages/<int:message_id>/edit/', edit_message, name='edit_message'),
 ]
