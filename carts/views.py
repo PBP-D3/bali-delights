@@ -141,14 +141,6 @@ def remove_cart_item(request):
     except CartItem.DoesNotExist:
       return JsonResponse({"success": False, "message": "Item not found."}, status=404)
 
-@login_required
-def show_products(request):
-  products = Product.objects.all()  # Retrieve all products from the database
-  context = {
-    'products': products
-  }
-  return render(request, "test_prod.html", context)
-
 @csrf_exempt
 @login_required
 def add_to_cart(request):

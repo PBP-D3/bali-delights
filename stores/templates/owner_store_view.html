@@ -3,12 +3,19 @@
 
 {% block meta %}
 <title>{{ store.name }} - Store Details</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-<ul class="flex items-center font-body space-x-4 mt-4 px-28">
-    <li class="text-gray-500 text-base">
-        <a href="{% url 'stores:show_stores' %}" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Stores</a>
+<!-- Store Image and Buttons -->
+<div class="store-details">
+  <img src="{{ store.image_url }}" alt="{{ store.name }}" class="store-image">
+  <h1 class="store-name">{{ store.name }}</h1>
+  
+  <!-- Navigation Buttons -->
+  <ul class="flex items-center mt-4 space-x-4 font-body px-28">
+    <li class="text-base text-gray-500">
+      <a href="{% url 'stores:show_stores' %}" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Stores</a>
     </li>
     <li>
       <svg xmlns="http://www.w3.org/2000/svg" class="fill-gray-400 w-3.5 -rotate-90" viewBox="0 0 24 24">
@@ -17,62 +24,176 @@
           clip-rule="evenodd" data-original="#000000"></path>
       </svg>
     </li>
-    <li class="text-gray-500 text-base cursor-pointer">
-        <a href="" type="button" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">{{ store.name }}</a>
+    <li class="text-base text-gray-500">
+      <a href="{% url 'stores:owner_store_view' store.id %}" class="cursor-pointer w-40 text-center py-2.5 rounded-lg text-sm tracking-wider font-medium outline-none text-secondary hover:text-orange-400 transition-all duration-300">Store Details</a>
     </li>
-</ul>
+  </ul>
+</div>
 
-<div class="container mx-auto px-28">
-    <div class="bg-white rounded p-6 mb-6">
-        <div class="flex flex-row items-center gap-20 mx-40 mb-10 rounded border border-secondary p-4">
-            <img src="{{ store.get_image }}" alt="{{ store.name }}" class="h-48 rounded">
-            <div class="flex flex-col h-fit">
-                <h1 class="text-3xl font-header font-bold mb-4">{{ store.name }}</h1>
-                <p class="text-gray-700 font-body text-sm mb-4 w-fit">{{ store.location }}</p>
-                <p class="text-gray-700 font-body text-base mb-4 w-fit">{{ store.description }}</p>
-                <div class="font-body max-w-fit h-fit rounded-lg overflow-hidden gap-6 flex">
-                    <a href="" 
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Add Product
-                    </a>
-                    <a href="{% url 'stores:edit_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Edit Store
-                    </a>
-                    <a href="{% url 'stores:delete_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Delete Store
-                    </a>
-                </div>                
-            </div>
+<!-- Add Product Button -->
+{% if user.is_authenticated and user.role == "shop_owner" %}
+<div class="flex justify-center mb-4">
+  <button class="px-4 py-2 rounded-lg edit-btn" onclick="openModal()">Add New Product</button>
+</div>
+{% endif %}
+
+<!-- Modal structure for adding a new product -->
+<div id="productModal" class="fixed inset-0 z-50 flex items-start justify-center hidden overflow-y-auto bg-gray-800 bg-opacity-50">
+  <div class="w-full max-w-md mx-4 my-16 overflow-hidden bg-white rounded-lg shadow-lg">
+
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b">
+      <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
+      <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeModal()">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+    </div>
+
+    <!-- Modal body -->
+    <div class="px-6 py-4 space-y-4 form-style">
+      <form id="ProductForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" id="name" name="name" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
         </div>
         
-        <h2 class="text-2xl font-semibold mb-4">Products</h2>
-        {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {% for product in products %}
-                <div class="bg-gray-100 rounded overflow-hidden shadow-lg p-4 flex flex-col h-full space-y-3">
-                    <!-- Product Image -->
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-32 object-cover mb-2">
-                    
-                    <!-- Product Details -->
-                    <div class="flex-grow">
-                        <div class="font-bold text-xl">{{ product.name }}</div>
-                        <p class="text-gray-700 text-base">{{ product.description }}</p>
-                        <p class="font-bold mt-2">Price: ${{ product.price }}</p>
-                    </div>
-                    
-                    <!-- Button Container -->
-                    <div class="w-max mx-auto border-2 border-[#333] rounded-lg overflow-hidden flex mt-auto">
-                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold border-r-2 border-[#333] outline-none hover:bg-[#333] hover:text-white transition-all">Edit Product</a>
-                        <a href="" class="px-5 py-2.5 text-[#333] text-sm tracking-wider font-semibold outline-none hover:bg-[#333] hover:text-white transition-all">Delete Product</a>
-                    </div>
-                </div>                
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No products available for this store.</p>
-        {% endif %}
+        <div class="mb-4">
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="description" name="description" rows="3" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+          <input type="number" id="price" name="price" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+          <input type="number" id="stock" name="stock" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+          <select id="category" name="category" class="block w-full p-2 mt-1 border border-gray-300 rounded-md" required>
+            {% for category in categories %}
+            <option value="{{ category.0 }}">
+              {{ category.0 }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Image Upload Field -->
+        <div class="mb-4">
+          <label for="image_file" class="block text-sm font-medium text-gray-700">Upload Image</label>
+          <input type="file" id="image_file" name="image_file" class="block w-full p-2 mt-1 text-gray-700 border border-gray-300 rounded-md" accept="image/*">
+        </div>
+
+        <div class="mb-4">
+          <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL (optional)</label>
+          <input type="text" id="image_url" name="image_url" class="block w-full p-2 mt-1 border border-gray-300 rounded-md">
+        </div>
+      </form>
     </div>
+
+    <!-- Modal footer -->
+    <div class="flex justify-end p-4 border-t border-gray-200">
+      <button type="button" class="px-4 py-2 mr-2 font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600" onclick="closeModal()">Cancel</button>
+      <button type="button" id="submitProductEntry" class="px-4 py-2 font-bold text-white bg-indigo-700 rounded-lg hover:bg-indigo-600" onclick="submitForm()">Save</button>
+    </div>
+  </div>
 </div>
-{% endblock content %}
+
+<!-- Products List -->
+<div class="product-grid">
+  {% for product in products %}
+  <div class="bg-gray-100 product-card">
+    <a href="{% url 'products:product_detail' product.id %}">
+      <div class="card-content">
+        <h3 class="product-name">{{ product.name }}</h3>
+        {% if product.image_url %}
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+        {% else %} 
+          <p>No image available</p>
+        {% endif %}
+        <p class="product-price">Price: {{ product.price }}</p>
+        <p class="product-category">Category: {{ product.category }}</p>
+        Rating: <span style="color: gold;">{{ product.average_rating|floatformat:2|default:"0" }} / 5 </span>
+      </div>
+    </a>
+    {% if user.is_authenticated and user.role == "shop_owner" %}
+    <div class="flex justify-between mt-4 button-group">
+      <a href="{% url 'products:edit_product' product.id %}">
+        <button class="px-4 py-2 rounded-lg edit-btn">Edit</button>
+      </a>
+      <a href="javascript:void(0);" onclick="deleteProduct({{ product.id }})">
+        <button class="px-4 py-2 rounded-lg delete-btn">Delete</button>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  function openModal() {
+    document.getElementById("productModal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("productModal").classList.add("hidden");
+  }
+
+  function submitForm() {
+    const form = document.getElementById('ProductForm');
+    const formData = new FormData(form);
+
+    fetch('{% url "products:add_product" %}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload(); // Reload the page to see the new product
+      } else {
+        alert('Failed to add product: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    });
+  }
+
+  function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      fetch(`{% url 'products:delete_product' 0 %}`.replace('0', productId), {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          location.reload(); // Reload the page to see the updated product list
+        } else {
+          alert('Failed to delete product.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    }
+  }
+</script>
+{% endblock %}
