@@ -32,12 +32,6 @@ class CartItem(models.Model):
   def product_name(self):
     return self.product_id.name
 
-from django.db import models
-from django.conf import settings
-from products.models import Product
-
-User = settings.AUTH_USER_MODEL
-
 class Order(models.Model):  
   user_id = models.ForeignKey(User, on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)

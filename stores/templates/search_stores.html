@@ -10,16 +10,16 @@
 {% if stores %}
     <div class="grid w-full grid-cols-1 gap-6 lg:grid-cols-2 ">
         {% for store in stores %}
-            <div class="flex items-center w-full gap-8 p-6 overflow-hidden transition-transform duration-300 border rounded shadow-lg md:flex-row border-secondary hover:shadow-lg md:px-6">
+            <div class="flex items-center justify-between w-full gap-8 p-6 overflow-hidden transition-transform duration-300 border rounded shadow-lg max-md:flex-col md:flex-row border-secondary hover:shadow-lg md:px-6">
                 <!-- Store Image -->
                 {% if store.get_image %}
-                    <img src="{{ store.get_image }}" alt="{{ store.name }}" class="object-cover w-48 h-48 rounded">
+                    <img src="{{ store.get_image }}" alt="{{ store.name }}" class="object-cover w-[40%] h-[40%] rounded">
                 {% else %}
                     <p>No image available</p>
                 {% endif %}
 
                 <!-- Store Info and Actions -->
-                <div class="flex flex-col flex-grow">
+                <div class="flex flex-col w-[60%]">
                     <!-- Store Name and Description -->
                     <h1 class="mb-4 text-3xl font-bold text-secondary font-header">{{ store.name }}</h1>
                     <p class="mb-4 text-sm text-gray-700 font-body w-fit">{{ store.location }}</p>
