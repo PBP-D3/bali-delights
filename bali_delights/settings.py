@@ -146,3 +146,7 @@ else:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://muhammad-azzam31-balidelights.pbp.cs.ui.ac.id", "https://muhammad-azzam31-balidelights.pbp.cs.ui.ac.id"]
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
