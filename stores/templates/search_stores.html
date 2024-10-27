@@ -1,16 +1,25 @@
+{% load static %}
+{% block meta %}
+<title>Search Store</title>
+<meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+{% endblock meta %}
+
+{% block content %}
 {% if stores %}
     <div class="grid w-full grid-cols-1 gap-6 lg:grid-cols-2 ">
         {% for store in stores %}
-            <div class="flex items-center w-full gap-8 p-6 overflow-hidden transition-transform duration-300 border rounded shadow-lg md:flex-row border-secondary hover:shadow-lg md:px-6">
+            <div class="flex items-center justify-between w-full gap-8 p-6 overflow-hidden transition-transform duration-300 border rounded shadow-lg max-md:flex-col md:flex-row border-secondary hover:shadow-lg md:px-6">
                 <!-- Store Image -->
                 {% if store.get_image %}
-                    <img src="{{ store.get_image }}" alt="{{ store.name }}" class="object-cover w-48 h-48 rounded">
+                    <img src="{{ store.get_image }}" alt="{{ store.name }}" class="object-cover w-[40%] h-[40%] rounded">
                 {% else %}
                     <p>No image available</p>
                 {% endif %}
 
                 <!-- Store Info and Actions -->
-                <div class="flex flex-col flex-grow">
+                <div class="flex flex-col w-[60%]">
                     <!-- Store Name and Description -->
                     <h1 class="mb-4 text-3xl font-bold text-secondary font-header">{{ store.name }}</h1>
                     <p class="mb-4 text-sm text-gray-700 font-body w-fit">{{ store.location }}</p>
@@ -18,7 +27,7 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex gap-4 mt-auto">
-                        <a href="{% if is_user_store_view %}{% url 'stores:owner_store_view' store.id %}{% else %}{% url 'stores:show_store_details' store.id %}{% endif %}"
+                        <a href="{% if is_user_store_view or user.is_authenticated and store.owner_id == user %}{% url 'stores:owner_store_view' store.id %}{% else %}{% url 'stores:show_store_details' store.id %}{% endif %}"
                            class="w-40 text-center px-5 py-2.5 rounded-lg text-sm font-medium border border-current bg-secondary text-white hover:bg-transparent hover:text-gray-500 transition-all duration-300">
                             Go to Store Page
                         </a>
@@ -30,3 +39,4 @@
 {% else %}
     <p>No stores found.</p>
 {% endif %}
+{% endblock  %}
