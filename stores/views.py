@@ -7,6 +7,7 @@ from products.models import Product
 from django.core import serializers
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def show_stores(request):
     stores = Store.objects.all()
@@ -49,6 +50,9 @@ def register_store(request):
             store = form.save(commit=False)
             store.owner_id = request.user
             store.save()
+            # user becomes owner
+            request.user.role = "store_owner"
+            request.user.save()
             data = {
                 'html': render_to_string('search_stores.html', {'stores': Store.objects.filter(owner_id=request.user)}),
             }
@@ -81,14 +85,24 @@ def delete_store(request, id):
     
 
 def show_store_details(request, id):
-    store = get_object_or_404(Store, pk=id)
-    products = Product.objects.filter(store_id=store)
-    return render(request, 'show_store_details.html', {'store': store, 'products': products})
+  store = get_object_or_404(Store, pk=id)
+  search_query = strip_tags(request.GET.get('search', ''))
+
+  products = Product.objects.filter(store_id=store)
+  if search_query:
+      products = products.filter(name__icontains=search_query)
+
+  return render(request, 'show_store_details.html', {'store': store, 'products': products})
 
 def owner_store_view(request, id):
-    store = get_object_or_404(Store, pk=id)
-    products = Product.objects.filter(store_id=store)
-    return render(request, 'owner_store_view.html', {'store': store, 'products': products})
+  store = get_object_or_404(Store, pk=id)
+  search_query = strip_tags(request.GET.get('search', ''))
+
+  products = Product.objects.filter(store_id=store)
+  if search_query:
+      products = products.filter(name__icontains=search_query)
+
+  return render(request, 'owner_store_view.html', {'store': store, 'products': products, 'search_query': request.GET.get('search', ''),})
 
 def show_xml(request):
     data = Store.objects.all()
@@ -105,3 +119,4 @@ def show_xml_by_id(request, id):
 def show_json_by_id(request, id):
     data = Store.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+

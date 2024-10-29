@@ -8,6 +8,7 @@ from .models import Cart, CartItem, Order, OrderItem
 from .forms import PasswordConfirmForm
 from products.models import Product
 from decimal import Decimal
+from django.utils.html import strip_tags
 
 @login_required
 def cart_view(request):
@@ -71,10 +72,10 @@ def submit_order(request):
             order=order,
             product=item.product_id,
             quantity=item.quantity,
-            subtotal=float(item.subtotal)  # Convert to float for JSON serialization
+            subtotal=item.subtotal  # Convert to float for JSON serialization
           )
           # Pay the shop owner for the product sold
-          product.store_id.owner_id.money += float(item.subtotal)  # Convert to float
+          product.store_id.owner_id.money += item.subtotal  # Convert to float
           product.store_id.owner_id.save()
 
         # Clear cart items and update cart status
@@ -128,7 +129,7 @@ def receipt_view(request, order_id):
 @login_required
 def remove_cart_item(request):
   if request.method == "POST":
-    item_id = request.POST.get("item_id")
+    item_id = strip_tags(request.POST.get("item_id"))
     try:
       item = get_object_or_404(CartItem, id=item_id, cart_id__user_id=request.user, cart_id__status='pending')
       item.delete()  # Remove the item from the cart
@@ -182,7 +183,7 @@ def add_to_cart(request):
 def update_cart_item(request):
   if request.method == "POST":
     item_id = request.POST.get("item_id")
-    quantity = int(request.POST.get("quantity"))  # Convert to int
+    quantity = int(request.POST.get("quantity"))# Convert to int
     item = get_object_or_404(
       CartItem, 
       id=item_id, 
@@ -197,6 +198,11 @@ def update_cart_item(request):
       return JsonResponse({
         "success": False,
         "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
+    })
+    if item.quantity <= 0:
+       return JsonResponse({
+        "success": False,
+        "message": f"Can't complete purchase with zero items!"
     })
     item.subtotal = item.quantity * item.price
     item.save()
