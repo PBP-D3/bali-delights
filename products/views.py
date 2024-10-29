@@ -34,38 +34,55 @@ def add_product(request):
             return JsonResponse({"success": False, "message": "Form validation error.", "errors": form.errors})
     return JsonResponse({"success": False, "message": "Invalid request."})
 
-def show_products(request, category=None):
-    # Category filter
-    if request.method == 'GET' and 'category' in request.GET:
-        category = request.GET.get('category')
+from django.http import JsonResponse
 
-    search_query = request.GET.get('search', '')
-    
+def show_products(request, category=None, store_id=None):
+    # Initialize the queryset
     products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
 
     if category:
         products = products.filter(category=category)
-    
+
+    search_query = request.GET.get('search', '')
     if search_query:
         products = products.filter(name__icontains=search_query)
 
+        # Filter by store ID if provided
+        if store_id:
+            products = products.filter(store__id=store_id)
+
+        # Prepare the list of products to return in JSON
+        product_list = [{
+            'id': product.id,
+            'name': product.name,
+            'image_url': product.image_url,
+            'price': product.price,
+            'stock': product.stock,
+            'category': product.category,
+            'average_rating': product.average_rating,
+        } for product in products]
+
+        return JsonResponse({'products': product_list})
+
+    # Handle sorting
     sort_order = request.GET.get('sort', 'id')
     if sort_order == 'desc':
         products = products.order_by('-price')
     elif sort_order == 'asc':
         products = products.order_by('price')
     else:
-        products = products.order_by('id') 
+        products = products.order_by('id')
 
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
 
+    # Prepare context for rendering the full HTML view
     context = {
         'products': products,
         'categories': categories,
         'selected_category': category,
         'sort_order': sort_order,
-        'search_query': search_query,  
+        'search_query': search_query,
     }
 
     return render(request, "products.html", context)
