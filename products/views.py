@@ -91,6 +91,7 @@ def product_detail(request, product_id):
 
 def edit_product(request, product_id):
   product = get_object_or_404(Product, pk=product_id)
+<<<<<<< HEAD
   form = ProductForm(request.POST or None, instance=product)
 
   if form.is_valid() and request.method == "POST":
@@ -98,6 +99,19 @@ def edit_product(request, product_id):
     return HttpResponseRedirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
 
   context = {'form': form}
+=======
+  
+  form = ProductForm(request.POST or None, request.FILES or None, instance=product)
+
+  if request.method == "POST":
+    if form.is_valid():
+        form.save()
+        return redirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
+    else:
+        print("Form errors:", form.errors)
+
+  context = {'form': form, 'product': product}
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
   return render(request, "edit_product.html", context)
 
 def delete_product(request, product_id):
@@ -105,7 +119,7 @@ def delete_product(request, product_id):
 
     product.delete()
 
-    return HttpResponseRedirect(reverse('products:show_products'))
+    return HttpResponseRedirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
 
 def show_xml(request):
     data = Product.objects.filter(user=request.user)

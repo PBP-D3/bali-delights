@@ -1,9 +1,7 @@
 from django import forms
 from products.models import Product
 
-class ProductForm(forms.ModelForm):
-    image_file = forms.ImageField(required=False)  
-
+class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "description", "price", "stock", "category", "image_url", "image_file"]
+        fields = ["name", "description", "price", "stock", "category", "image_url"]

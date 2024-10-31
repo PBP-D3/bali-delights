@@ -61,9 +61,15 @@
         <a href="{% url 'products:product_detail' product.id %}">
           <div class="text-center h-[400px]">
             <h3 class="mb-2 text-lg font-bold h-14 line-clamp-2">{{ product.name }}</h3>
+<<<<<<< HEAD
             {% if product.image_url %}
               <img 
                 src="{{ product.image_url }}" 
+=======
+            {% if product.get_image %}
+              <img 
+                src="{{ product.get_image }}" 
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
                 alt="{{ product.name }}" 
                 class="object-cover w-full h-48 mb-4 rounded-md">
             {% else %} 
