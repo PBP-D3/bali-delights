@@ -3,6 +3,10 @@ from main.models import User
 from products.models import Product
 from stores.models import Store
 from reviews.models import Review, Like
+<<<<<<< HEAD
+=======
+from carts.models import Cart, CartItem
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
 
 class Command(BaseCommand):
     help = "DEV COMMAND: Fill database with a set of data for testing purposes"
@@ -19,7 +23,12 @@ class Command(BaseCommand):
         
         self.load_reviews()
         
+<<<<<<< HEAD
         self.load_likes()
+=======
+        self.load_carts()
+    
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
 
     def load_users(self):
         call_command('loaddata', 'initial_users')
@@ -47,6 +56,7 @@ class Command(BaseCommand):
         for review in Review.objects.all():
             # For example, if you need to ensure product fields are not null
             review.save()  # Save again if you've modified anything
+<<<<<<< HEAD
             
     def load_likes(self):
         call_command('loaddata', 'initial_likes')
@@ -54,4 +64,21 @@ class Command(BaseCommand):
         for like in Like.objects.all():
             # For example, if you need to ensure product fields are not null
             like.save()  # Save again if you've modified anything
+=======
+        for like in Like.objects.all():
+            # For example, if you need to ensure product fields are not null
+            like.save()  # Save again if you've modified anything
+            
+    def load_carts(self):
+        call_command('loaddata', 'initial_reviews')
+         # If you need to modify any fields after loading, do it here
+        for cart in Cart.objects.all():
+            # For example, if you need to ensure product fields are not null
+            cart.save()  # Save again if you've modified anything
+        for cartitem in CartItem.objects.all():
+            # For example, if you need to ensure product fields are not null
+            cartitem.save()  # Save again if you've modified anything
+        
+        
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
         

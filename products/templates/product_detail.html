@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+  <title>{{ product.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock meta %}
+
+{% block content %}
+<div class="flex flex-col items-center max-w-3xl gap-6 p-6 mx-auto border border-gray-300 rounded-lg md:flex-row">
+  {% if product.get_image %}
+    <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full max-w-xs rounded-lg md:max-w-sm">
+  {% endif %}
+  <div class="flex flex-col gap-4 text-center md:text-left">
+    <h1 class="text-2xl font-bold">{{ product.name }}</h1>
+    <p><strong>Price:</strong> {{ product.price }}</p>
+    <p><strong>Stock:</strong> {{ product.stock }}</p>
+    <p><strong>Category:</strong> {{ product.category }}</p>
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <div class="flex justify-center gap-4 mt-4 md:justify-start">
+      <a href="{% url 'reviews:product_reviews' product.id %}">
+        <button 
+          class="px-6 py-2 font-bold text-black transition-colors duration-300 rounded-lg bg-primary hover:bg-secondary ">
+          Check Reviews
+        </button>
+      </a>
+      {% if user.is_authenticated %}
+      
+      <a href="{% url 'carts:cart' %}">
+        <button 
+          onclick="addToCart({{ product.id }}, {{ product.stock }})"
+          class="px-6 py-2 font-bold text-white transition-colors duration-300 rounded-lg bg-secondary hover:bg-amber-800">
+          Add to Cart
+        </button>
+      </a>
+      {% endif %}
+    </div>
+    <a href="{% url 'products:show_products' %}">
+      <input type="button" value="Back" class="px-6 py-2 font-bold text-white transition-colors duration-300 bg-gray-500 rounded-lg cursor-pointer hover:bg-gray-600">
+    </a>
+  </div>
+</div>
+
+<script>
+  function addToCart(productId, stock) {
+    if (stock === 0) {
+      alert("This item is out of stock.");
+      return;
+    }
+
+    fetch("{% url 'carts:add_to_cart' %}", {
+      method: 'POST',
+      body: new URLSearchParams({ product_id: productId }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        redirect("{% url 'carts:cart' %}")
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    });
+  }
+</script>
+{% endblock content %}

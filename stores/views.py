@@ -7,6 +7,7 @@ from products.models import Product
 from django.core import serializers
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def show_stores(request):
     stores = Store.objects.all()
@@ -36,7 +37,6 @@ def search_stores(request):
     else:
         stores = Store.objects.all()
     
-    # Check if the request is for the user's stores and pass the variable
     is_user_store_view = request.path == '/stores/show_user_store/'
     
     html = render_to_string('search_stores.html', {'stores': stores, 'is_user_store_view': is_user_store_view})
@@ -45,28 +45,29 @@ def search_stores(request):
 @login_required(login_url="/login")
 def register_store(request):
     if request.method == 'POST':
-        form = StoreForm(request.POST)
+        form = StoreForm(request.POST, request.FILES)
         if form.is_valid():
             store = form.save(commit=False)
             store.owner_id = request.user
             store.save()
-            # Prepare response data
+            # user becomes owner
+            request.user.role = "store_owner"
+            request.user.save()
             data = {
                 'html': render_to_string('search_stores.html', {'stores': Store.objects.filter(owner_id=request.user)}),
             }
-            return JsonResponse(data)  # Return JSON response
+            return JsonResponse(data) 
 
-    # Handle GET request
     else:
         form = StoreForm()
-    
-    return render(request, 'register_store.html', {'form': form})  # Keep this for other usage
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required(login_url="/login")
 def edit_store(request, id):
     store = get_object_or_404(Store, id=id)
     if request.method == 'POST':
-        form = StoreForm(request.POST, instance=store)
+        form = StoreForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
             form.save()
             return redirect('stores:owner_store_view', store.id)
@@ -84,14 +85,24 @@ def delete_store(request, id):
     
 
 def show_store_details(request, id):
-    store = get_object_or_404(Store, pk=id)
-    products = Product.objects.filter(store_id=store)
-    return render(request, 'show_store_details.html', {'store': store, 'products': products})
+  store = get_object_or_404(Store, pk=id)
+  search_query = strip_tags(request.GET.get('search', ''))
+
+  products = Product.objects.filter(store_id=store)
+  if search_query:
+      products = products.filter(name__icontains=search_query)
+
+  return render(request, 'show_store_details.html', {'store': store, 'products': products})
 
 def owner_store_view(request, id):
-    store = get_object_or_404(Store, pk=id)
-    products = Product.objects.filter(store_id=store)
-    return render(request, 'owner_store_view.html', {'store': store, 'products': products})
+  store = get_object_or_404(Store, pk=id)
+  search_query = strip_tags(request.GET.get('search', ''))
+
+  products = Product.objects.filter(store_id=store)
+  if search_query:
+      products = products.filter(name__icontains=search_query)
+
+  return render(request, 'owner_store_view.html', {'store': store, 'products': products, 'search_query': request.GET.get('search', ''),})
 
 def show_xml(request):
     data = Store.objects.all()
@@ -108,3 +119,4 @@ def show_xml_by_id(request, id):
 def show_json_by_id(request, id):
     data = Store.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+

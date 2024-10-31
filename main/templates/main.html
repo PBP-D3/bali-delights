@@ -3,12 +3,18 @@
 
 {% block meta %}
 <title>Main</title>
+ <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 {% endblock meta %}
 
 {% block content %}
 
 <!-- Hero Section -->
+<<<<<<< HEAD
 <section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden">
+=======
+<section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden md:-mt-[50px] pr-4 md:pr-12">
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
     {% comment %} decoration {% endcomment %}
     <div class="absolute -top-[200px] rotate-0 opacity-5 md:opacity-10 h-fit w-fit md:top-[40px] md:-left-[300px] md:rotate-90">{% include "images/floral-pattern.html" %}</div>
     <div class="flex flex-col items-center mx-auto max-w-7xl md:flex-row">
@@ -29,27 +35,62 @@
 </section>
 
  <!-- Products Section -->
-<section class="py-20 bg-white1">
-  <div class="container mx-auto text-center">
-    <h2 class="text-3xl font-bold font-header text-black1">Explore Over <span class="underline underline-offset-2 font-header text-accent">100</span> Products</h2>
-    <p class="mt-4 text-lg text-gray-700 font-body">
+<section class="px-4 py-20 mx-auto md:px-8 bg-white1 w-max-7xl">
+  <div class="container flex flex-col gap-4 mx-auto text-center md:gap-8">
+    <h2 class="text-3xl font-bold font-header text-black1 ">Explore Over <span class="underline underline-offset-2 font-header text-accent"><a href="/products">100</a></span> Products</h2>
+    <p class="text-lg text-gray-700 font-body ">
       Discover the best of Bali with our curated selection of local products.
     </p>
-    <div class="grid grid-cols-1 gap-8 mt-8 sm:grid-cols-2 lg:grid-cols-3">
+
       <!-- Loop through top products -->
-      {% comment %} {% for product in top_products %}
-      <div class="p-4 border rounded-lg shadow-md border-secondary">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover w-full h-48 rounded-md">
-        <h3 class="mt-4 text-xl font-semibold font-header">{{ product.name }}</h3>
-        <p class="text-sm text-gray-600 font-body">{{ product.description|truncatewords:10 }}</p>
-        <p class="mt-2 font-bold text-accent">{{ product.price|floatformat:2 }} USD</p>
-      </div>
-      {% endfor %} {% endcomment %}
+      <div class="flex py-4 space-x-6 overflow-x-auto">
+        {% for review in top_reviews %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden min-w-[300px] w-72 flex-shrink-0 border border-secondary">
+                <!-- Product Image -->
+                <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
+                
+                <div class="p-6">
+                    <!-- Product and Reviewer Details -->
+                    <h3 class="text-lg font-semibold text-gray-900 min-h-24">
+                        {{ review.product_id.name}}
+                    </h3>
+                    <p class="text-gray-500">Reviewed by: 
+                        {% if user.is_authenticated %}
+                            {{ review.user_id.username }}
+                        {% else %}
+                            {{ review.user_id.username|slice:":1" }}{% for char in review.user_id.username %}*{% endfor %}
+                        {% endif %}
+                    </p>
+                    
+                    <!-- Rating and Likes -->
+                    <div class="grid grid-cols-2">
+                        <p class="mr-4 font-semibold text-yellow-500">Rating: {{ review.rating }} / 5</p>
+                        <div class="grid grid-cols-2 gap-0 justify-self-end">
+                            <span class="text-right text-gray-600">{{ review.num_likes }}</span>
+                            <img src="{% static 'logos/likes.png' %}" alt="Likes" class="ml-0">
+                        </div>
+                    </div>
+                    
+                    <!-- Short Description -->
+                    <p class="mt-4 text-gray-700">
+                        {{ review.comment|truncatechars:30 }}
+                    </p>
+
+                    <!-- Link to Product GANTI LINK 'products:product_details'-->
+                    <a href="{% url 'products:product_detail' review.product_id.id %}"
+                       class="block py-2 mt-6 font-bold text-center text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">
+                        View Product
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+
     </div>
     {% comment %} <a href="{% url 'main:product_list' %}" class="inline-block px-8 py-3 mt-8 text-white transition rounded-md bg-secondary font-body hover:bg-accent">Explore All Products</a> {% endcomment %}
   </div>
 </section>
 
+<<<<<<< HEAD
 <!-- Top Reviews Section -->
 <section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
   <div class="mx-auto max-w-7xl">
@@ -99,6 +140,35 @@
     </div>
 </div>
 </section> 
+=======
+<!-- Become a Store Owner Section -->
+<section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
+  <div class="flex flex-col px-4 mx-auto text-center max-w-7xl md:px-8 lg:px-16">
+    <h1 class="md:self-end max-md:text-center w-full md:w-[60%] lg:w-1/2 mb-8 text-3xl font-semibold text-gray-800 text-end">Become a Store Owner and Start Earning!</h1>
+    <div class="flex justify-start gap-12 h-fit max-md:flex-col">
+
+      <img src="{% static 'images/stack-money.png' %}" alt="Cuan" class="md:w-[35%] md:-mt-[6%]">
+      <ul class="flex flex-col justify-center gap-1 px-10 text-start -mt-[4%]">
+
+        <li class="text-lg text-gray-600 "> - Turn your passion into profit.</li>
+        <li class="text-lg text-gray-600 "> - Easily manage your products.</li>
+        <li class="text-lg text-gray-600 "> - Dedicated chat channels for each user.</li>
+        <li class="text-lg text-gray-600 "> - And many more benefits!</li>
+      </div>
+    </div>
+
+    {% if user.is_authenticated %}
+
+    <div class="flex justify-center w-full mx-auto mt-8 max-w-7xl md:mt-12">
+
+      <a href="/stores" class="px-6 py-3 text-lg font-semibold transition-colors duration-200 rounded-lg text-white1 bg-secondary hover:bg-[rgb(94,80,63)]">
+        Start Your Journey
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
 
 <!-- Join Now Section -->
 {% if not user.is_authenticated %}

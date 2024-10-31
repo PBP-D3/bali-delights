@@ -2,12 +2,19 @@
 {% load static %}
 
 {% block meta %}
+<<<<<<< HEAD
 
   <title>Main</title>
+=======
+  <title>Order History</title>
+   <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
+<<<<<<< HEAD
   <h1>Order History</h1>
   {% for cart in carts %}
     <div>
@@ -18,3 +25,78 @@
     </div>
   {% endfor %}
 {% endblock content %}
+=======
+<div class="container px-8 py-6 mx-auto max-w-7xl md:px-10 lg:px-20">
+  <h1 class="mb-3 text-2xl font-bold">Order History</h1>
+
+  {% if orders.count > 0 %}
+  <div class="flex justify-start space-x-3 transition-all">
+    <button id="sort-date" class="px-4 py-2 text-sm rounded text-white1 bg-accent hover:opacity-80">Sort by Date</button>
+    <button id="sort-amount" class="px-4 py-2 text-sm rounded text-white1 bg-accent hover:opacity-80">Sort by Amount</button>
+  </div>
+
+  <table class="min-w-full mt-5 divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Order Date</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Total Price</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="orders-list" class="bg-white divide-y divide-gray-200">
+      {% for order in orders %}
+      <tr data-date="{{ order.created_at }}" data-amount="{{ order.total_price }}">
+        <td class="px-6 py-4 whitespace-nowrap">{{ order.created_at }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">${{ order.total_price }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <a href="{% url 'carts:receipt_view' order.id %}" class="underline">View Receipt</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% else %}
+  <p>No orders found.</p>
+  {% endif %}
+</div>
+
+<script>
+  const ordersList = document.getElementById("orders-list");
+  let sortDirection = { date: 'asc', amount: 'asc' };  // Track sorting direction
+
+  document.getElementById("sort-date").addEventListener("click", () => {
+    toggleSort('date');
+  });
+
+  document.getElementById("sort-amount").addEventListener("click", () => {
+    toggleSort('amount');
+  });
+
+  function toggleSort(field) {
+    const reverse = sortDirection[field] === 'desc';
+    const rows = Array.from(ordersList.querySelectorAll("tr"));
+
+    rows.sort((a, b) => {
+      let valA = a.getAttribute(`data-${field}`);
+      let valB = b.getAttribute(`data-${field}`);
+      if (field === 'amount') {
+        valA = parseFloat(valA);
+        valB = parseFloat(valB);
+      }
+      return reverse ? (valA < valB ? 1 : -1) : (valA > valB ? 1 : -1);
+    });
+
+    // Toggle the sorting direction
+    sortDirection[field] = reverse ? 'asc' : 'desc';
+    rows.forEach(row => ordersList.appendChild(row));
+
+    // Update the URL with the new sort order
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('sort_by', field);
+    urlParams.set('sort_direction', sortDirection[field]);
+    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+  }
+</script>
+{% endblock %}
+>>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
