@@ -39,7 +39,7 @@ jobs:
           git checkout master
 
           # Push to master branch and capture the output
-          push_output=$(git push -f $PWS_URL main:master 2>&1)
+          push_output=$(git push $PWS_URL main:master 2>&1)
           if [[ $? -ne 0 ]]; then
             echo "Push failed with output: $push_output"
             echo "Error: Unable to push changes. Please check the error message above and resolve any conflicts manually."
