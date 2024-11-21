@@ -43,7 +43,7 @@
         {% for review in top_reviews %}
             <div class="bg-white shadow-lg rounded-lg overflow-hidden min-w-[300px] w-72 flex-shrink-0 border border-secondary">
                 <!-- Product Image -->
-                <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
+                <img src="{{ review.product_id.get_image }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
                 
                 <div class="p-6">
                     <!-- Product and Reviewer Details -->

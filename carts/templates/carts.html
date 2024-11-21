@@ -36,7 +36,7 @@
       <div id="cart-items" class="flex flex-col gap-10 p-4 overflow-y-scroll shadow-md rounded-xl">
       {% for item in items %}
         <div class="flex gap-4 rounded-md shadow-md cart-item shadow-accent">
-          <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}" height="90" width="90" class="self-center rounded-md" >
+          <img src="{{ item.product_id.get_image }}" alt="{{ item.product_id.name }}" height="90" width="90" class="self-center rounded-md" >
           <div class="flex justify-between py-6">
             <div class="flex flex-col gap-2">
               <p class="font-bold">{{ item.product_id.name }} </p>
@@ -79,8 +79,6 @@
         </form>
       </div>
     </div>
-
-    
   </div>
 {% endif %}
 

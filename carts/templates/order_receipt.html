@@ -20,7 +20,7 @@
     {% for item in items %}
       <div class="flex items-center justify-between py-2 border-b border-gray-300">
         <div class="flex items-center gap-4">
-          <img src="{{ item.product.image_url|default:'static/images/fallback_image.png' }}" 
+          <img src="{{ item.product.get_image|default:'static/images/fallback_image.png' }}" 
                alt="{{ item.product.name }}" 
                height="90" width="90"
                class="rounded-md" 

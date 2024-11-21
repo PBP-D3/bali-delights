@@ -9,7 +9,7 @@
             {% for review in user_reviews %}
                 <div class="flex w-3/4 p-6 space-x-4 bg-white border rounded-lg shadow-md review-item border-secondary" data-review-id="{{ review.id }}">
                     <div class="flex-shrink-0 w-24 h-24">
-                        <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-full rounded-md">
+                        <img src="{{ review.product_id.get_image }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-full rounded-md">
                     </div>
                     
                     <!-- Review Details GANTI reviews:product_reviews jadi products:product-details .....-->
