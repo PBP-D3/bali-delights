@@ -135,8 +135,6 @@ Penjual di aplikasi Bali Delights berfungsi sebagai penyedia produk suvenir yang
 
    - Penjual dapat melihat ulasan yang diberikan oleh pelanggan dan merespons feedback untuk meningkatkan layanan dan kualitas produk.
 
-4. **Analytics**
-   - Penjual dapat melihat total penjualan mereka serta chart penjualan berdasarkan produk/kategori.
 
 ## VI. Tautan Deployment
 
