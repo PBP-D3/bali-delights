@@ -16,4 +16,8 @@ urlpatterns = [
     path('delete/<int:id>/', delete_store, name='delete_store'),
     path('owner/<int:id>/', owner_store_view, name='owner_store_view'),
     path('search/', search_stores, name='search_stores'),
+    path('json/', show_json, name='show_json'),
+    path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
+    path('api/user_stores/', api_user_stores, name='api_user_stores'),
+    path('api/store_details/<int:id>/', api_store_details, name='api_store_details'),
 ]
