@@ -144,3 +144,44 @@ def toggle_like(request, review_id):
         return JsonResponse({'liked': liked, 'like_count': like_count}, status=200)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def product_reviews_json(request, product_id):
+    reviews = Review.objects.filter(product_id=product_id).select_related('user_id')
+    reviews_data = [
+        {
+            "id": review.id,
+            "comment": review.comment,
+            "rating": review.rating,
+            "user": {
+                "id": review.user_id.id,
+                "username": review.user_id.username,
+            },
+            "created_at": review.created_at,
+            "updated_at": review.updated_at,
+            "total_likes": review.like_set.count(),
+            "liked_by_user": review.like_set.filter(user_id=request.user.id).exists() if request.user.is_authenticated else False,
+        }
+        for review in reviews
+    ]
+    return JsonResponse(reviews_data, safe=False)
+
+@login_required
+def user_reviews_json(request):
+    user_reviews = Review.objects.filter(user_id=request.user).select_related('product_id')
+    user_reviews_data = [
+        {
+            "id": review.id,
+            "comment": review.comment,
+            "rating": review.rating,
+            "product": {
+                "id": review.product_id.id,
+                "name": review.product_id.name,
+            },
+            "created_at": review.created_at,
+            "updated_at": review.updated_at,
+            "total_likes": review.like_set.count(),
+            "liked_by_user": review.like_set.filter(user_id=request.user.id).exists(),
+        }
+        for review in user_reviews
+    ]
+    return JsonResponse(user_reviews_data, safe=False)

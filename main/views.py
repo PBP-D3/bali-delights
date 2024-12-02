@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse   # Tambahkan import redirect di baris ini
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -70,3 +70,22 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+def top_reviews_json(request):
+    top_reviews = Review.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:5]
+    top_reviews_data = [
+        {
+            "id": review.id,
+            "comment": review.comment,
+            "rating": review.rating,
+            "user": {
+                "id": review.user_id.id,
+                "username": review.user_id.username,
+            },
+            "created_at": review.created_at,
+            "updated_at": review.updated_at,
+            "total_likes": review.like_set.count(),
+            "liked_by_user": review.like_set.filter(user_id=request.user.id).exists() if request.user.is_authenticated else False,
+        }
+        for review in top_reviews
+    ]
+    return JsonResponse(top_reviews_data, safe=False)
