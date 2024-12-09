@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,6 +9,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.views.decorators.csrf import csrf_exempt
 
 def show_stores(request):
     stores = Store.objects.all()
@@ -62,6 +64,35 @@ def register_store(request):
         form = StoreForm()
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+def register_store_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            # Pastikan semua field disertakan
+            new_product = Product.objects.create(
+                user=request.user,  # Ambil user dari request yang sudah login
+                name=data["name"],
+                price=int(data["price"]),
+                description=data["description"],
+                stock=int(data["stock"]),
+                image=data['image'],
+                category=data["category"],  # Default category ke string kosong jika tidak ada
+            )
+
+            new_product.save()
+            return JsonResponse({"status": "success"}, status=200)
+
+        except KeyError as e:
+            # Tangani error jika ada field yang hilang
+            return JsonResponse({"status": "error", "message": f"Missing field: {str(e)}"}, status=400)
+        except Exception as e:
+            # Tangani error lain
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid HTTP method"}, status=405)
 
 @login_required(login_url="/login")
 def edit_store(request, id):
@@ -121,5 +152,5 @@ def show_json_by_id(request, id):
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def show_json_by_owner(request):
-    data = Store.objects.filter(owner_id=request.user)
+    data = Store.objects.filter(owner_id=request.jsonData['id'])
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")

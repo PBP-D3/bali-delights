@@ -12,6 +12,7 @@ urlpatterns = [
     path('load-all-stores/', load_all_stores, name='load_all_stores'),
     path('my-store/', show_user_store, name='show_user_store'),
     path('register-store/', register_store, name='register_store'),
+    path('register-store-flutter/', register_store_flutter, name='register_store_flutter'),
     path('edit/<int:id>/', edit_store, name='edit_store'),
     path('delete/<int:id>/', delete_store, name='delete_store'),
     path('owner/<int:id>/', owner_store_view, name='owner_store_view'),
