@@ -45,8 +45,19 @@ INSTALLED_APPS = [
     'stores',
     'carts',
     'django_browser_reload',
-    'theme'
+    'theme',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # Token-based authentication
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Restrict access to authenticated users by default
+    ],
+}
 
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
