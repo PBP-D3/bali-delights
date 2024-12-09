@@ -89,3 +89,83 @@ def top_reviews_json(request):
         for review in top_reviews
     ]
     return JsonResponse(top_reviews_data, safe=False)
+
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def LoginView(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        username = body.get('username')
+        password = body.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            response = JsonResponse({
+                'status': 'success',
+                'message': 'Logged in successfully',
+                'user': {
+                    'username': user.username,
+                    'id': user.id
+                }
+            })
+            response.set_cookie(
+                'sessionid',
+                request.session.session_key,
+                httponly=True,
+                samesite='None',
+                secure=True
+            )
+            return response
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def LogoutView(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            logout(request)
+            response = JsonResponse({'status': 'success', 'message': 'Logged out successfully'})
+            response.delete_cookie('sessionid')
+            return response
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'}, status=401)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def RegisterView(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        username = body.get('username')
+        password = body.get('password')
+        password_confirm = body.get('password_confirm')
+        
+        if password != password_confirm:
+            return JsonResponse({'status': 'error', 'message': 'Passwords do not match'}, status=400)
+        
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=400)
+        
+        user = User.objects.create_user(username=username, password=password)
+        return JsonResponse({'status': 'success', 'message': 'User registered successfully'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def check_auth_status(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'success',
+            'isAuthenticated': True,
+            'user': {
+                'username': request.user.username,
+                'id': request.user.id
+            }
+        })
+    return JsonResponse({
+        'status': 'success',
+        'isAuthenticated': False
+    })

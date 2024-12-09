@@ -210,3 +210,80 @@ def update_cart_item(request):
     return JsonResponse({"success": True, "subtotal": item.subtotal})
   
   return JsonResponse({"success": False}, status=400)
+
+@login_required
+@csrf_exempt
+def cart_view_json(request):
+    cart, created = Cart.objects.get_or_create(user_id=request.user, status='pending')
+    items = cart.items.select_related('product_id')
+    total_price = sum(item.subtotal for item in items)
+    
+    items_data = [{
+        'id': item.id,
+        'product_name': item.product_id.name,
+        'quantity': item.quantity,
+        'price': float(item.price),
+        'subtotal': float(item.subtotal)
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'cart': {
+            'id': cart.id,
+            'total_price': float(total_price),
+            'items': items_data,
+            'user': request.user.username
+        }
+    })
+
+@login_required
+@csrf_exempt
+def order_history_json(request):
+    sort_by = request.GET.get('sort_by', 'created_at')
+    sort_direction = request.GET.get('sort_direction', 'asc')
+    
+    if sort_by not in ['created_at', 'total_price']:
+        sort_by = 'created_at'
+    
+    if sort_direction == 'desc':
+        orders = Order.objects.filter(user_id=request.user).order_by(f'-{sort_by}')
+    else:
+        orders = Order.objects.filter(user_id=request.user).order_by(sort_by)
+    
+    orders_data = [{
+        'id': order.id,
+        'total_price': float(order.total_price),
+        'created_at': order.created_at.isoformat(),
+        'items': [{
+            'product': item.product.name if item.product else 'Deleted Product',
+            'quantity': item.quantity,
+            'subtotal': float(item.subtotal)
+        } for item in order.order_items.all()]
+    } for order in orders]
+    
+    return JsonResponse({
+        'success': True,
+        'orders': orders_data
+    })
+
+@login_required
+@csrf_exempt
+def receipt_view_json(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.order_items.all()
+    
+    items_data = [{
+        'product': item.product.name if item.product else 'Deleted Product',
+        'quantity': item.quantity,
+        'subtotal': float(item.subtotal)
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'order': {
+            'id': order.id,
+            'total_price': float(order.total_price),
+            'created_at': order.created_at.isoformat(),
+            'items': items_data
+        }
+    })
