@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 class User(AbstractUser):
+    objects = UserManager()
     ROLE_CHOICES = [
         ('normal_user', 'Normal User'),
         ('shop_owner', 'Shop Owner'),
