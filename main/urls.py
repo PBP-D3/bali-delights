@@ -12,6 +12,6 @@ urlpatterns = [
     path('top-reviews-json/', top_reviews_json, name='top_reviews_json'),
     path('api/login/', LoginView, name='api_login'),
     path('api/logout/', LogoutView, name='api_logout'),
-        path('api/register/', RegisterView, name='api_register'),
+    path('api/register/', RegisterView, name='api_register'),
     path('api/top-reviews/', top_reviews_json, name='api_top_reviews')
 ]
