@@ -94,78 +94,113 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.contrib.auth import authenticate, login as auth_login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+import json
+from django.contrib.auth import logout as auth_logout
+
+from main.models import User  # Import custom User model 
 
 @csrf_exempt
 def LoginView(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            auth_login(request, user)
+            # Status login sukses.
+            return JsonResponse({
+                "username": user.username,
+                "status": True,
+                "message": "Login sukses!"
+                # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Login gagal, akun dinonaktifkan."
+            }, status=401)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Login gagal, periksa kembali email atau kata sandi."
+        }, status=401)
+
+@csrf_exempt 
+def RegisterView(request):
     if request.method == 'POST':
-        body = json.loads(request.body)
-        username = body.get('username')
-        password = body.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            response = JsonResponse({
-                'status': 'success',
-                'message': 'Logged in successfully',
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            password_confirm = data.get('password_confirm')
+            
+            # Validate required fields
+            if not all([username, password, password_confirm]):
+                return JsonResponse({
+                    'status': False,
+                    'message': 'All fields are required'
+                }, status=400)
+            
+            # Check password match
+            if password != password_confirm:
+                return JsonResponse({
+                    'status': False, 
+                    'message': 'Passwords do not match'
+                }, status=400)
+            
+            # Check username availability
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({
+                    'status': False,
+                    'message': 'Username already exists'
+                }, status=400)
+            
+            # Create user with custom model
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                money=0  # Set initial money value
+            )
+            
+            return JsonResponse({
+                'status': True,
+                'message': 'Registration successful',
                 'user': {
                     'username': user.username,
-                    'id': user.id
+                    'id': user.id,
+                    'money': user.money
                 }
-            })
-            response.set_cookie(
-                'sessionid',
-                request.session.session_key,
-                httponly=True,
-                samesite='None',
-                secure=True
-            )
-            return response
-        else:
-            return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': False,
+                'message': 'Invalid JSON data'
+            }, status=400)
+            
+    return JsonResponse({
+        'status': False,
+        'message': 'Method not allowed'
+    }, status=405)
 
 @csrf_exempt
 def LogoutView(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            logout(request)
-            response = JsonResponse({'status': 'success', 'message': 'Logged out successfully'})
-            response.delete_cookie('sessionid')
-            return response
-        return JsonResponse({'status': 'error', 'message': 'Not logged in'}, status=401)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+    username = request.user.username
 
-@csrf_exempt
-def RegisterView(request):
-    if request.method == 'POST':
-        body = json.loads(request.body)
-        username = body.get('username')
-        password = body.get('password')
-        password_confirm = body.get('password_confirm')
-        
-        if password != password_confirm:
-            return JsonResponse({'status': 'error', 'message': 'Passwords do not match'}, status=400)
-        
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=400)
-        
-        user = User.objects.create_user(username=username, password=password)
-        return JsonResponse({'status': 'success', 'message': 'User registered successfully'})
-    
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
-
-@csrf_exempt
-def check_auth_status(request):
-    if request.user.is_authenticated:
+    try:
+        auth_logout(request)
         return JsonResponse({
-            'status': 'success',
-            'isAuthenticated': True,
-            'user': {
-                'username': request.user.username,
-                'id': request.user.id
-            }
-        })
-    return JsonResponse({
-        'status': 'success',
-        'isAuthenticated': False
-    })
+            "username": username,
+            "status": True,
+            "message": "Logout berhasil!"
+        }, status=200)
+    except:
+        return JsonResponse({
+        "status": False,
+        "message": "Logout gagal."
+        }, status=401)
