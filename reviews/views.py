@@ -156,6 +156,10 @@ def product_reviews_json(request, product_id):
                 "id": review.user_id.id,
                 "username": review.user_id.username,
             },
+            "product": {
+                "id": review.product_id.id,
+                "name": review.product_id.name,
+            },
             "created_at": review.created_at,
             "updated_at": review.updated_at,
             "total_likes": review.like_set.count(),
@@ -173,6 +177,10 @@ def user_reviews_json(request):
             "id": review.id,
             "comment": review.comment,
             "rating": review.rating,
+            "user": {
+                "id": review.user_id.id,
+                "username": review.user_id.username,
+            },
             "product": {
                 "id": review.product_id.id,
                 "name": review.product_id.name,
