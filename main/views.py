@@ -89,3 +89,118 @@ def top_reviews_json(request):
         for review in top_reviews
     ]
     return JsonResponse(top_reviews_data, safe=False)
+
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.contrib.auth import authenticate, login as auth_login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+import json
+from django.contrib.auth import logout as auth_logout
+
+from main.models import User  # Import custom User model 
+
+@csrf_exempt
+def LoginView(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            auth_login(request, user)
+            # Status login sukses.
+            return JsonResponse({
+                "username": user.username,
+                "status": True,
+                "message": "Login sukses!"
+                # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Login gagal, akun dinonaktifkan."
+            }, status=401)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Login gagal, periksa kembali email atau kata sandi."
+        }, status=401)
+
+@csrf_exempt 
+def RegisterView(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            password_confirm = data.get('password_confirm')
+            
+            # Validate required fields
+            if not all([username, password, password_confirm]):
+                return JsonResponse({
+                    'status': False,
+                    'message': 'All fields are required'
+                }, status=400)
+            
+            # Check password match
+            if password != password_confirm:
+                return JsonResponse({
+                    'status': False, 
+                    'message': 'Passwords do not match'
+                }, status=400)
+            
+            # Check username availability
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({
+                    'status': False,
+                    'message': 'Username already exists'
+                }, status=400)
+            
+            # Create user with custom model
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                money=0  # Set initial money value
+            )
+            
+            return JsonResponse({
+                'status': True,
+                'message': 'Registration successful',
+                'user': {
+                    'username': user.username,
+                    'id': user.id,
+                    'money': user.money
+                }
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': False,
+                'message': 'Invalid JSON data'
+            }, status=400)
+            
+    return JsonResponse({
+        'status': False,
+        'message': 'Method not allowed'
+    }, status=405)
+
+@csrf_exempt
+def LogoutView(request):
+    username = request.user.username
+
+    try:
+        auth_logout(request)
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Logout berhasil!"
+        }, status=200)
+    except:
+        return JsonResponse({
+        "status": False,
+        "message": "Logout gagal."
+        }, status=401)

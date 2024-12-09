@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-nqz=h6)ugh(81x68-$sgq@m@s$%qj8%8#7*f3d0kq!pmx(r@m&
 PRODUCTION = os.getenv("PRODUCTION", False)
 DEBUG = not PRODUCTION
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhammad-azzam31-balidelights.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhammad-azzam31-balidelights.pbp.cs.ui.ac.id", "10.2.2.2"]
 
 # Application definition
 
@@ -45,8 +45,26 @@ INSTALLED_APPS = [
     'stores',
     'carts',
     'django_browser_reload',
-    'theme'
+    'theme',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # Token-based authentication
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Restrict access to authenticated users by default
+    ],
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
@@ -58,6 +76,7 @@ AUTH_USER_MODEL = 'main.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # ini
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
