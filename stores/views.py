@@ -120,21 +120,6 @@ def show_json_by_id(request, id):
     data = Store.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
-@login_required(login_url="/login")
-def api_user_stores(request):
-    """API untuk mengirimkan semua store yang dimiliki oleh user yang login."""
-    user = request.user
-    stores = Store.objects.filter(owner_id=user).values('id', 'name', 'photo', 'location', 'owner_id')
-    return JsonResponse(list(stores), safe=False)
-
-def api_store_details(request, id):
-    """API untuk mengirimkan detail store berdasarkan ID."""
-    store = get_object_or_404(Store, pk=id)
-    data = {
-        'id': store.id,
-        'name': store.name,
-        'photo': store.photo,
-        'location': store.location,
-        'owner_id': store.owner_id_id,  # Foreign key, ambil id pemiliknya
-    }
-    return JsonResponse(data)
+def show_json_by_owner(request):
+    data = Store.objects.filter(owner_id=request.user)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
