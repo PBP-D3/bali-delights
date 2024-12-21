@@ -1,37 +1,148 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-
+{% block meta %}
+<title>Edit Product</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock meta %}
 {% block content %}
-<div class="flex flex-col min-h-screen bg-gray-100">
-    <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
-      <h1 class="text-3xl font-bold text-center mb-8 text-black">Edit Product Entry</h1>
-    
-      <div class="bg-white rounded-lg p-6 form-style">
-        <form method="POST" class="space-y-6">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="flex flex-col">
-                    <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
-                        {{ field.label }}
-                    </label>
-                    <div class="w-full">
-                        {{ field }}
-                    </div>
-                    {% if field.help_text %}
-                        <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            <div class="flex justify-center mt-6">
-                <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
-                    Edit Product Entry
-                </button>
-            </div>
-        </form>
-    </div>
-    </div>
+
+<div class="relative w-full px-10 mx-auto overflow-hidden bg-white rounded-lg shadow-lg max-w-7xl md:px-20">  <!-- Increased max width -->
+  <div class="px-6 py-4 text-2xl font-bold text-center text-white bg-secondary font-body">
+    Edit Your Product
   </div>
-{% endblock %}
+  <form id="edit-product-form" class="px-6 py-4" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Product Name Field -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_name">
+        Product Name
+      </label>
+      <input
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_name" name="name" type="text" placeholder="Enter product name" value="{{ product.name }}" required>
+    </div>
+
+    <!-- Product Description Field -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_description">
+        Product Description
+      </label>
+      <textarea
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_description" name="description" rows="4" placeholder="Enter product description">{{ product.description }}</textarea>
+    </div>
+
+    <!-- Product Price Field -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_price">
+        Product Price
+      </label>
+      <input
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_price" name="price" type="number" step="0.01" placeholder="Enter product price" value="{{ product.price }}" required>
+    </div>
+
+    <!-- Product Stock Field -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_stock">
+        Product Stock
+      </label>
+      <input
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_stock" name="stock" type="number" placeholder="Enter product stock" value="{{ product.stock }}" required>
+    </div>
+
+    <!-- Product Category Field -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_category">
+        Product Category
+      </label>
+      <select
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_category" name="category" required>
+        <option value="">Select a category</option>
+        <option value="Clothes" {% if product.category == "Clothes" %}selected{% endif %}>Clothes</option>
+        <option value="Jewelries" {% if product.category == "Jewelries" %}selected{% endif %}>Jewelries</option>
+        <option value="Crafts" {% if product.category == "Crafts" %}selected{% endif %}>Crafts</option>
+        <option value="Arts" {% if product.category == "Arts" %}selected{% endif %}>Arts</option>
+        <option value="Snacks" {% if product.category == "Snacks" %}selected{% endif %}>Snacks</option>
+        <option value="Drinks" {% if product.category == "Drinks" %}selected{% endif %}>Drinks</option>
+      </select>
+    </div>
+
+    <!-- Image Selection Option -->
+    <div class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700">
+        Product Image Option
+      </label>
+      <div class="flex items-center gap-4">
+        <label class="flex items-center text-gray-700">
+          <input type="radio" name="choice" value="upload" class="mr-2" checked> Upload Image
+        </label>
+        <label class="flex items-center text-gray-700">
+          <input type="radio" name="choice" value="url" class="mr-2"> Image URL
+        </label>
+      </div>
+    </div>
+
+    <!-- Product Image Upload Field -->
+    <div id="photo-upload-field" class="mb-4">
+      <label class="block mb-2 font-bold text-gray-700" for="id_photo_upload">
+        Upload Product Image
+      </label>
+      <input
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_photo_upload" name="photo_upload" type="file">
+    </div>
+
+    <!-- Product Image URL Field -->
+    <div id="photo-url-field" class="mb-4" style="display: none;">
+      <label class="block mb-2 font-bold text-gray-700" for="id_photo">
+        Product Image URL
+      </label>
+      <input
+        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="id_photo" name="photo" type="text" placeholder="Enter image URL">
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex items-center justify-center gap-4 mb-4">
+      <button
+        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline"
+        type="submit">
+        Update Product
+      </button>
+      <a
+        href="{% url 'stores:owner_store_view' product.store_id.id %}"
+        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+        Back
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const choiceRadios = document.querySelectorAll("input[name='choice']");
+    const uploadField = document.getElementById("photo-upload-field");
+    const urlField = document.getElementById("photo-url-field");
+
+    function toggleFields() {
+      if (document.querySelector("input[name='choice']:checked").value === "upload") {
+        uploadField.style.display = "block";
+        urlField.style.display = "none";
+      } else {
+        uploadField.style.display = "none";
+        urlField.style.display = "block";
+      }
+    }
+
+    choiceRadios.forEach(radio => radio.addEventListener("change", toggleFields));
+    toggleFields();  // Initial toggle based on the default selection
+  });
+</script>
+
+{% endblock content %}

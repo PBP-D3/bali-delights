@@ -1,9 +1,23 @@
 {% extends "base.html" %}
 {% load static %}
+<<<<<<< HEAD
 {% block content %}
 <div class="max-w-4xl px-4 mx-auto mt-4 product-reviews">
     <!-- url product ke product_details -->
     <a href="{% url 'reviews:product_reviews' product.id %}" class="justify-self-start">
+=======
+{% block meta %}
+<title>Product Review</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+ <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock meta %}
+{% block content %}
+
+<div class="px-4 mx-auto max-lg:pt-8 max-w-7xl md:px-12 lg:px-20 product-reviews">
+    <!-- url product ke product_details -->
+    <a href="{% url 'products:product_detail' product.id %}" class="justify-self-start">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
         <button class="px-4 py-2 mb-4 font-bold text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">Back</button>
     </a>
     <h1 class="mb-6 text-2xl font-semibold text-gray-800">Reviews for<h1>

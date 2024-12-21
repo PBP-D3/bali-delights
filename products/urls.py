@@ -11,9 +11,13 @@ urlpatterns = [
     path('xml/', show_xml, name='show_xml'),
     path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
     path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'),
-    path('edit-product/<int:product_id>', edit_product, name='edit_product'),
+    path('edit-product/<int:product_id>/', edit_product, name='edit_product'),
     path('delete/<int:product_id>/', delete_product, name='delete_product'),
+<<<<<<< HEAD
     path("add-product/", add_product, name="add_product"),
     path("api/products/", api_get_products, name="api_get_products"),
+=======
+    path('api/store/<int:store_id>/add-product/', add_product, name='add_product'),
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
 ]
 

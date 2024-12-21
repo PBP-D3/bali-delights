@@ -8,32 +8,43 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 from django.http import JsonResponse
-from django.db.models import Avg
-from django.conf import settings
-from django.core.files.storage import FileSystemStorage
-import os
-from django.core.paginator import Paginator
 
 @login_required
 @require_POST
 def add_product(request):
-    if request.method == "POST" and request.is_ajax():
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"success": True})
-        else:
-            return JsonResponse({"success": False, "message": "Form validation error."})
-    return JsonResponse({"success": False, "message": "Invalid request."})
+    print("test add")
+    if request.user.role != "shop_owner":
+        return JsonResponse({"success": False, "message": "Permission denied."})
+
+    if request.method == "POST":
+        print(request.POST)
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        stock = request.POST.get("stock")
+        category = request.POST.get("category")
+        image_url = request.POST.get("image_url")
+        user = request.user  
+
+        new_product = Product(
+            name=name,
+            description=description,
+            price=price,
+            stock=stock,
+            category=category,
+            image_url=image_url,
+            store_id=user.store 
+        )
+        new_product.save()
+
+        return JsonResponse({"success": True, "message": "Product added successfully!"})
+
+    return JsonResponse({"success": False, "message": "Invalid request method."})
 
 def show_products(request, category=None):
-    # Category filter
+   # Category filter
     if request.method == 'GET' and 'category' in request.GET:
         category = request.GET.get('category')
-
-    search_query = request.GET.get('search', '')
-    
-    products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
 
     if category:
         products = products.filter(category=category)
@@ -46,18 +57,16 @@ def show_products(request, category=None):
         products = products.order_by('-price')
     elif sort_order == 'asc':
         products = products.order_by('price')
-    else:
-        products = products.order_by('id') 
 
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
 
+    # Prepare context for rendering the full HTML view
     context = {
         'products': products,
         'categories': categories,
         'selected_category': category,
         'sort_order': sort_order,
-        'search_query': search_query,  
     }
 
     return render(request, "products.html", context)
@@ -67,23 +76,26 @@ def product_detail(request, product_id):
     return render(request, "product_detail.html", {"product": product})
 
 def edit_product(request, product_id):
-    product = Product.objects.get(pk = product_id)
+  product = get_object_or_404(Product, pk=product_id)
+  
+  form = ProductForm(request.POST or None, request.FILES or None, instance=product)
 
-    form = ProductForm(request.POST or None, instance=product)
-
-    if form.is_valid() and request.method == "POST":
+  if request.method == "POST":
+    if form.is_valid():
         form.save()
-        return HttpResponseRedirect(reverse('products:show_products'))
+        return redirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
+    else:
+        print("Form errors:", form.errors)
 
-    context = {'form': form}
-    return render(request, "edit_product.html", context)
+  context = {'form': form, 'product': product}
+  return render(request, "edit_product.html", context)
 
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     product.delete()
 
-    return HttpResponseRedirect(reverse('products:show_products'))
+    return HttpResponseRedirect(reverse('stores:owner_store_view', args=[product.store_id.id]))
 
 def show_xml(request):
     data = Product.objects.filter(user=request.user)
