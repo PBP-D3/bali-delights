@@ -32,6 +32,9 @@ class CartItem(models.Model):
   def product_name(self):
     return self.product_id.name
 
+  def get_image(self):
+    return self.product_id.get_image()
+
 class Order(models.Model):  
   user_id = models.ForeignKey(User, on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -48,3 +51,8 @@ class OrderItem(models.Model):
 
   def __str__(self):
     return f'{self.product.name} x {self.quantity}'
+
+  def get_image(self):
+    if self.product:
+      return self.product.get_image()
+    return None
