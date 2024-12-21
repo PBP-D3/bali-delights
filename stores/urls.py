@@ -20,4 +20,6 @@ urlpatterns = [
     path('json/', show_json, name='show_json'),
     path('owner_json/', show_json_by_owner, name='show_json_by_owner'),
     path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
+    path('edit-flutter/<int:store_id>/', edit_store_flutter, name='edit_store_flutter'),
+    path('delete-flutter/<int:store_id>/', delete_store_flutter, name='delete_store_flutter'),
 ]
