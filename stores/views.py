@@ -65,11 +65,26 @@ def register_store(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Store
+import json
+import base64
+from django.core.files.base import ContentFile
+
 @csrf_exempt
 def register_store_flutter(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            photo_upload = data.get('photo_upload', "")
+            if photo_upload:
+                format, imgstr = photo_upload.split(';base64,') 
+                ext = format.split('/')[-1] 
+                photo_upload = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            else:
+                photo_upload = None
 
             # Create a new store
             new_store = Store.objects.create(
@@ -77,7 +92,7 @@ def register_store_flutter(request):
                 name=data["name"],
                 location=data["location"],
                 description=data["description"],
-                photo_upload=data.get("photo_upload", ""),
+                photo_upload=photo_upload,
                 photo=data.get("photo", ""),
             )
 
