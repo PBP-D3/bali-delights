@@ -43,7 +43,7 @@ def submit_order(request):
 
         # Check for sufficient funds
         if request.user.money < total_price:
-          return JsonResponse({"success": False, "message": "Insufficient funds."})
+          return JsonResponse({"success": False, "message": "Insufficient funds."}, status=403)
 
         # Check if the user is trying to buy their own product
         for item in items:
@@ -52,9 +52,9 @@ def submit_order(request):
             return JsonResponse({
               "success": False,
               "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
-          })
+          }, status=403)
           if product.store_id.owner_id == request.user:
-            return JsonResponse({"success": False, "message": "You cannot buy your own product."})
+            return JsonResponse({"success": False, "message": "You cannot buy your own product."}, status=403)
 
         # Deduct from user's balance
         request.user.money -= total_price
@@ -87,7 +87,7 @@ def submit_order(request):
           "success": True,
           "total_price": total_price,
           "remaining_balance": request.user.money
-        })
+        }, status=200)
 
       except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Cart not found."}, status=404)
@@ -223,7 +223,8 @@ def cart_view_json(request):
         'product_name': item.product_id.name,
         'quantity': item.quantity,
         'price': float(item.price),
-        'subtotal': float(item.subtotal)
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
     } for item in items]
     
     return JsonResponse({
@@ -257,7 +258,8 @@ def order_history_json(request):
         'items': [{
             'product': item.product.name if item.product else 'Deleted Product',
             'quantity': item.quantity,
-            'subtotal': float(item.subtotal)
+            'subtotal': float(item.subtotal),
+            'image': item.get_image()
         } for item in order.order_items.all()]
     } for order in orders]
     
@@ -275,7 +277,8 @@ def receipt_view_json(request, order_id):
     items_data = [{
         'product': item.product.name if item.product else 'Deleted Product',
         'quantity': item.quantity,
-        'subtotal': float(item.subtotal)
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
     } for item in items]
     
     return JsonResponse({
