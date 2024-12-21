@@ -72,7 +72,8 @@ def logout_user(request):
 
 def top_reviews_json(request):
     top_reviews = Review.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:5]
-    top_reviews_data = [
+    
+    reviews_data = [
         {
             "id": review.id,
             "comment": review.comment,
@@ -81,6 +82,11 @@ def top_reviews_json(request):
                 "id": review.user_id.id,
                 "username": review.user_id.username,
             },
+            "product": {
+                "id": review.product_id.id,
+                "name": review.product_id.name,
+                "image": review.product_id.get_image(),
+            },
             "created_at": review.created_at,
             "updated_at": review.updated_at,
             "total_likes": review.like_set.count(),
@@ -88,7 +94,12 @@ def top_reviews_json(request):
         }
         for review in top_reviews
     ]
-    return JsonResponse(top_reviews_data, safe=False)
+    
+    response_data = {
+        "reviews": reviews_data
+    }
+    
+    return JsonResponse(response_data, safe=False)
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
