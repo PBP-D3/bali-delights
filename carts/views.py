@@ -46,13 +46,21 @@ def submit_order(request):
 
         # Check for sufficient funds
         if request.user.money < total_price:
-          return JsonResponse({"success": False, "message": "Insufficient funds."})
+          return JsonResponse({"success": False, "message": "Insufficient funds."}, status=403)
 
         # Check if the user is trying to buy their own product
         for item in items:
           product = item.product_id
+<<<<<<< HEAD
+=======
+          if item.quantity > product.stock:
+            return JsonResponse({
+              "success": False,
+              "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
+          }, status=403)
+>>>>>>> 9cdca71d936f069adf750f8f008f41b3ec6b2b75
           if product.store_id.owner_id == request.user:
-            return JsonResponse({"success": False, "message": "You cannot buy your own product."})
+            return JsonResponse({"success": False, "message": "You cannot buy your own product."}, status=403)
 
         # Deduct from user's balance
         request.user.money -= total_price
@@ -85,7 +93,7 @@ def submit_order(request):
           "success": True,
           "total_price": total_price,
           "remaining_balance": request.user.money
-        })
+        }, status=200)
 
       except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Cart not found."}, status=404)
@@ -208,3 +216,83 @@ def update_cart_item(request):
     return JsonResponse({"success": True, "subtotal": item.subtotal})
   
   return JsonResponse({"success": False}, status=400)
+
+@login_required
+@csrf_exempt
+def cart_view_json(request):
+    cart, created = Cart.objects.get_or_create(user_id=request.user, status='pending')
+    items = cart.items.select_related('product_id')
+    total_price = sum(item.subtotal for item in items)
+    
+    items_data = [{
+        'id': item.id,
+        'product_name': item.product_id.name,
+        'quantity': item.quantity,
+        'price': float(item.price),
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'cart': {
+            'id': cart.id,
+            'total_price': float(total_price),
+            'items': items_data,
+            'user': request.user.username
+        }
+    })
+
+@login_required
+@csrf_exempt
+def order_history_json(request):
+    sort_by = request.GET.get('sort_by', 'created_at')
+    sort_direction = request.GET.get('sort_direction', 'asc')
+    
+    if sort_by not in ['created_at', 'total_price']:
+        sort_by = 'created_at'
+    
+    if sort_direction == 'desc':
+        orders = Order.objects.filter(user_id=request.user).order_by(f'-{sort_by}')
+    else:
+        orders = Order.objects.filter(user_id=request.user).order_by(sort_by)
+    
+    orders_data = [{
+        'id': order.id,
+        'total_price': float(order.total_price),
+        'created_at': order.created_at.isoformat(),
+        'items': [{
+            'product': item.product.name if item.product else 'Deleted Product',
+            'quantity': item.quantity,
+            'subtotal': float(item.subtotal),
+            'image': item.get_image()
+        } for item in order.order_items.all()]
+    } for order in orders]
+    
+    return JsonResponse({
+        'success': True,
+        'orders': orders_data
+    })
+
+@login_required
+@csrf_exempt
+def receipt_view_json(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.order_items.all()
+    
+    items_data = [{
+        'product': item.product.name if item.product else 'Deleted Product',
+        'quantity': item.quantity,
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'order': {
+            'id': order.id,
+            'total_price': float(order.total_price),
+            'created_at': order.created_at.isoformat(),
+            'items': items_data
+        }
+    })

@@ -7,6 +7,7 @@ from products.models import Product
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.forms.models import model_to_dict
 from django.db.models import Count
 
@@ -35,6 +36,30 @@ def create_review(request, product_id):
                'product': product
                }
     return render(request, "create_review.html", context)
+
+@csrf_exempt
+@login_required
+@require_POST
+def create_review_json(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+    
+    form = ReviewForm(data)
+    
+    if form.is_valid():
+        new_review = form.save(commit=False)
+        new_review.user_id = request.user
+        new_review.product_id = product
+        new_review.save()
+        
+        created_review = model_to_dict(new_review)
+        return JsonResponse({'success': True, 'review': created_review}, status=201)
+    else:
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 @csrf_exempt
 @login_required
@@ -148,7 +173,10 @@ def toggle_like(request, review_id):
 =======
 
 def product_reviews_json(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product_id=product_id).select_related('user_id')
+    user_review_exists = reviews.filter(user_id=request.user.id).exists() if request.user.is_authenticated else True
+    
     reviews_data = [
         {
             "id": review.id,
@@ -158,6 +186,11 @@ def product_reviews_json(request, product_id):
                 "id": review.user_id.id,
                 "username": review.user_id.username,
             },
+            "product": {
+                "id": review.product_id.id,
+                "name": review.product_id.name,
+                "image": review.product_id.get_image(),
+            },
             "created_at": review.created_at,
             "updated_at": review.updated_at,
             "total_likes": review.like_set.count(),
@@ -165,7 +198,18 @@ def product_reviews_json(request, product_id):
         }
         for review in reviews
     ]
-    return JsonResponse(reviews_data, safe=False)
+    
+    response_data = {
+        "product": {
+            "id": product.id,
+            "name": product.name,
+            "image": product.get_image(),
+        },
+        "reviews": reviews_data,
+        "user_review_exists": user_review_exists
+    }
+    
+    return JsonResponse(response_data, safe=False)
 
 @login_required
 def user_reviews_json(request):
@@ -175,9 +219,14 @@ def user_reviews_json(request):
             "id": review.id,
             "comment": review.comment,
             "rating": review.rating,
+            "user": {
+                "id": review.user_id.id,
+                "username": review.user_id.username,
+            },
             "product": {
                 "id": review.product_id.id,
                 "name": review.product_id.name,
+                "image": review.product_id.get_image(),
             },
             "created_at": review.created_at,
             "updated_at": review.updated_at,
