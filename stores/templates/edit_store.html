@@ -8,11 +8,19 @@
 {% endblock meta %}
 {% block content %}
 
+<<<<<<< HEAD
+<div class="mx-72 m-10 bg-white shadow-lg rounded-lg overflow-hidden relative">  <!-- Increased max width -->
+    <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-body font-bold">
+        Edit Your Store
+    </div>
+    <form id="register-form" class="py-4 px-6" method="POST" enctype="multipart/form-data">
+=======
 <div class="relative w-full px-10 mx-auto overflow-hidden bg-white rounded-lg shadow-lg max-w-7xl md:px-20">  <!-- Increased max width -->
     <div class="px-6 py-4 text-2xl font-bold text-center text-white bg-secondary font-body">
         Edit Your Store
     </div>
     <form id="register-form" class="px-6 py-4" method="POST" enctype="multipart/form-data">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
         {% csrf_token %}
         
         <!-- Store Name Field -->
@@ -21,7 +29,11 @@
                 Store Name
             </label>
             <input
+<<<<<<< HEAD
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+=======
                 class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 id="id_name" name="name" type="text" placeholder="Enter store name" value="{{ store.name }}" required>
         </div>
     
@@ -31,13 +43,21 @@
                 Store Description
             </label>
             <textarea
+<<<<<<< HEAD
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+=======
                 class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 id="id_description" name="description" rows="4" placeholder="Enter store description">{{ store.description }}</textarea>
         </div>
     
         <!-- Image Selection Option -->
         <div class="mb-4">
+<<<<<<< HEAD
+            <label class="block text-gray-700 font-bold mb-2">
+=======
             <label class="block mb-2 font-bold text-gray-700">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 Store Image Option
             </label>
             <div class="flex items-center gap-4">
@@ -52,21 +72,37 @@
     
         <!-- Store Image Upload Field -->
         <div id="photo-upload-field" class="mb-4">
+<<<<<<< HEAD
+            <label class="block text-gray-700 font-bold mb-2" for="id_photo_upload">
+                Upload Store Image
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+=======
             <label class="block mb-2 font-bold text-gray-700" for="id_photo_upload">
                 Upload Store Image
             </label>
             <input
                 class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 id="id_photo_upload" name="photo_upload" type="file">
         </div>
     
         <!-- Store Image URL Field -->
         <div id="photo-url-field" class="mb-4" style="display: none;">
+<<<<<<< HEAD
+            <label class="block text-gray-700 font-bold mb-2" for="id_photo">
+                Store Image URL
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+=======
             <label class="block mb-2 font-bold text-gray-700" for="id_photo">
                 Store Image URL
             </label>
             <input
                 class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 id="id_photo" name="photo" type="text" placeholder="Enter image URL">
         </div>
     
@@ -76,12 +112,20 @@
                 Store Location
             </label>
             <input
+<<<<<<< HEAD
+                class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+=======
                 class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 id="id_location" name="location" type="text" placeholder="Enter store location" value="{{ store.location }}" required>
         </div>
     
         <!-- Submit Button -->
+<<<<<<< HEAD
+        <div class="flex items-center justify-center mb-4 gap-4">
+=======
         <div class="flex items-center justify-center gap-4 mb-4">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
             <button
                 class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline"
                 type="submit">
@@ -89,7 +133,11 @@
             </button>
             <a
                 href="{% url 'stores:owner_store_view' store.id %}"
+<<<<<<< HEAD
+                class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+=======
                 class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 Back
             </a>
         </div>
@@ -117,4 +165,8 @@
     });
 </script>
 
+<<<<<<< HEAD
+{% endblock %}
+=======
 {% endblock content %}
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9

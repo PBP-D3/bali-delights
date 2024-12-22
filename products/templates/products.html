@@ -8,113 +8,250 @@
 {% endblock meta %}
 
 {% block content %}
-<h1 class="px-8 mx-auto mt-4 text-3xl w-max-7xl md:px-12 lg:px-16">Products</h1>
-<!-- Search Bar -->
-<div class="flex flex-col gap-6 px-8 py-6 mx-auto md:gap-10 max-w-7xl md:px-12 lg:px-20">
-  
-  <div class="flex justify-center">
-    <form method="GET" class="flex items-center w-full max-w-xs gap-2 px-4">
-      <input 
-        type="text" 
-        name="search" 
-        placeholder="Search products..." 
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
-        value="{{ request.GET.search }}">
-      <button 
-        type="submit" 
-        class="px-3 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600">
-        Search
-      </button>
+{% include 'subnav.html' %}
+<h1>Product</h1>
+
+<!-- Filtering Form -->
+<div>
+    <form method="GET" class="filter-form"><span>Sort by: </span>
+        <select name="category" class="dropdown" onchange="this.form.submit()">
+            <option value="">Select Category</option>
+            {% for category in categories %}
+                <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
+                    {{ category.0 }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="sort" class="dropdown" onchange="this.form.submit()">
+            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Price: Lowest</option>
+            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Price: Highest</option>
+        </select>
     </form>
-  </div>
-  
-  <!-- Filtering Form -->
-  <div class="flex justify-center">
-    <form method="GET" class="flex items-center w-full max-w-md gap-4">
-      <label class="font-semibold min-w-fit">Sort by:</label>
-      <select 
-        name="category" 
-        class="w-1/2 p-2 border border-gray-300 rounded-lg" 
-        onchange="this.form.submit()">
-        <option value="">Select Category</option>
-        {% for category in categories %}
-          <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
-            {{ category.0 }}
-          </option>
-        {% endfor %}
-      </select>
-  
-      <select 
-        name="sort" 
-        class="w-1/2 p-2 border border-gray-300 rounded-lg" 
-        onchange="this.form.submit()">
-        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Price: Lowest</option>
-        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Price: Highest</option>
-      </select>
-    </form>
-  </div>
-  
-  <!-- Product Grid -->
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+</div>
+
+<!-- Add Product Button -->
+{% if user.is_authenticated and user.role == "shop_owner" %}
+<div class="flex justify-center mb-4">
+    <button class="edit-btn rounded-lg px-4 py-2" onclick="openModal()">Add New Product</button>
+</div>
+{% endif %}
+
+<!-- Modal structure -->
+<div id="productModal" class="hidden fixed inset-0 z-50 flex items-start justify-center bg-gray-800 bg-opacity-50 overflow-y-auto">
+    <div class="bg-white w-full max-w-md mx-4 my-16 rounded-lg shadow-lg overflow-hidden">
+
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-xl font-semibold text-gray-900">Add New Product Entry</h3>
+            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeModal()">
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="px-6 py-4 space-y-4 form-style">
+            <form id="ProductForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <input type="number" id="price" name="price" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+                    <input type="number" id="stock" name="stock" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="category" name="category" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                        {% for category in categories %}
+                        <option value="{{ category.0 }}" {% if selected_category == category.0 %}selected{% endif %}>
+                            {{ category.0 }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700">Image URL</label>
+                    <input type="url" id="image_url" name="image_url" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="flex justify-end p-4 border-t border-gray-200">
+            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2" onclick="closeModal()">Cancel</button>
+            <button type="submit" id="submitProductEntry" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg" onclick="submitForm()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Product card -->
+<div class="product-grid">
     {% for product in products %}
       <div class="p-4 transition-all duration-200 transform bg-gray-100 rounded-lg shadow-sm hover:shadow-lg hover:ring-1 hover:ring-[]">
         <a href="{% url 'products:product_detail' product.id %}">
-          <div class="text-center h-[400px]">
-            <h3 class="mb-2 text-lg font-bold h-14 line-clamp-2">{{ product.name }}</h3>
-            {% if product.get_image %}
-              <img 
-                src="{{ product.get_image }}" 
-                alt="{{ product.name }}" 
-                class="object-cover w-full h-48 mb-4 rounded-md">
-            {% else %} 
-              <p class="flex items-center justify-center w-full h-48 mb-4 text-sm text-center text-gray-500 bg-black opacity-15">No image available</p>
-            {% endif %}
-            <p class="font-semibold text-gray-700">Price: ${{ product.price }}</p>
-            <p class="text-gray-600">Stock: {{ product.stock }}</p>
-            <p class="text-gray-600">Category: {{ product.category }}</p>
-            <div class="text-yellow-500">Rating: {{ product.average_rating|floatformat:2|default:"-" }} {% if product.average_rating %}/ 5{% endif %}</div>
-          </div>
+            <div class="card-content">
+                <h3 class="product-name">{{ product.name }}</h3>
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                {% else %} 
+                    <p>No image available</p>
+                {% endif %}
+                <p class="product-price">Price: {{ product.price }}</p>
+                <p class="product-category">Category: {{ product.category }}</p>
+                <p>Rating: <span class="rating-placeholder">⭐️⭐️⭐️⭐️⭐️</span></p>
+            </div>
         </a>
-        <div class="flex justify-between mt-4">
-          {% if user.is_authenticated %}
-          
-          <button 
-            onclick="addToCart({{ product.id }})" 
-            class="px-3 py-2 transition-all rounded text-black1 bg-primary hover:bg-yellow-400 hover:bg-[rgb(189,159, 126)]">
-            Add to Cart
-          </button>
-          {% endif %}
-        <a 
-          href="{% url 'reviews:product_reviews' product.id %}" 
-          class="px-3 py-2 text-white rounded bg-secondary hover:bg-amber-800">
-          Reviews
-        </a>
-      </div>
-      </div>
+        {% if user.is_authenticated and user.role == "shop_owner" %}
+        <div class="button-group flex justify-between mt-4">
+            <a href="{% url 'products:edit_product' product.id %}">
+                <button class="edit-btn rounded-lg px-4 py-2">Edit</button>
+            </a>
+            <a href="{% url 'products:delete_product' product.id %}">
+                <button class="delete-btn rounded-lg px-4 py-2">Delete</button>
+            </a>
+        </div>
+        {% endif %}
+    </div>
     {% endfor %}
-  </div>
 </div>
 
+<style>
+    .add-product-button {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .product-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 20px;
+    }
+    .product-card {
+        width: 200px;
+        height: 350px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s;
+    }
+    .product-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .card-content {
+        flex-grow: 1;
+    }
+    .product-name {
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical;
+    }
+    .product-price, .product-category, .rating-placeholder {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .product-image {
+        max-width: 100%;
+        height: 150px;
+        object-fit: cover;
+        margin: auto;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .rating-placeholder {
+        color: #FFD700; /* Gold color for rating stars */
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+    }
+    .edit-btn {
+        background-color: wheat;
+        color: black;
+    }
+    .delete-btn {
+        background-color: red;
+        color: black;
+    }
+    .filter-form {
+        margin-bottom: 20px;
+    }
+    .filter-form select {
+        margin-right: 10px;
+        padding: 5px;
+    }
+    .dropdown {
+        width: 150px;  
+        height: 30px;  
+        padding: 5px;  
+        font-size: 14px;  
+        border-radius: 4px;  
+        border: 1px solid #ccc;  
+        background-color: #fff; 
+    }
+    
+</style>
 <script>
-  function addToCart(productId, stock) {
-    if (stock === 0) {
-      alert("This item is out of stock.");
-      return;
+    function openModal() {
+        document.getElementById('productModal').classList.remove('hidden');
     }
 
-    fetch("{% url 'carts:add_to_cart' %}", {
-      method: 'POST',
-      body: new URLSearchParams({ product_id: productId }),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert("Product successfully added to cart.");
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-    });
-  }
+    function closeModal() {
+        document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function submitForm() {
+        const formData = new FormData(document.getElementById('ProductForm'));
+        
+        fetch("{% url 'products:add_product' %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: new FormData(document.querySelector('#ProductForm')),
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Product added successfully!');
+                closeModal();
+                location.reload(); // Refresh to display the new product
+            } else {
+                alert('Failed to add product');
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        });
+    }
+
 </script>
 {% endblock content %}

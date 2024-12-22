@@ -13,7 +13,11 @@
             <div class="flex items-center justify-between w-full gap-8 p-6 overflow-hidden transition-transform duration-300 border rounded shadow-lg max-md:flex-col md:flex-row border-secondary hover:shadow-lg md:px-6">
                 <!-- Store Image -->
                 {% if store.get_image %}
+<<<<<<< HEAD
+                    <img src="{{ store.get_image }}" alt="{{ store.name }}" class="h-48 w-48 object-cover rounded">
+=======
                     <img src="{{ store.get_image }}" alt="{{ store.name }}" class="object-cover w-[40%] h-[40%] rounded">
+>>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
                 {% else %}
                     <p>No image available</p>
                 {% endif %}
