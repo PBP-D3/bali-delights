@@ -6,3 +6,5 @@ requests
 urllib3
 django_browser_reload
 Pillow
+djangorestframework
+django-cors-headers
