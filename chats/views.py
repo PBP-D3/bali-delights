@@ -8,7 +8,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import Max
 from django.utils.html import strip_tags
 
-
 User = get_user_model()
 
 @login_required
@@ -70,7 +69,7 @@ def list_chats(request):
                 'store': {
                     'id': chat.store.id,
                     'name': chat.store.name,
-                    'photo_url': chat.store.get_image if chat.store.get_image else '/static/images/default_avatar.jpg',
+                    'photo_url': chat.store.get_image() 
                 },
                 'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else "No messages",
                 'last_message_content': last_message.content if last_message else ""
@@ -78,6 +77,57 @@ def list_chats(request):
 
     context = {'chats': chat_data}
     return render(request, 'chats.html', context=context)
+
+@login_required
+def list_chats_json(request):
+    user = request.user
+    chat_data = []
+
+    if user.role == "shop_owner":
+        owned_stores = Store.objects.filter(owner_id=user.id)
+        chats = Chat.objects.filter(store__in=owned_stores).annotate(
+            last_message_time=Max('messages__timestamp')).order_by('-last_message_time')
+        
+        for chat in chats:
+            last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+            chat_data.append({
+                'id': chat.id,
+                'sender': {
+                    'id': chat.sender.id,
+                    'username': chat.sender.username,
+                },
+                'store': {
+                    'id': chat.store.id,
+                    'name': chat.store.name,
+                    'photo_url': chat.store.get_image() 
+                },
+                'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else None,
+                'last_message': {
+                    'content': last_message.content if last_message else None,
+                    'sender_id': last_message.sender.id if last_message else None,
+                }
+            })
+    else:
+        chats = Chat.objects.filter(sender=user).annotate(
+            last_message_time=Max('messages__timestamp')).order_by('-last_message_time')
+        
+        for chat in chats:
+            last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+            chat_data.append({
+                'id': chat.id,
+                'store': {
+                    'id': chat.store.id,
+                    'name': chat.store.name,
+                    'photo_url': chat.store.get_image() 
+                },
+                'last_message_time': chat.last_message_time.strftime('%Y-%m-%d %H:%M:%S') if chat.last_message_time else None,
+                'last_message': {
+                    'content': last_message.content if last_message else None,
+                    'sender_id': last_message.sender.id if last_message else None,
+                }
+            })
+
+    return JsonResponse({'chats': chat_data})
 
 def chat_with_cust(request, store_id, customer_id):
     store = get_object_or_404(Store, id=store_id)
@@ -94,6 +144,36 @@ def chat_with_cust(request, store_id, customer_id):
     })
 
 @login_required
+def chat_with_cust_json(request, store_id, customer_id):
+    store = get_object_or_404(Store, id=store_id)
+    cust = get_object_or_404(User, id=customer_id)
+    
+    chat, created = Chat.objects.get_or_create(store=store, sender=cust)
+    messages = Message.objects.filter(chat=chat).order_by('timestamp')
+    
+    messages_data = [{
+        'id': msg.id,
+        'content': msg.content,
+        'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'sender_id': msg.sender.id,
+        'sender_username': msg.sender.username
+    } for msg in messages]
+    
+    return JsonResponse({
+        'chat_id': chat.id,
+        'store': {
+            'id': store.id,
+            'name': store.name,
+            'photo_url': store.get_image() 
+        },
+        'customer': {
+            'id': cust.id,
+            'username': cust.username
+        },
+        'messages': messages_data
+    })
+
+@login_required
 def chat_with_store(request, store_id):
     # Retrieve the store based on the provided store ID and make sure it matches the owner (logged-in user)
     store = get_object_or_404(Store, id=store_id)
@@ -106,6 +186,31 @@ def chat_with_store(request, store_id):
         'chat': chat,
         'messages': messages,
         'store': store,
+    })
+
+@login_required
+def chat_with_store_json(request, store_id):
+    store = get_object_or_404(Store, id=store_id)
+    
+    chat, created = Chat.objects.get_or_create(sender=request.user, store=store)
+    messages = Message.objects.filter(chat=chat).order_by('timestamp')
+    
+    messages_data = [{
+        'id': msg.id,
+        'content': msg.content,
+        'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'sender_id': msg.sender.id,
+        'sender_username': msg.sender.username
+    } for msg in messages]
+    
+    return JsonResponse({
+        'chat_id': chat.id,
+        'store': {
+            'id': store.id,
+            'name': store.name,
+            'photo_url': store.get_image() 
+        },
+        'messages': messages_data
     })
 
 @login_required
@@ -129,7 +234,7 @@ def get_stores(request):
     print(search_query)
 
     # Retrieve all stores or filter by search query
-    if search_query:
+    if (search_query):
         stores = Store.objects.filter(name__icontains=search_query)
     else:
         stores = Store.objects.all()
@@ -219,3 +324,44 @@ def chats_view(request):
         'user': user
     }
     return render(request, 'chats.html', context)
+
+@login_required
+def chats_view_json(request):
+    user = request.user
+    chats_data = []
+
+    if user.role == "shop_owner":
+        owner_stores = Store.objects.filter(owner=user)
+        chats = Chat.objects.filter(store__in=owner_stores).select_related('sender', 'store')
+    else:
+        chats = Chat.objects.filter(sender=user).select_related('store')
+
+    for chat in chats:
+        last_message = Message.objects.filter(chat=chat).order_by('-timestamp').first()
+        chat_data = {
+            'id': chat.id,
+            'store': {
+                'id': chat.store.id,
+                'name': chat.store.name,
+                'photo_url': chat.store.get_image() 
+            },
+            'sender': {
+                'id': chat.sender.id,
+                'username': chat.sender.username
+            },
+            'last_message': {
+                'content': last_message.content if last_message else None,
+                'timestamp': last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') if last_message else None,
+                'sender_id': last_message.sender.id if last_message else None
+            } if last_message else None
+        }
+        chats_data.append(chat_data)
+
+    return JsonResponse({
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'role': user.role
+        },
+        'chats': chats_data
+    })

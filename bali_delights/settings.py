@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'chats',
+    'chats',  # Keep only one instance of 'chats'
     'products',
     'reviews',
     'stores',
