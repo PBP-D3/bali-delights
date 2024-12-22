@@ -3,12 +3,18 @@
 
 {% block meta %}
 <<<<<<< HEAD
+<<<<<<< HEAD
   <title>Main</title>
 =======
   <title>Carts</title>
    <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+  <title>Carts</title>
+   <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
 {% endblock meta %}
 
@@ -16,18 +22,24 @@
 
 {% if not items %}
 <<<<<<< HEAD
+<<<<<<< HEAD
   <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-40 mx-auto text-center max-w-7xl md:pt-6 lg:pt-0">
     <div>
 =======
   <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-20 mx-auto text-center md:mb-20 lg:pt-0 max-w-7xl">
     <div class="lg:mt-12">
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+  <div class="flex flex-col items-center justify-start w-full h-screen gap-16 pt-20 mx-auto text-center md:mb-20 lg:pt-0 max-w-7xl">
+    <div class="lg:mt-12">
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
       {% include "icons/emptycart_icon.html" %}
     </div>
     <div class="">
       <h4 class="mb-2 text-lg font-bold md:text-2xl">Looks like your cart is empty</h4>
       <p class="text-sm md:text-base">Let's start shopping!</p>
     </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <a href="/carts/products" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
   </div>
@@ -60,6 +72,8 @@
       </form>
     </div>
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     <a href="/products/" class="flex justify-center px-8 py-3 md:px-12 md:py-4 text-center rounded-md bg-secondary text-white1 border border-accent transition-colors hover:bg-[#5e503f] text-sm md:text-base">Explore Products</a>
   </div>
 {% else %}
@@ -77,7 +91,7 @@
       <div id="cart-items" class="flex flex-col gap-10 p-4 overflow-y-scroll shadow-md rounded-xl">
       {% for item in items %}
         <div class="flex gap-4 rounded-md shadow-md cart-item shadow-accent">
-          <img src="{{ item.product_id.image_url }}" alt="{{ item.product_id.name }}" height="90" width="90" class="self-center rounded-md" >
+          <img src="{{ item.product_id.get_image }}" alt="{{ item.product_id.name }}" height="90" width="90" class="self-center rounded-md" >
           <div class="flex justify-between py-6">
             <div class="flex flex-col gap-2">
               <p class="font-bold">{{ item.product_id.name }} </p>
@@ -120,9 +134,12 @@
         </form>
       </div>
     </div>
+<<<<<<< HEAD
 
     
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
   </div>
 {% endif %}
 
@@ -164,9 +181,12 @@
     button.addEventListener('click', event => {
       const itemId = DOMPurify.sanitize(event.target.dataset.itemId);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
       fetch("{% url 'carts:remove_cart_item' %}", {
         method: 'POST',
         body: new URLSearchParams({ item_id: itemId }),
@@ -180,7 +200,10 @@
             location.reload();
           } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
             const cartItem = event.target.closest('.cart-item');
             const separator = cartItem.nextElementSibling;
             
@@ -189,7 +212,10 @@
               separator.remove();
             }
             cartItem.remove();
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
             // Remove the item from the cart display
             event.target.closest('.cart-item').remove();
             // Recalculate the grand total

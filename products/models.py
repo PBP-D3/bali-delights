@@ -21,11 +21,11 @@ class Product(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   photo_upload = models.ImageField(upload_to='product_images/', blank=True, null=True)
-  photo = models.URLField(blank=True, null=True)
+  photo_url = models.URLField(blank=True, null=True)
   
   def get_image(self):
-      if self.photo:
-          return self.photo
+      if self.photo_url:
+          return self.photo_url
       elif self.photo_upload:
           return self.photo_upload.url
       return "https://img.freepik.com/premium-vector/shop-vector-design-white-background_917213-257003.jpg?semt=ais_hybrid"

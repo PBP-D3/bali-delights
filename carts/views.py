@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 from django.http import JsonResponse
 from django.db import transaction
@@ -109,6 +110,8 @@ def show_products(request):
 
 @csrf_exempt  # Since we're using DOMPurify for sanitization
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 from django.http import JsonResponse
 from django.db import transaction
 from .models import Cart, CartItem, Order, OrderItem
@@ -150,7 +153,7 @@ def submit_order(request):
 
         # Check for sufficient funds
         if request.user.money < total_price:
-          return JsonResponse({"success": False, "message": "Insufficient funds."})
+          return JsonResponse({"success": False, "message": "Insufficient funds."}, status=403)
 
         # Check if the user is trying to buy their own product
         for item in items:
@@ -159,9 +162,9 @@ def submit_order(request):
             return JsonResponse({
               "success": False,
               "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
-          })
+          }, status=403)
           if product.store_id.owner_id == request.user:
-            return JsonResponse({"success": False, "message": "You cannot buy your own product."})
+            return JsonResponse({"success": False, "message": "You cannot buy your own product."}, status=403)
 
         # Deduct from user's balance
         request.user.money -= total_price
@@ -179,10 +182,10 @@ def submit_order(request):
             order=order,
             product=item.product_id,
             quantity=item.quantity,
-            subtotal=item.subtotal  # Convert to float for JSON serialization
+            subtotal=float(item.subtotal)  # Convert to float for JSON serialization
           )
           # Pay the shop owner for the product sold
-          product.store_id.owner_id.money += item.subtotal  # Convert to float
+          product.store_id.owner_id.money += float(item.subtotal)  # Convert to float
           product.store_id.owner_id.save()
 
         # Clear cart items and update cart status
@@ -194,7 +197,7 @@ def submit_order(request):
           "success": True,
           "total_price": total_price,
           "remaining_balance": request.user.money
-        })
+        }, status=200)
 
       except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Cart not found."}, status=404)
@@ -203,19 +206,7 @@ def submit_order(request):
 
 @login_required
 def order_history(request):
-  sort_by = request.GET.get('sort_by', 'created_at')  # Default sort by date
-  sort_direction = request.GET.get('sort_direction', 'asc')  # Default direction
-
-  # Check for valid sort_by options
-  if sort_by not in ['created_at', 'total_price']:
-    sort_by = 'created_at'  # Fallback to default if invalid
-
-  # Determine the order by clause based on the sort_direction
-  if sort_direction == 'desc':
-    orders = Order.objects.filter(user_id=request.user).order_by(f'-{sort_by}')
-  else:
-    orders = Order.objects.filter(user_id=request.user).order_by(sort_by)
-
+  orders = Order.objects.filter(user_id=request.user).order_by('-created_at')
   return render(request, 'order_history.html', {'orders': orders})
 
 @login_required
@@ -236,7 +227,7 @@ def receipt_view(request, order_id):
 @login_required
 def remove_cart_item(request):
   if request.method == "POST":
-    item_id = strip_tags(request.POST.get("item_id"))
+    item_id = request.POST.get("item_id")
     try:
       item = get_object_or_404(CartItem, id=item_id, cart_id__user_id=request.user, cart_id__status='pending')
       item.delete()  # Remove the item from the cart
@@ -249,8 +240,19 @@ def remove_cart_item(request):
     except CartItem.DoesNotExist:
       return JsonResponse({"success": False, "message": "Item not found."}, status=404)
 
+@login_required
+def show_products(request):
+  products = Product.objects.all()  # Retrieve all products from the database
+  context = {
+    'products': products
+  }
+  return render(request, "test_prod.html", context)
+
 @csrf_exempt
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 @login_required
 def add_to_cart(request):
   if request.method == 'POST':
@@ -259,23 +261,32 @@ def add_to_cart(request):
 
     product = get_object_or_404(Product, id=product_id)
 <<<<<<< HEAD
+<<<<<<< HEAD
     cart, created = Cart.objects.get_or_create(user_id=request.user)
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     cart, created = Cart.objects.get_or_create(user_id=request.user, status='pending')
 
     # Check if user is trying to add their own product
     if product.store_id.owner_id == request.user:
       return JsonResponse({'success': False, 'message': 'You cannot add your own product to the cart.'}, status=403)
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 
     if product.stock <= 0:
       return JsonResponse({'success': False, 'message': 'Stock is empty.'})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     cart_item, created = CartItem.objects.get_or_create(cart_id=cart, product_id=product, quantity=1, price=product.price, subtotal=quantity * product.price)
 
     # Update the total price of the cart
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     cart_item, created = CartItem.objects.get_or_create(
       cart_id=cart, 
       product_id=product, 
@@ -283,7 +294,10 @@ def add_to_cart(request):
     )
 
     # Update total price of the cart
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     cart.total_price = sum(item.subtotal for item in cart.items.all())
     cart.save()
 
@@ -294,16 +308,23 @@ def add_to_cart(request):
       'remaining_stock': product.stock - cart_item.quantity
     })
 <<<<<<< HEAD
+<<<<<<< HEAD
   
 =======
     
   return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+    
+  return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 @csrf_exempt
 @login_required
 def update_cart_item(request):
   if request.method == "POST":
+<<<<<<< HEAD
 <<<<<<< HEAD
     form = CartItemUpdateForm(request.POST)
     if form.is_valid():
@@ -321,8 +342,10 @@ def update_cart_item(request):
       return JsonResponse({"success": True, "subtotal": item.subtotal})
   return JsonResponse({"success": False}, status=400)
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     item_id = request.POST.get("item_id")
-    quantity = int(request.POST.get("quantity"))# Convert to int
+    quantity = int(request.POST.get("quantity"))  # Convert to int
     item = get_object_or_404(
       CartItem, 
       id=item_id, 
@@ -349,4 +372,87 @@ def update_cart_item(request):
     return JsonResponse({"success": True, "subtotal": item.subtotal})
   
   return JsonResponse({"success": False}, status=400)
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+
+@login_required
+@csrf_exempt
+def cart_view_json(request):
+    cart, created = Cart.objects.get_or_create(user_id=request.user, status='pending')
+    items = cart.items.select_related('product_id')
+    total_price = sum(item.subtotal for item in items)
+    
+    items_data = [{
+        'id': item.id,
+        'product_name': item.product_id.name,
+        'quantity': item.quantity,
+        'price': float(item.price),
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'cart': {
+            'id': cart.id,
+            'total_price': float(total_price),
+            'items': items_data,
+            'user': request.user.username
+        }
+    })
+
+@login_required
+@csrf_exempt
+def order_history_json(request):
+    sort_by = request.GET.get('sort_by', 'created_at')
+    sort_direction = request.GET.get('sort_direction', 'asc')
+    
+    if sort_by not in ['created_at', 'total_price']:
+        sort_by = 'created_at'
+    
+    if sort_direction == 'desc':
+        orders = Order.objects.filter(user_id=request.user).order_by(f'-{sort_by}')
+    else:
+        orders = Order.objects.filter(user_id=request.user).order_by(sort_by)
+    
+    orders_data = [{
+        'id': order.id,
+        'total_price': float(order.total_price),
+        'created_at': order.created_at.isoformat(),
+        'items': [{
+            'product': item.product.name if item.product else 'Deleted Product',
+            'quantity': item.quantity,
+            'subtotal': float(item.subtotal),
+            'image': item.get_image()
+        } for item in order.order_items.all()]
+    } for order in orders]
+    
+    return JsonResponse({
+        'success': True,
+        'orders': orders_data
+    })
+
+@login_required
+@csrf_exempt
+def receipt_view_json(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.order_items.all()
+    
+    items_data = [{
+        'product': item.product.name if item.product else 'Deleted Product',
+        'quantity': item.quantity,
+        'subtotal': float(item.subtotal),
+        'image': item.get_image()
+    } for item in items]
+    
+    return JsonResponse({
+        'success': True,
+        'order': {
+            'id': order.id,
+            'total_price': float(order.total_price),
+            'created_at': order.created_at.isoformat(),
+            'items': items_data
+        }
+    })
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77

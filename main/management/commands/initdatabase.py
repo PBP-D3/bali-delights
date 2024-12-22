@@ -4,9 +4,13 @@ from products.models import Product
 from stores.models import Store
 from reviews.models import Review, Like
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 from carts.models import Cart, CartItem
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+from carts.models import Cart, CartItem
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 
 class Command(BaseCommand):
     help = "DEV COMMAND: Fill database with a set of data for testing purposes"
@@ -24,11 +28,16 @@ class Command(BaseCommand):
         self.load_reviews()
         
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.load_likes()
 =======
         self.load_carts()
     
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+        self.load_carts()
+    
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 
     def load_users(self):
         call_command('loaddata', 'initial_users')
@@ -57,6 +66,7 @@ class Command(BaseCommand):
             # For example, if you need to ensure product fields are not null
             review.save()  # Save again if you've modified anything
 <<<<<<< HEAD
+<<<<<<< HEAD
             
     def load_likes(self):
         call_command('loaddata', 'initial_likes')
@@ -65,6 +75,8 @@ class Command(BaseCommand):
             # For example, if you need to ensure product fields are not null
             like.save()  # Save again if you've modified anything
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
         for like in Like.objects.all():
             # For example, if you need to ensure product fields are not null
             like.save()  # Save again if you've modified anything
@@ -80,5 +92,8 @@ class Command(BaseCommand):
             cartitem.save()  # Save again if you've modified anything
         
         
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
         

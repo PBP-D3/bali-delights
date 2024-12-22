@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 <<<<<<< HEAD
+<<<<<<< HEAD
 {% block content %}
 <div class="max-w-4xl px-4 mx-auto mt-4 product-reviews">
     <!-- url product ke product_details -->
     <a href="{% url 'reviews:product_reviews' product.id %}" class="justify-self-start">
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 {% block meta %}
 <title>Product Review</title>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
@@ -17,7 +20,10 @@
 <div class="px-4 mx-auto max-lg:pt-8 max-w-7xl md:px-12 lg:px-20 product-reviews">
     <!-- url product ke product_details -->
     <a href="{% url 'products:product_detail' product.id %}" class="justify-self-start">
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
         <button class="px-4 py-2 mb-4 font-bold text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">Back</button>
     </a>
     <h1 class="mb-6 text-2xl font-semibold text-gray-800">Reviews for<h1>
@@ -101,10 +107,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 // Update the displayed like count
 <<<<<<< HEAD
+<<<<<<< HEAD
                 document.querySelector(`#like-count-${reviewId}`).textContent = data.like_count;
 =======
                 document.querySelector(`#like-count-${  reviewId}`).textContent = data.like_count;
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+                document.querySelector(`#like-count-${  reviewId}`).textContent = data.like_count;
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
             });
         });
     });

@@ -11,10 +11,14 @@
 
 <!-- Hero Section -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 <section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden">
 =======
 <section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden md:-mt-[50px] pr-4 md:pr-12">
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+<section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden md:-mt-[50px] pr-4 md:pr-12">
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
     {% comment %} decoration {% endcomment %}
     <div class="absolute -top-[200px] rotate-0 opacity-5 md:opacity-10 h-fit w-fit md:top-[40px] md:-left-[300px] md:rotate-90">{% include "images/floral-pattern.html" %}</div>
     <div class="flex flex-col items-center mx-auto max-w-7xl md:flex-row">
@@ -47,7 +51,7 @@
         {% for review in top_reviews %}
             <div class="bg-white shadow-lg rounded-lg overflow-hidden min-w-[300px] w-72 flex-shrink-0 border border-secondary">
                 <!-- Product Image -->
-                <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
+                <img src="{{ review.product_id.get_image }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
                 
                 <div class="p-6">
                     <!-- Product and Reviewer Details -->
@@ -90,6 +94,7 @@
   </div>
 </section>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <!-- Top Reviews Section -->
 <section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
@@ -141,6 +146,8 @@
 </div>
 </section> 
 =======
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 <!-- Become a Store Owner Section -->
 <section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
   <div class="flex flex-col px-4 mx-auto text-center max-w-7xl md:px-8 lg:px-16">
@@ -168,7 +175,10 @@
     {% endif %}
   </div>
 </section>
+<<<<<<< HEAD
 >>>>>>> 5a9e59f7027c96c63041055472554c90239d653d
+=======
+>>>>>>> f8b43257d2a50c14e7a6b1b8c4d61569b9cc8b77
 
 <!-- Join Now Section -->
 {% if not user.is_authenticated %}

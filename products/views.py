@@ -12,7 +12,7 @@ from django.db.models import Avg
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import os
-
+from .models import Product, Store
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
@@ -89,6 +89,7 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, "product_detail.html", {"product": product})
 
+@csrf_exempt
 def edit_product(request, product_id):
   product = get_object_or_404(Product, pk=product_id)
   
@@ -104,6 +105,7 @@ def edit_product(request, product_id):
   context = {'form': form, 'product': product}
   return render(request, "edit_product.html", context)
 
+@csrf_exempt
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -126,3 +128,66 @@ def show_xml_by_id(request, id):
 def show_json_by_id(request, id):
     data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+@login_required
+def api_get_products(request):
+    search_query = request.GET.get('search', '')
+    category = request.GET.get('category', None)
+    sort_order = request.GET.get('sort', 'id')
+
+    products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
+
+    if category:
+        products = products.filter(category=category)
+    
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+
+    if sort_order == 'desc':
+        products = products.order_by('-price')
+    elif sort_order == 'asc':
+        products = products.order_by('price')
+    else:
+        products = products.order_by('id')
+
+    # Serialize the products
+    products_list = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": product.price,
+            "stock": product.stock,
+            "category": product.get_category_display(),  
+            "photo_url": product.get_image(),  
+            "average_rating": product.average_rating,
+            "store": {
+                "id": product.store_id.id,
+                "name": product.store_id.name,  
+            }
+        }
+        for product in products
+    ]
+
+    return JsonResponse({"products": products_list}, safe=False)
+
+@login_required
+@csrf_exempt
+def api_get_products_by_store(request, store_id):
+    store = get_object_or_404(Store, pk=store_id)
+    products = Product.objects.filter(store_id=store)
+    products = Product.objects.filter(store_id=store).annotate(average_rating=Avg('review__rating'))
+    products_list = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": product.price,
+            "stock": product.stock,
+            "category": product.get_category_display(),
+            "photo_url": product.get_image(),
+            "average_rating": product.average_rating,
+        }
+        for product in products
+    ]
+    return JsonResponse({"products": products_list}, safe=False)
