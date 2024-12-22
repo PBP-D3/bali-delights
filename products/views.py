@@ -23,43 +23,40 @@ from .models import Product, Store
 from django.utils.html import escape
 from django.utils.html import strip_tags
 
+@csrf_exempt
 @login_required
 @require_POST
-def add_product(request):
-    print("test add")
-    if request.user.role != "shop_owner":
-        return JsonResponse({"success": False, "message": "Permission denied."})
-
-    if request.method == "POST":
-        print(request.POST)
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        stock = request.POST.get("stock")
-        category = request.POST.get("category")
-        image_url = request.POST.get("image_url")
-        user = request.user  
-
-        new_product = Product(
-            name=name,
-            description=description,
-            price=price,
-            stock=stock,
-            category=category,
-            image_url=image_url,
-            store_id=user.store 
-        )
-        new_product.save()
-
-        return JsonResponse({"success": True, "message": "Product added successfully!"})
-
-    return JsonResponse({"success": False, "message": "Invalid request method."})
+def add_product(request, store_id):
+  if request.method == 'POST':
+    # Sanitize input fields using escape or another clean method
+    form_data = {field: escape(value) for field, value in request.POST.items()}
+    form = ProductForm(form_data, request.FILES)
+    
+    if form.is_valid():
+      product = form.save(commit=False)
+      store = get_object_or_404(Store, id=store_id)
+      product.store_id = store
+      product.save()
+      return JsonResponse({"success": True})
+    
+    else:
+      return JsonResponse({
+        "success": False,
+        "message": "Form validation error.",
+        "errors": form.errors
+      })
+  return JsonResponse({"success": False, "message": "Invalid request."})
 
 def show_products(request, category=None):
    # Category filter
     if request.method == 'GET' and 'category' in request.GET:
         category = request.GET.get('category')
+        
+    search_query = strip_tags(request.GET.get('search', ''))
 
+    products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
+
+    # Apply category filtering if provided
     if category:
         products = products.filter(category=category)
     
@@ -71,7 +68,9 @@ def show_products(request, category=None):
         products = products.order_by('-price')
     elif sort_order == 'asc':
         products = products.order_by('price')
-
+    else:
+        products = products.order_by('id')
+        
     # Get unique categories for the filter dropdown
     categories = Product.CATEGORY_CHOICES
 
@@ -81,6 +80,7 @@ def show_products(request, category=None):
         'categories': categories,
         'selected_category': category,
         'sort_order': sort_order,
+        'search_query': request.GET.get('search', ''),
     }
 
     return render(request, "products.html", context)
@@ -126,43 +126,3 @@ def show_xml_by_id(request, id):
 def show_json_by_id(request, id):
     data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
-
-@login_required
-def api_get_products(request):
-    # Optional filtering (search, category, etc.)
-    search_query = request.GET.get('search', '')
-    category = request.GET.get('category', None)
-    sort_order = request.GET.get('sort', 'id')
-
-    products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
-
-    if category:
-        products = products.filter(category=category)
-    
-    if search_query:
-        products = products.filter(name__icontains=search_query)
-
-    if sort_order == 'desc':
-        products = products.order_by('-price')
-    elif sort_order == 'asc':
-        products = products.order_by('price')
-    else:
-        products = products.order_by('id')
-
-    # Serialize the products
-    products_list = [
-        {
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": product.price,
-            "stock": product.stock,
-            "category": product.get_category_display(),  # Human-readable category
-            "image_url": product.photo_upload.url if product.photo_upload else None,  
-            "average_rating": product.average_rating,
-        }
-        for product in products
-    ]
-
-    # Return all products without pagination
-    return JsonResponse({"products": products_list}, safe=False)
