@@ -9,7 +9,11 @@ from chats.views import (
     delete_chat,
     edit_message,
     chat_with_cust,
-    chats_view  # Import the chats_view function
+    chats_view,
+    list_chats_json,
+    chat_with_cust_json,
+    chat_with_store_json,
+    chats_view_json,
 )
 
 urlpatterns = [
@@ -41,4 +45,10 @@ urlpatterns = [
     
     # API endpoint to edit a message
     path('api/messages/<int:message_id>/edit/', edit_message, name='edit_message'),
+
+    # JSON API endpoints
+    path('api/chats/list/', list_chats_json, name='list_chats_json'),
+    path('api/chats/<int:store_id>/<int:customer_id>/view/', chat_with_cust_json, name='chat_with_cust_json'),
+    path('api/chats/<int:store_id>/view/', chat_with_store_json, name='chat_with_store_json'),
+    path('api/chats/view/', chats_view_json, name='chats_view_json'),
 ]
