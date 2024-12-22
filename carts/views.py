@@ -75,7 +75,7 @@ def submit_order(request):
             subtotal=float(item.subtotal)  # Convert to float for JSON serialization
           )
           # Pay the shop owner for the product sold
-          product.store_id.owner_id.money += float(item.subtotal)  # Convert to float
+          product.store_id.owner_id.money += Decimal(item.subtotal)  # Convert to float
           product.store_id.owner_id.save()
 
         # Clear cart items and update cart status
