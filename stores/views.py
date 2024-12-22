@@ -111,15 +111,35 @@ def register_store_flutter(request):
 @csrf_exempt
 def edit_store_flutter(request, store_id):
     if request.method == 'POST':
-        store = get_object_or_404(Store, id=store_id)
-        data = json.loads(request.body)
-        store.name = data.get('name', store.name)
-        store.location = data.get('location', store.location)
-        store.description = data.get('description', store.description)
-        store.photo_upload = data.get('photo_upload', store.photo_upload)
-        store.photo = data.get('photo', store.photo)
-        store.save()
-        return JsonResponse({'status': 'success', 'message': 'Store updated successfully'})
+        try:
+            store = get_object_or_404(Store, id=store_id)
+            data = json.loads(request.body)
+            print(data)
+            # Handle photo_upload similar to register_store_flutter
+            photo_upload = data.get('photo_upload', "")
+            if photo_upload:
+                if photo_upload.startswith('data:'):  # New base64 image
+                    format, imgstr = photo_upload.split(';base64,') 
+                    ext = format.split('/')[-1] 
+                    photo_upload = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+                    store.photo_upload = photo_upload
+                    store.photo = None
+            elif photo_upload is None:  # Clear the photo_upload
+                store.photo_upload = None
+
+            # Update other fields
+            store.name = data.get('name', store.name)
+            store.location = data.get('location', store.location)
+            store.description = data.get('description', store.description)
+            store.photo = data.get('photo', "")
+
+            store.save()
+            return JsonResponse({'status': 'success', 'message': 'Store updated successfully'})
+            
+        except KeyError as e:
+            return JsonResponse({"status": "error", "message": f"Missing field: {str(e)}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
     else:
         return JsonResponse({"status": "error", "message": "Invalid HTTP method"}, status=405)
 
