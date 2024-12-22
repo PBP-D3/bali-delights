@@ -3,142 +3,12 @@
 
 {% block meta %}
 <title>Available Stores</title>
-<<<<<<< HEAD
-=======
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
-<<<<<<< HEAD
-<div class="flex flex-col space-y-3 px-28 mb-9">
-    <div class="p-4 font-sans">
-        <div class="flex items-center justify-between mb-9">
-            <ul class="flex">
-                <li id="allStoresTab" class="tab text-accent font-bold text-[15px] py-2.5 px-5 border-b-2 border-accent cursor-pointer">
-                    All Stores
-                </li>
-                {% if user.is_authenticated %}
-                    <li id="myStoresTab" class="tab text-gray-400 font-semibold text-[15px] py-2.5 px-5 border-b-2 border-transparent cursor-pointer">
-                        My Stores
-                    </li>
-                    <li id="open-modal" class="tab text-gray-400 font-semibold text-[15px] py-2.5 px-5 border-b-2 border-transparent cursor-pointer">
-                        <button class="">Register Store</button>
-                    </li>
-                {% endif %}
-            </ul>
-
-            <input type="text" id="store-search" class="px-6 py-2 ml-auto border rounded" placeholder="Search store by name">
-        </div>
-
-        <div id="allStoresContent" class="tab-content">
-            <!-- Container for AJAX-loaded store results -->
-            <div id="store-results">
-                {% include 'search_stores.html' with stores=stores %}
-            </div>
-        </div>
-        
-        <div id="myStoresContent" class="hidden tab-content">  <!-- Hide My Stores content initially -->
-            <div id="my-store-results">
-                <!-- User stores will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Registering Store -->
-    <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="relative w-full mt-10 overflow-hidden bg-white rounded-lg shadow-lg mx-72">
-            <div class="px-6 py-4 text-2xl font-bold text-center text-white bg-secondary font-body">
-                Register Your Store
-            </div>
-            <form id="register-form" class="px-6 py-4" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <!-- Store Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 font-bold text-gray-700" for="id_name">
-                        Store Name
-                    </label>
-                    <input
-                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                        id="id_name" name="name" type="text" placeholder="Enter store name" required>
-                </div>
-            
-                <!-- Store Description Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 font-bold text-gray-700" for="id_description">
-                        Store Description
-                    </label>
-                    <textarea
-                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                        id="id_description" name="description" rows="4" placeholder="Enter store description"></textarea>
-                </div>
-            
-                <!-- Image Selection Option -->
-                <div class="mb-4">
-                    <label class="block mb-2 font-bold text-gray-700">
-                        Store Image Option
-                    </label>
-                    <div class="flex items-center gap-4">
-                        <label class="flex items-center text-gray-700">
-                            <input type="radio" name="choice" value="upload" class="mr-2" checked> Upload Image
-                        </label>
-                        <label class="flex items-center text-gray-700">
-                            <input type="radio" name="choice" value="url" class="mr-2"> Image URL
-                        </label>
-                    </div>
-                </div>
-            
-                <!-- Store Image Upload Field -->
-                <div id="photo-upload-field" class="mb-4">
-                    <label class="block mb-2 font-bold text-gray-700" for="id_photo_upload">
-                        Upload Store Image
-                    </label>
-                    <input
-                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                        id="id_photo_upload" name="photo_upload" type="file">
-                </div>
-            
-                <!-- Store Image URL Field -->
-                <div id="photo-url-field" class="mb-4" style="display: none;">
-                    <label class="block mb-2 font-bold text-gray-700" for="id_photo">
-                        Store Image URL
-                    </label>
-                    <input
-                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                        id="id_photo" name="photo" type="text" placeholder="Enter image URL">
-                </div>
-            
-                <!-- Store Location Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 font-bold text-gray-700" for="id_location">
-                        Store Location
-                    </label>
-                    <input
-                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                        id="id_location" name="location" type="text" placeholder="Enter store location" required>
-                </div>
-            
-                <!-- Submit Button -->
-                <div class="flex items-center justify-center gap-4 mb-4">
-                    <button
-                        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline"
-                        type="submit">
-                        Register Store
-                    </button>
-                    <button
-                        type="button"
-                        id="close-modal"
-                        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline">
-                        Back
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-=======
 <div class="flex flex-col p-6 mx-auto space-y-3 max-w-7xl md:px-10 mb-9 ">
     <h1 class="mb-3 text-3xl">Stores</h1>
   <div class="font-sans">
@@ -265,7 +135,6 @@
     </form>
 </div>
 </div>
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
 </div>
 
 <script>

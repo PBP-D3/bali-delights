@@ -6,29 +6,6 @@
 {% endblock meta %}
 
 {% block content %}
-<<<<<<< HEAD
-<div class="product-details flex flex-col md:flex-row items-center md:items-start mx-auto">
-    {% if product.image_url %}
-        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
-    {% endif %}
-    <div class="product-info ml-0 md:ml-6 mt-6 md:mt-0">
-        <h1 style="text-align: center"><strong>{{ product.name }}</strong></h1>
-        <p><strong>Price:</strong> {{ product.price }}</p>
-        <p><strong>Stock:</strong> {{ product.stock }}</p>
-        <p><strong>Category:</strong> {{ product.category }}</p>
-        <p><strong>Description:</strong> {{ product.description }}</p>
-        <div class="button-container gap-10">
-            <a href="{% url 'reviews:product_reviews' product.id %}" class="ml-2 justify-self-start">
-                <input type="button" value="Check Reviews" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            </a>
-            <a href="#">
-                <input type="button" value="Add to cart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
-            </a>
-        </div>
-        <a href="{% url 'products:show_products' %}">
-            <input type="button" value="Back" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded">
-        </a>
-=======
 <div class="flex flex-col items-center max-w-3xl gap-6 p-6 mx-auto border border-gray-300 rounded-lg md:flex-row">
   {% if product.get_image %}
     <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full max-w-xs rounded-lg md:max-w-sm">
@@ -56,7 +33,6 @@
         </button>
       </a>
       {% endif %}
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
     </div>
     <a href="{% url 'products:show_products' %}">
       <input type="button" value="Back" class="px-6 py-2 font-bold text-white transition-colors duration-300 bg-gray-500 rounded-lg cursor-pointer hover:bg-gray-600">

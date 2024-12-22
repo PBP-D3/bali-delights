@@ -10,11 +10,7 @@
 {% block content %}
 
 <!-- Hero Section -->
-<<<<<<< HEAD
-<section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden">
-=======
 <section class="py-16 min-h-fit md:py-[120px] bg-gradient-to-b md:bg-gradient-to-bl from-[#eae0d5] to-[#bd9f7e] text-black1 relative overflow-hidden md:-mt-[50px] pr-4 md:pr-12">
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
     {% comment %} decoration {% endcomment %}
     <div class="absolute -top-[200px] rotate-0 opacity-5 md:opacity-10 h-fit w-fit md:top-[40px] md:-left-[300px] md:rotate-90">{% include "images/floral-pattern.html" %}</div>
     <div class="flex flex-col items-center mx-auto max-w-7xl md:flex-row">
@@ -90,57 +86,6 @@
   </div>
 </section>
 
-<<<<<<< HEAD
-<!-- Top Reviews Section -->
-<section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
-  <div class="mx-auto max-w-7xl">
-    <h1 class="mb-8 text-3xl font-semibold text-center text-gray-800">Top Reviews</h1>
-    
-    <div class="flex py-4 space-x-6 overflow-x-auto">
-        {% for review in top_reviews %}
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden min-w-[300px] w-72 flex-shrink-0 border border-secondary">
-                <!-- Product Image -->
-                <img src="{{ review.product_id.image_url }}" alt="{{ review.product_id.name }}" class="object-cover w-full h-48">
-                
-                <div class="p-6">
-                    <!-- Product and Reviewer Details -->
-                    <h3 class="text-lg font-semibold text-gray-900 min-h-24">
-                        {{ review.product_id.name}}
-                    </h3>
-                    <p class="text-gray-500">Reviewed by: 
-                        {% if user.is_authenticated %}
-                            {{ review.user_id.username }}
-                        {% else %}
-                            {{ review.user_id.username|slice:":1" }}{% for char in review.user_id.username %}*{% endfor %}
-                        {% endif %}
-                    </p>
-                    
-                    <!-- Rating and Likes -->
-                    <div class="grid grid-cols-2">
-                        <p class="mr-4 font-semibold text-yellow-500">Rating: {{ review.rating }} / 5</p>
-                        <div class="grid grid-cols-2 gap-0 justify-self-end">
-                            <span class="text-right text-gray-600">{{ review.num_likes }}</span>
-                            <img src="{% static 'logos/likes.png' %}" alt="Likes" class="ml-0">
-                        </div>
-                    </div>
-                    
-                    <!-- Short Description -->
-                    <p class="mt-4 text-gray-700">
-                        {{ review.comment|truncatechars:30 }}
-                    </p>
-
-                    <!-- Link to Product GANTI LINK 'products:product_details'-->
-                    <a href="{% url 'reviews:product_reviews' review.product_id.id %}"
-                       class="block py-2 mt-6 font-bold text-center text-white border rounded border-secondary bg-secondary hover:bg-transparent hover:text-gray-500">
-                        View Product
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-</section> 
-=======
 <!-- Become a Store Owner Section -->
 <section class="py-20 bg-gradient-to-b from-[#eae0d5] to-white text-black1">
   <div class="flex flex-col px-4 mx-auto text-center max-w-7xl md:px-8 lg:px-16">
@@ -168,7 +113,6 @@
     {% endif %}
   </div>
 </section>
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
 
 <!-- Join Now Section -->
 {% if not user.is_authenticated %}

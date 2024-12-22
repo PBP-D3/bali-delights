@@ -27,31 +27,6 @@
     </li>
   </ul>
 
-<<<<<<< HEAD
-<div class="container mx-auto px-28">
-    <div class="bg-white rounded p-6 mb-6">
-        <div class="flex flex-row items-center gap-20 mx-40 mb-10 rounded border border-secondary p-4">
-            <img src="{{ store.get_image }}" alt="{{ store.name }}" class="h-48 rounded">
-            <div class="flex flex-col h-fit">
-                <h1 class="text-3xl font-header font-bold mb-4">{{ store.name }}</h1>
-                <p class="text-gray-700 font-body text-sm mb-4 w-fit">{{ store.location }}</p>
-                <p class="text-gray-700 font-body text-base mb-4 w-fit">{{ store.description }}</p>
-                <div class="font-body max-w-fit h-fit rounded-lg overflow-hidden gap-6 flex">
-                    <a href="" 
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Add Product
-                    </a>
-                    <a href="{% url 'stores:edit_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Edit Store
-                    </a>
-                    <a href="{% url 'stores:delete_store' store.id %}"
-                    type="button" class="w-40 text-center px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-secondary  hover:bg-transparent text-white hover:text-orange-400 transition-all duration-300">
-                        Delete Store
-                    </a>
-                </div>                
-            </div>
-=======
   <div>
     <div class="flex flex-col items-center gap-6 p-4 mb-10 border rounded-lg md:flex-row border-secondary">
       <img src="{{ store.get_image }}" alt="{{ store.name }}" class="w-[12rem] rounded-md">
@@ -65,7 +40,6 @@
             {% csrf_token %}
             <button type="submit" class="px-4 py-2 text-white transition bg-red-700 rounded hover:bg-red-800">Delete Store</button>
           </form>
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
         </div>
       </div>
     </div>
