@@ -32,16 +32,8 @@ class CartItem(models.Model):
   def product_name(self):
     return self.product_id.name
 
-<<<<<<< HEAD
-from django.db import models
-from django.conf import settings
-from products.models import Product
-
-User = settings.AUTH_USER_MODEL
-=======
   def get_image(self):
     return self.product_id.get_image()
->>>>>>> 9cdca71d936f069adf750f8f008f41b3ec6b2b75
 
 class Order(models.Model):  
   user_id = models.ForeignKey(User, on_delete=models.CASCADE)

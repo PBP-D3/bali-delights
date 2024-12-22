@@ -8,10 +8,7 @@ from .models import Cart, CartItem, Order, OrderItem
 from .forms import PasswordConfirmForm
 from products.models import Product
 from decimal import Decimal
-<<<<<<< HEAD
-=======
 from django.utils.html import strip_tags
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
 
 @login_required
 def cart_view(request):
@@ -51,14 +48,11 @@ def submit_order(request):
         # Check if the user is trying to buy their own product
         for item in items:
           product = item.product_id
-<<<<<<< HEAD
-=======
           if item.quantity > product.stock:
             return JsonResponse({
               "success": False,
               "message": f"Insufficient stock for {product.name}. Available stock: {product.stock}."
           }, status=403)
->>>>>>> 9cdca71d936f069adf750f8f008f41b3ec6b2b75
           if product.store_id.owner_id == request.user:
             return JsonResponse({"success": False, "message": "You cannot buy your own product."}, status=403)
 
@@ -192,9 +186,6 @@ def update_cart_item(request):
       cart_id__user_id=request.user, 
       cart_id__status='pending'
     )
-<<<<<<< HEAD
-    item.quantity = quantity
-=======
     
     item.quantity = quantity
     # Check if quantity exceeds stock
@@ -209,7 +200,6 @@ def update_cart_item(request):
         "success": False,
         "message": f"Can't complete purchase with zero items!"
     })
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
     item.subtotal = item.quantity * item.price
     item.save()
 

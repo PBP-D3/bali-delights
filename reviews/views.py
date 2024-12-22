@@ -169,8 +169,6 @@ def toggle_like(request, review_id):
         return JsonResponse({'liked': liked, 'like_count': like_count}, status=200)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
-<<<<<<< HEAD
-=======
 
 def product_reviews_json(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -236,4 +234,3 @@ def user_reviews_json(request):
         for review in user_reviews
     ]
     return JsonResponse(user_reviews_data, safe=False)
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9

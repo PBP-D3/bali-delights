@@ -8,6 +8,20 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from products.forms import ProductForm
 from django.http import JsonResponse
+from django.db.models import Avg
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+import os
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .forms import ProductForm  # Ensure you import your ProductForm
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import Product, Store
+from django.utils.html import escape
+from django.utils.html import strip_tags
 
 @login_required
 @require_POST
@@ -119,7 +133,6 @@ def api_get_products(request):
     search_query = request.GET.get('search', '')
     category = request.GET.get('category', None)
     sort_order = request.GET.get('sort', 'id')
-    page_number = request.GET.get('page', 1)
 
     products = Product.objects.all().annotate(average_rating=Avg('review__rating'))
 
@@ -134,11 +147,7 @@ def api_get_products(request):
     elif sort_order == 'asc':
         products = products.order_by('price')
     else:
-        products = products.order_by('id') 
-
-    # Pagination
-    paginator = Paginator(products, 10)  # 10 products per page
-    page = paginator.get_page(page_number)
+        products = products.order_by('id')
 
     # Serialize the products
     products_list = [
@@ -149,19 +158,11 @@ def api_get_products(request):
             "price": product.price,
             "stock": product.stock,
             "category": product.get_category_display(),  # Human-readable category
-            "image_url": product.image_url.url if product.image_url else None,
+            "image_url": product.photo_upload.url if product.photo_upload else None,  
             "average_rating": product.average_rating,
         }
-        for product in page
+        for product in products
     ]
 
-    # Response with pagination metadata
-    response_data = {
-        "products": products_list,
-        "total_pages": paginator.num_pages,
-        "current_page": page.number,
-        "has_next": page.has_next(),
-        "has_previous": page.has_previous(),
-    }
-
-    return JsonResponse(response_data, safe=False)
+    # Return all products without pagination
+    return JsonResponse({"products": products_list}, safe=False)

@@ -52,12 +52,9 @@ def register_store(request):
             store = form.save(commit=False)
             store.owner_id = request.user
             store.save()
-<<<<<<< HEAD
-=======
             # user becomes owner
             request.user.role = "store_owner"
             request.user.save()
->>>>>>> 96142267eefa9f39795c370ba55897f89fbaa7c9
             data = {
                 'html': render_to_string('search_stores.html', {'stores': Store.objects.filter(owner_id=request.user)}),
             }
