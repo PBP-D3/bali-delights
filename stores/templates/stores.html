@@ -13,9 +13,9 @@
 
 {% block content %}
 <<<<<<< HEAD
-<div class="flex flex-col px-28 mb-9 space-y-3">
-    <div class="font-sans p-4">
-        <div class="flex justify-between items-center mb-9">
+<div class="flex flex-col space-y-3 px-28 mb-9">
+    <div class="p-4 font-sans">
+        <div class="flex items-center justify-between mb-9">
             <ul class="flex">
                 <li id="allStoresTab" class="tab text-accent font-bold text-[15px] py-2.5 px-5 border-b-2 border-accent cursor-pointer">
                     All Stores
@@ -30,7 +30,7 @@
                 {% endif %}
             </ul>
 
-            <input type="text" id="store-search" class="ml-auto px-6 py-2 border rounded" placeholder="Search store by name">
+            <input type="text" id="store-search" class="px-6 py-2 ml-auto border rounded" placeholder="Search store by name">
         </div>
 
         <div id="allStoresContent" class="tab-content">
@@ -40,7 +40,7 @@
             </div>
         </div>
         
-        <div id="myStoresContent" class="tab-content hidden">  <!-- Hide My Stores content initially -->
+        <div id="myStoresContent" class="hidden tab-content">  <!-- Hide My Stores content initially -->
             <div id="my-store-results">
                 <!-- User stores will be loaded here -->
             </div>
@@ -48,37 +48,37 @@
     </div>
 
     <!-- Modal for Registering Store -->
-    <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="w-full mx-72 mt-10 bg-white shadow-lg rounded-lg overflow-hidden relative">
-            <div class="text-2xl py-4 px-6 bg-secondary text-white text-center font-body font-bold">
+    <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="relative w-full mt-10 overflow-hidden bg-white rounded-lg shadow-lg mx-72">
+            <div class="px-6 py-4 text-2xl font-bold text-center text-white bg-secondary font-body">
                 Register Your Store
             </div>
-            <form id="register-form" class="py-4 px-6" method="POST" enctype="multipart/form-data">
+            <form id="register-form" class="px-6 py-4" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 
                 <!-- Store Name Field -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2" for="id_name">
+                    <label class="block mb-2 font-bold text-gray-700" for="id_name">
                         Store Name
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         id="id_name" name="name" type="text" placeholder="Enter store name" required>
                 </div>
             
                 <!-- Store Description Field -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2" for="id_description">
+                    <label class="block mb-2 font-bold text-gray-700" for="id_description">
                         Store Description
                     </label>
                     <textarea
-                        class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         id="id_description" name="description" rows="4" placeholder="Enter store description"></textarea>
                 </div>
             
                 <!-- Image Selection Option -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">
+                    <label class="block mb-2 font-bold text-gray-700">
                         Store Image Option
                     </label>
                     <div class="flex items-center gap-4">
@@ -93,45 +93,45 @@
             
                 <!-- Store Image Upload Field -->
                 <div id="photo-upload-field" class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2" for="id_photo_upload">
+                    <label class="block mb-2 font-bold text-gray-700" for="id_photo_upload">
                         Upload Store Image
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         id="id_photo_upload" name="photo_upload" type="file">
                 </div>
             
                 <!-- Store Image URL Field -->
                 <div id="photo-url-field" class="mb-4" style="display: none;">
-                    <label class="block text-gray-700 font-bold mb-2" for="id_photo">
+                    <label class="block mb-2 font-bold text-gray-700" for="id_photo">
                         Store Image URL
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         id="id_photo" name="photo" type="text" placeholder="Enter image URL">
                 </div>
             
                 <!-- Store Location Field -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2" for="id_location">
+                    <label class="block mb-2 font-bold text-gray-700" for="id_location">
                         Store Location
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="w-full px-4 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         id="id_location" name="location" type="text" placeholder="Enter store location" required>
                 </div>
             
                 <!-- Submit Button -->
-                <div class="flex items-center justify-center mb-4 gap-4">
+                <div class="flex items-center justify-center gap-4 mb-4">
                     <button
-                        class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
+                        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline"
                         type="submit">
                         Register Store
                     </button>
                     <button
                         type="button"
                         id="close-modal"
-                        class="bg-secondary text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline">
+                        class="px-4 py-2 text-white rounded bg-secondary hover:bg-gray-800 focus:outline-none focus:shadow-outline">
                         Back
                     </button>
                 </div>
